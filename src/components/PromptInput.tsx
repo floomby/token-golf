@@ -2,8 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 import Graphemer from "graphemer";
 import { compile } from "html-to-text";
-
+import { api } from "~/utils/api";
 import { get_encoding } from "@dqbd/tiktoken";
+import { useNotificationQueue } from "~/providers/notifications";
 
 const encoder = get_encoding("cl100k_base");
 const textDecoder = new TextDecoder();
@@ -89,10 +90,11 @@ const HoverableText: React.FC<HoverableTextProps> = ({
 
   let linebreaks = <></>;
   if (text.includes("\n")) {
-    const replaced = text.replace(/\n\n/g, "\n");
+    const newLineCount = text.split("\n").length - 1;
+
     linebreaks = (
       <>
-        {new Array(replaced.length).fill(0).map((_, idx) => (
+        {new Array(newLineCount).fill(0).map((_, idx) => (
           <br key={idx} />
         ))}
       </>
@@ -141,12 +143,37 @@ type PromptInputProps = {
   prompt: string;
   setPrompt: (prompt: string) => void;
   onSubmit: () => void;
+  testIndex: number;
+  challengeId: string;
 };
 const PromptInput: React.FC<PromptInputProps> = ({
   prompt,
   setPrompt,
   onSubmit,
+  testIndex,
+  challengeId,
 }) => {
+  const notifications = useNotificationQueue();
+
+  const { mutate: runSingleTest } = api.challenge.runSingleTest.useMutation({
+    onSuccess: (data) => {
+      const id = Math.random().toString();
+      notifications.add(id, {
+        message: JSON.stringify(data),
+        level: FeedbackLevel.Success,
+        duration: 5000,
+      });
+    },
+    onError: (error) => {
+      const id = Math.random().toString();
+      notifications.add(id, {
+        message: error.message,
+        level: FeedbackLevel.Error,
+        duration: 5000,
+      });
+    },
+  });
+
   // we will have a hidden contenteditablediv that will be edited and then we will wrap each character when we display it
 
   const editableRef = useRef<HTMLDivElement>(null);
@@ -158,18 +185,11 @@ const PromptInput: React.FC<PromptInputProps> = ({
 
   useEffect(() => {
     const segments = getSegments(prompt);
-    // console.log("segments", segments);
     setSegments(segments);
     setInfoToken(null);
-    // check if the prompt has newlines
-    // if (/\n/g.test(prompt)) {
-    //   console.log("newlines detected");
-    // }
-    console.log("prompt", prompt);
-    console.log("segments", segments);
+    // console.log("prompt", prompt);
+    // console.log("segments", segments);
   }, [prompt]);
-
-  const [content, setContent] = useState<string>("");
 
   return (
     <div className="flex flex-row items-center justify-center gap-4">
@@ -191,16 +211,10 @@ const PromptInput: React.FC<PromptInputProps> = ({
           suppressContentEditableWarning={true}
           onInput={(e) => {
             const text = compiledConvert(e.currentTarget.innerText);
-            // Idk if this makes any sense
-            // console.log("text", text);
-            setPrompt(text);
-            // if (e.currentTarget.innerHTML !== text) {
-            //   const replacement = text.replace(/\n/g, "<br/>");
-            //   console.log("replacing", e.currentTarget.innerHTML, replacement);
-            //   e.currentTarget.innerText = replacement;
-            // }
+            setPrompt(text.replace(/\n\n/g, "\n"));
             const replaced = flattenSpanText(e.currentTarget.innerHTML);
             if (replaced !== e.currentTarget.innerHTML) {
+              // FIXME This is really terrible behavior
               console.log("replacing", replaced, text);
               e.currentTarget.innerHTML = text;
             }
@@ -220,9 +234,11 @@ const PromptInput: React.FC<PromptInputProps> = ({
             "rounded-lg px-4 py-2" +
             colorFromFeedbackLevel(FeedbackLevel.Success, true)
           }
-          onClick={onSubmit}
+          onClick={() => {
+            void runSingleTest({ prompt, testIndex, challengeId });
+          }}
         >
-          Submit
+          Run
         </button>
       </div>
     </div>

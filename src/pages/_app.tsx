@@ -8,6 +8,7 @@ import "~/styles/globals.css";
 import { NotificationProvider } from "~/providers/notifications";
 import WidthProvider from "~/providers/width";
 import NotificationList from "~/components/NotificationList";
+import Header from "~/components/Header";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -18,6 +19,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <NotificationProvider>
         <WidthProvider>
           <div className="absolute inset-0 min-h-screen min-w-max text-black dark:text-white">
+            <Header />
             <Component {...pageProps} />
             <NotificationList />
           </div>

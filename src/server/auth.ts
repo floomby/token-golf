@@ -10,6 +10,7 @@ import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 import { env } from "~/env.mjs";
 import db from "~/utils/db";
 import mongoose from "mongoose";
+import { Profile } from "~/utils/odm";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -39,28 +40,54 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    session: async ({ session, user }) => {
+      await db();
+
+      const sess = await mongoose.startSession();
+      sess.startTransaction();
+      const abort = async () => {
+        await sess.abortTransaction();
+        await sess.endSession();
+      };
+
+      try {
+        const profile = await Profile.findOne({ email: user.email }, null, {
+          session: sess,
+        });
+
+        if (!profile) {
+          await Profile.create(
+            [
+              {
+                email: session.user.email,
+                name: session.user.name,
+                image: session.user.image,
+              },
+            ],
+            { session: sess }
+          );
+        }
+
+        await sess.commitTransaction();
+
+        const ret = {
+          ...session,
+          user: {
+            ...session.user,
+            id: user.id,
+            name: profile?.name || session.user.name,
+            image: profile?.image || session.user.image,
+          },
+        };
+
+        return ret;
+      } catch (err) {
+        await abort();
+        throw err;
+      }
+    },
   },
   providers: [
-    // DiscordProvider({
-    //   clientId: env.DISCORD_CLIENT_ID,
-    //   clientSecret: env.DISCORD_CLIENT_SECRET,
-    // }),
-    /**
-     * ...add more providers here.
-     *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-     *
-     * @see https://next-auth.js.org/providers/github
-     */
     GithubProvider({
       clientId: env.GITHUB_CLIENT_ID,
       clientSecret: env.GITHUB_CLIENT_SECRET,

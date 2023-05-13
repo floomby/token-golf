@@ -27,6 +27,36 @@ const Run =
   (mongoose.models.Run as mongoose.Model<IRun>) ||
   mongoose.model<IRun>("Run", RunSchema);
 
+export interface ITestRun {
+  prompt: string;
+  challenge: ObjectId;
+  at: Date;
+  testIndex: number;
+  result: string;
+  profile: ObjectId;
+}
+
+const TestRunSchema = new mongoose.Schema<ITestRun>({
+  prompt: { type: String, required: true },
+  challenge: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Challenge",
+    required: true,
+  },
+  at: { type: Date, required: true, default: Date.now },
+  testIndex: { type: Number, required: true },
+  result: { type: String, required: true },
+  profile: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Profile",
+    required: true,
+  },
+});
+
+const TestRun =
+  (mongoose.models.TestRun as mongoose.Model<ITestRun>) ||
+  mongoose.model<ITestRun>("TestRun", TestRunSchema);
+
 export interface IScore {
   tokenCount: number;
   profile: ObjectId;
@@ -34,8 +64,8 @@ export interface IScore {
 }
 
 export interface ITest {
-  input: string;
-  output: string;
+  test: string;
+  expected: string;
 }
 
 export interface IChallenge {
@@ -48,27 +78,33 @@ export interface IChallenge {
 const ChallengeSchema = new mongoose.Schema<IChallenge>({
   name: { type: String, required: true },
   description: { type: String, required: true },
-  tests: [
-    {
-      input: { type: String, required: true },
-      output: { type: String, required: true },
-    },
-  ],
-  scores: [
-    {
-      tokenCount: { type: Number, required: true },
-      profile: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Profile",
-        required: true,
+  tests: {
+    type: [
+      {
+        test: { type: String, required: true },
+        expected: { type: String, required: true },
       },
-      run: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Run",
-        required: true,
+    ],
+    required: true,
+  },
+  scores: {
+    type: [
+      {
+        tokenCount: { type: Number, required: true },
+        profile: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Profile",
+          required: true,
+        },
+        run: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Run",
+          required: true,
+        },
       },
-    },
-  ],
+    ],
+    default: [],
+  },
 });
 
 const Challenge =
@@ -77,13 +113,13 @@ const Challenge =
 
 export interface IProfile {
   email: string;
-  displayName: string;
+  name: string;
   image: string;
 }
 
 const ProfileSchema = new mongoose.Schema<IProfile>({
   email: { type: String, required: true },
-  displayName: { type: String, required: true },
+  name: { type: String, required: true },
   image: { type: String, required: true },
 });
 
@@ -91,4 +127,4 @@ const Profile =
   (mongoose.models.Profile as mongoose.Model<IProfile>) ||
   mongoose.model<IProfile>("Profile", ProfileSchema);
 
-export { Profile, Challenge, Run };
+export { Profile, Challenge, Run, TestRun };
