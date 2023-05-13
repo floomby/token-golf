@@ -87,19 +87,32 @@ const HoverableText: React.FC<HoverableTextProps> = ({
     }
   }, [spanRef, mousePosition]);
 
+  let linebreaks = <></>;
+  if (text.includes("\n")) {
+    const replaced = text.replace(/\n\n/g, "\n");
+    linebreaks = (
+      <>
+        {new Array(replaced.length).fill(0).map((_, idx) => (
+          <br key={idx} />
+        ))}
+      </>
+    );
+  }
+
   return (
     <>
       <span
         ref={spanRef}
         className={
           "rounded-sm " +
-          colorFromIndex(index) +
-          (hovered ? " bg-red-400 bg-opacity-60" : " bg-opacity-40")
+          (hovered
+            ? " bg-red-400 bg-opacity-60"
+            : " bg-opacity-40 " + colorFromIndex(index))
         }
       >
         {text}
       </span>
-      {text === "\n" ? <br /> : null}
+      {linebreaks}
     </>
   );
 };
@@ -117,7 +130,7 @@ const TokenInfo: React.FC<TokenInfoProps> = ({ token }) => {
   const encoding = encoder.encode(token, "all");
 
   return (
-    <div className="w-48 flex flex-col justify-start gap-2">
+    <div className="flex w-48 flex-col justify-start gap-2">
       <h3 className="text-lg font-bold">"{token}"</h3>
       <h3 className="text-lg font-bold">Encoding: {encoding.join(", ")}</h3>
     </div>
@@ -149,16 +162,18 @@ const PromptInput: React.FC<PromptInputProps> = ({
     setSegments(segments);
     setInfoToken(null);
     // check if the prompt has newlines
-    if (/\n/g.test(prompt)) {
-      console.log("newlines detected");
-    }
+    // if (/\n/g.test(prompt)) {
+    //   console.log("newlines detected");
+    // }
+    console.log("prompt", prompt);
+    console.log("segments", segments);
   }, [prompt]);
 
   const [content, setContent] = useState<string>("");
 
   return (
     <div className="flex flex-row items-center justify-center gap-4">
-      <div className="relative h-16 w-96 text-black">
+      <div className="relative h-64 w-96 text-black">
         <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-full rounded-md border-2">
           {segments.map((segment, i) => (
             <HoverableText
@@ -177,14 +192,13 @@ const PromptInput: React.FC<PromptInputProps> = ({
           onInput={(e) => {
             const text = compiledConvert(e.currentTarget.innerText);
             // Idk if this makes any sense
-            console.log("text", text);
+            // console.log("text", text);
             setPrompt(text);
             // if (e.currentTarget.innerHTML !== text) {
             //   const replacement = text.replace(/\n/g, "<br/>");
             //   console.log("replacing", e.currentTarget.innerHTML, replacement);
             //   e.currentTarget.innerText = replacement;
             // }
-            console.log("here");
             const replaced = flattenSpanText(e.currentTarget.innerHTML);
             if (replaced !== e.currentTarget.innerHTML) {
               console.log("replacing", replaced, text);
@@ -192,9 +206,6 @@ const PromptInput: React.FC<PromptInputProps> = ({
             }
           }}
           ref={editableRef}
-          onClick={(e) => {
-            console.log("editable click", e);
-          }}
           onMouseMove={(e) => {
             setInfoToken(null);
             setMousePosition({ x: e.clientX, y: e.clientY });
