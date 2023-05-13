@@ -1,7 +1,3 @@
-// Width provider
-// Profile provider
-
-import { useSession } from "next-auth/react";
 import { createContext, useEffect, useState } from "react";
 
 

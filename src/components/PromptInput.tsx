@@ -1,5 +1,41 @@
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
+import Graphemer from "graphemer";
+
+import { get_encoding } from "@dqbd/tiktoken";
+
+const encoder = get_encoding("cl100k_base");
+const textDecoder = new TextDecoder();
+const graphemer = new Graphemer();
+
+export function getSegments(inputText: string) {
+  const encoding = encoder.encode(inputText, "all");
+  const segments: { text: string; tokens: { id: number; idx: number }[] }[] =
+    [];
+
+  let byteAcc: number[] = [];
+  let tokenAcc: { id: number; idx: number }[] = [];
+  let inputGraphemes = graphemer.splitGraphemes(inputText);
+
+  for (let idx = 0; idx < encoding.length; idx++) {
+    const token = encoding[idx]!;
+    byteAcc.push(...encoder.decode_single_token_bytes(token));
+    tokenAcc.push({ id: token, idx });
+
+    const segmentText = textDecoder.decode(new Uint8Array(byteAcc));
+    const graphemes = graphemer.splitGraphemes(segmentText);
+
+    if (graphemes.every((item, idx) => inputGraphemes[idx] === item)) {
+      segments.push({ text: segmentText, tokens: tokenAcc });
+
+      byteAcc = [];
+      tokenAcc = [];
+      inputGraphemes = inputGraphemes.slice(graphemes.length);
+    }
+  }
+
+  return segments;
+}
 
 type HoverableTextProps = {
   text: string;
@@ -57,12 +93,29 @@ const PromptInput: React.FC<PromptInputProps> = ({
 
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
+  const [segments, setSegments] = useState<ReturnType<typeof getSegments>>(
+    []
+  );
+
+  useEffect(() => {
+    const segments = getSegments(prompt);
+    console.log("segments", segments);
+    setSegments(segments);
+  }, [prompt]);
+
   return (
     <div className="flex flex-row items-center justify-center gap-4">
       <div className="relative h-16 w-96">
         <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-full rounded-md border-2">
-          {prompt.split("").map((char, i) => (
+          {/* {prompt.split("").map((char, i) => (
             <HoverableText key={i} text={char} mousePosition={mousePosition} />
+          ))} */}
+          {segments.map((segment, i) => (
+            <HoverableText
+              key={i}
+              text={segment.text}
+              mousePosition={mousePosition}
+            />
           ))}
         </div>
         <div
