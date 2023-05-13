@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.pass-through:hover {
+
+}
+.pass-through:active {
+  pointer-events: none;
+}
