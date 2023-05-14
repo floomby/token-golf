@@ -88,18 +88,15 @@ const HoverableText: React.FC<HoverableTextProps> = ({
     }
   }, [spanRef, mousePosition]);
 
-  let linebreaks = <></>;
-  if (text.includes("\n")) {
-    const newLineCount = text.split("\n").length - 1;
+  const newLineCount = text.split("\n").length - 1;
 
-    linebreaks = (
-      <>
-        {new Array(newLineCount).fill(0).map((_, idx) => (
-          <br key={idx} />
-        ))}
-      </>
-    );
-  }
+  const linebreaks = (
+    <>
+      {new Array(newLineCount).fill(0).map((_, idx) => (
+        <br key={idx} />
+      ))}
+    </>
+  );
 
   return (
     <>
@@ -117,12 +114,6 @@ const HoverableText: React.FC<HoverableTextProps> = ({
       {linebreaks}
     </>
   );
-};
-
-const flattenSpanText = (html: string) => {
-  // remove span tags
-  const noSpan = html.replace(/<span[^>]*>/g, "").replace(/<\/span>/g, "");
-  return noSpan;
 };
 
 type TokenInfoProps = {
@@ -174,10 +165,6 @@ const PromptInput: React.FC<PromptInputProps> = ({
     },
   });
 
-  // we will have a hidden contenteditablediv that will be edited and then we will wrap each character when we display it
-
-  const editableRef = useRef<HTMLDivElement>(null);
-
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   const [segments, setSegments] = useState<ReturnType<typeof getSegments>>([]);
@@ -187,14 +174,16 @@ const PromptInput: React.FC<PromptInputProps> = ({
     const segments = getSegments(prompt);
     setSegments(segments);
     setInfoToken(null);
-    // console.log("prompt", prompt);
-    // console.log("segments", segments);
   }, [prompt]);
 
   return (
     <div className="flex flex-row items-center justify-center gap-4">
       <div className="relative h-64 w-96 text-black">
-        <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-full rounded-md border-2">
+        <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-full rounded-md border-2"
+          style={{
+            wordBreak: "break-word",
+          }}
+        >
           {segments.map((segment, i) => (
             <HoverableText
               key={i}
@@ -206,25 +195,20 @@ const PromptInput: React.FC<PromptInputProps> = ({
           ))}
         </div>
         <div
-          className="absolute left-0 top-0 h-full w-full rounded-md border-2 border-gray-300 bg-gray-200"
-          contentEditable={true}
-          suppressContentEditableWarning={true}
-          onInput={(e) => {
-            const text = compiledConvert(e.currentTarget.innerText);
-            setPrompt(text.replace(/\n\n/g, "\n"));
-            const replaced = flattenSpanText(e.currentTarget.innerHTML);
-            if (replaced !== e.currentTarget.innerHTML) {
-              // FIXME This is really terrible behavior
-              console.log("replacing", replaced, text);
-              e.currentTarget.innerHTML = text;
-            }
-          }}
-          ref={editableRef}
+          className="absolute left-0 top-0 h-full w-full"
           onMouseMove={(e) => {
             setInfoToken(null);
             setMousePosition({ x: e.clientX, y: e.clientY });
           }}
-        ></div>
+        >
+          <textarea
+            className="h-full w-full rounded-md border-2 border-gray-300 bg-gray-200"
+            value={prompt}
+            onChange={(e) => {
+              setPrompt(e.currentTarget.value);
+            }}
+          />
+        </div>
       </div>
       <div className="flex flex-col items-center justify-center gap-2">
         <h2 className="text-2xl">Token Count: {segments.length}</h2>
