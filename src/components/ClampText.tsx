@@ -16,7 +16,7 @@ const ClampText: React.FC<ClampTextProps> = ({
   return text.length > maxLength ? (
     <span
       className="truncate"
-      data-tooltip-content={text}
+      data-tooltip-html={text.replace(/ /g, "\u00a0").replace(/\n/g, "<br />")}
       id={`tooltip-${uid}`}
     >
       {text.length > maxLength ? text.substring(0, maxLength) + "..." : text}

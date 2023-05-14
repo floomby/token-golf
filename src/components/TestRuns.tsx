@@ -7,7 +7,11 @@ type TestRunsProps = {
   setTestIndex: (index: number) => void;
   setPrompt: (prompt: string) => void;
 };
-const TestRuns: React.FC<TestRunsProps> = ({ challengeId, setTestIndex, setPrompt }) => {
+const TestRuns: React.FC<TestRunsProps> = ({
+  challengeId,
+  setTestIndex,
+  setPrompt,
+}) => {
   const { data: testRuns } = api.challenge.myTestRuns.useQuery(challengeId, {
     enabled: !!challengeId,
     refetchInterval: 1000,
@@ -21,6 +25,7 @@ const TestRuns: React.FC<TestRunsProps> = ({ challengeId, setTestIndex, setPromp
           <table className="w-full">
             <thead>
               <tr className="bg-gray-200 text-left">
+                <th>Tokens</th>
                 <th>Prompt</th>
                 <th>Trim</th>
                 <th>Case Sensitive</th>
@@ -45,6 +50,7 @@ const TestRuns: React.FC<TestRunsProps> = ({ challengeId, setTestIndex, setPromp
                       setPrompt(testRun.prompt);
                     }}
                   >
+                    <td className="pl-1">{testRun.tokenCount}</td>
                     <td className="pl-1">
                       <ClampText maxLength={12} text={testRun.prompt} />
                     </td>

@@ -31,6 +31,7 @@ export interface ITestRun {
   prompt: string;
   trim: boolean;
   caseSensitive: boolean;
+  tokenCount: number;
   challenge: ObjectId;
   at: Date;
   testIndex: number;
@@ -43,6 +44,7 @@ const TestRunSchema = new mongoose.Schema<ITestRun>({
   prompt: { type: String, required: true },
   trim: { type: Boolean, required: true },
   caseSensitive: { type: Boolean, required: true },
+  tokenCount: { type: Number, required: true },
   challenge: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Challenge",

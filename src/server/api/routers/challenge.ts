@@ -9,6 +9,7 @@ import db from "~/utils/db";
 import { Challenge, Profile, TestRun } from "~/utils/odm";
 import { ChallengeUploadSchema } from "~/utils/schemas";
 import { runTest } from "~/utils/runner";
+import { countTokens, getSegments } from "~/utils/tokenize";
 
 export const challengeRouter = createTRPCRouter({
   create: protectedProcedure
@@ -80,6 +81,8 @@ export const challengeRouter = createTRPCRouter({
           throw new Error("Test not found");
         }
 
+        const tokenCount = countTokens(getSegments(input.prompt));
+
         const result = await runTest(test, input.prompt, input.trim, input.caseSensitive);
 
         const testRun = await TestRun.create(
@@ -88,6 +91,7 @@ export const challengeRouter = createTRPCRouter({
               prompt: input.prompt,
               trim: input.trim,
               caseSensitive: input.caseSensitive,
+              tokenCount,
               challenge: challenge._id,
               testIndex: input.testIndex,
               result: result.result,
@@ -130,6 +134,7 @@ export const challengeRouter = createTRPCRouter({
           prompt: 1,
           trim: 1,
           caseSensitive: 1,
+          tokenCount: 1,
           at: 1,
           testIndex: 1,
           result: 1,
