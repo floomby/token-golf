@@ -130,23 +130,6 @@ export const challengeRouter = createTRPCRouter({
         throw new Error("Profile not found");
       }
 
-      // const runs = await TestRun.find(
-      //   {
-      //     challenge: new mongoose.Types.ObjectId(input),
-      //     profile: profile._id,
-      //   },
-      //   {
-      //     prompt: 1,
-      //     trim: 1,
-      //     caseSensitive: 1,
-      //     tokenCount: 1,
-      //     at: 1,
-      //     testIndex: 1,
-      //     result: 1,
-      //     success: 1,
-      //   }
-      // );
-
       // aggregation to get the most recent runs with a limit of 25
       const runs = await TestRun.aggregate([
         {

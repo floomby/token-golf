@@ -31,7 +31,7 @@ export const userRouter = createTRPCRouter({
       ret.email = null;
     }
 
-    return profile;
+    return ret;
   }),
 
   listChallenges: publicProcedure
@@ -45,5 +45,20 @@ export const userRouter = createTRPCRouter({
       );
 
       return challenges;
+    }),
+
+  setDisplayName: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ input, ctx }) => {
+      await db();
+
+      const profile = await Profile.findOneAndUpdate(
+        {
+          email: ctx.session.user.email,
+        },
+        {
+          name: input,
+        }
+      );
     }),
 });

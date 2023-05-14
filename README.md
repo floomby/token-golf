@@ -4,9 +4,7 @@ Compete to solve nlp challenges using an llm with as few tokens as possible.
 
 ## My TODO
 
-- Complete runs
-- Profile link on challenges
-- Edit display name
-- Leaderboards
+- Challenge overview page
+- Leaderboard
 - Design stuff - consistent theme, make light theme work
 - Random challenge feed

@@ -13,6 +13,7 @@ import TestCarousel from "~/components/TestCarousel";
 import Spinner from "~/components/Spinner";
 import TestRuns from "~/components/TestRuns";
 import ChallengeSubmissionsModal from "~/components/ChallengeSubmissionsModal";
+import Image from "next/image";
 
 const flattenId = (id: string | string[] | undefined): string | undefined => {
   if (Array.isArray(id)) {
@@ -46,6 +47,21 @@ const ChallengePage: NextPage = () => {
   const [caseSensitive, setCaseSensitive] = useState(false);
   const [submissionsModalShown, setSubmissionsModalShown] = useState(false);
 
+  const { data: author } = api.user.read.useQuery(
+    challenge?.createdBy.toString() || "",
+    {
+      enabled: !!challenge?.createdBy,
+      onError: (error) => {
+        const id = Math.random().toString(36).substring(7);
+        notifications.add(id, {
+          message: error.message,
+          level: FeedbackLevel.Error,
+          duration: 5000,
+        });
+      },
+    }
+  );
+
   return (
     <>
       <Head>
@@ -57,7 +73,35 @@ const ChallengePage: NextPage = () => {
         {!!challenge ? (
           <>
             <div className="text-semibold mb-4 flex min-w-[50%] flex-col gap-1">
-              <h1 className="text-4xl">{challenge.name}</h1>
+              <div className="flex flex-row items-center">
+                <h1 className="text-4xl">{challenge.name}</h1>
+                {!!author ? (
+                  <>
+                    <span className="ml-4 mr-1 text-gray-500 dark:text-gray-400">
+                      by
+                    </span>
+                    <Link
+                      href={`/users/${challenge.createdBy}`}
+                      className="flex flex-row items-center rounded-lg bg-opacity-30 hover:bg-slate-400 p-2 gap-2"
+                    >
+                      <div className="relative h-8 w-8 shrink-0 p-0">
+                        <div className="absolute left-0 top-0 h-full w-full rounded-full shadow-inner shadow-gray-600 dark:shadow-gray-800"></div>
+                        <Image
+                          referrerPolicy="no-referrer"
+                          className="h-full w-full rounded-full"
+                          src={author.image}
+                          alt="Profile picture"
+                          width={32}
+                          height={32}
+                        />
+                      </div>
+                      <span className="text-lg font-semibold text-white">
+                        {author.name}
+                      </span>
+                    </Link>
+                  </>
+                ) : null}
+              </div>
               <p>{challenge.description}</p>
             </div>
             <TestCarousel
