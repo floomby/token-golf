@@ -14,13 +14,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCamera, faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 import UploadFileModal from "~/components/UploadFileModal";
 import { Tooltip } from "react-tooltip";
-
-const flattenId = (id: string | string[] | undefined): string | undefined => {
-  if (Array.isArray(id)) {
-    return id[0];
-  }
-  return id;
-};
+import { flattenId } from "~/utils/flatten";
 
 type MeUserProps = {
   name: string;
@@ -188,7 +182,7 @@ const UserChallenges: React.FC<UserChallengesProps> = ({ id }) => {
             challenges.map((challenge) => (
               <Link
                 key={challenge.id}
-                href={`/challenges/${challenge.id}`}
+                href={`/overviews/${challenge.id}`}
                 passHref
                 className="hover:underline"
                 data-tooltip-id={challenge.id}

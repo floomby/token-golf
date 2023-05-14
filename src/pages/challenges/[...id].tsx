@@ -7,20 +7,14 @@ import { api } from "~/utils/api";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 import { useNotificationQueue } from "~/providers/notifications";
 import PromptInput from "~/components/PromptInput";
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import TestCarousel from "~/components/TestCarousel";
 import Spinner from "~/components/Spinner";
 import TestRuns from "~/components/TestRuns";
 import ChallengeSubmissionsModal from "~/components/ChallengeSubmissionsModal";
 import Image from "next/image";
-
-const flattenId = (id: string | string[] | undefined): string | undefined => {
-  if (Array.isArray(id)) {
-    return id[0];
-  }
-  return id;
-};
+import { flattenId, getSecond } from "~/utils/flatten";
 
 const ChallengePage: NextPage = () => {
   const router = useRouter();
@@ -39,6 +33,24 @@ const ChallengePage: NextPage = () => {
         duration: 5000,
       });
     },
+  });
+
+  const {} = api.challenge.getResult.useQuery(getSecond(id) || "", {
+    enabled: !!getSecond(id),
+    onError: (error) => {
+      const id = Math.random().toString(36).substring(7);
+      notifications.add(id, {
+        message: error.message,
+        level: FeedbackLevel.Error,
+        duration: 5000,
+      });
+    },
+    onSuccess: (data) => {
+      setPrompt(data.prompt);
+      setCaseSensitive(data.caseSensitive);
+      setTrim(data.trim);
+    },
+    refetchOnWindowFocus: false,
   });
 
   const [prompt, setPrompt] = useState("");
@@ -82,7 +94,7 @@ const ChallengePage: NextPage = () => {
                     </span>
                     <Link
                       href={`/users/${challenge.createdBy}`}
-                      className="flex flex-row items-center rounded-lg bg-opacity-30 hover:bg-slate-400 p-2 gap-2"
+                      className="flex flex-row items-center gap-2 rounded-lg bg-opacity-30 p-2 hover:bg-slate-400"
                     >
                       <div className="relative h-8 w-8 shrink-0 p-0">
                         <div className="absolute left-0 top-0 h-full w-full rounded-full shadow-inner shadow-gray-600 dark:shadow-gray-800"></div>

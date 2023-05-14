@@ -16,15 +16,15 @@ export const challengeRouter = createTRPCRouter({
     .input(ChallengeUploadSchema)
     .mutation(async ({ input, ctx }) => {
       await db();
-      const profile = await Profile.findOne({ email: ctx.session.user.email });
+      // const profile = await Profile.findOne({ email: ctx.session.user.email });
 
-      if (!profile) {
-        throw new Error("Profile not found");
-      }
+      // if (!profile) {
+      //   throw new Error("Profile not found");
+      // }
 
       const challenge = await Challenge.create({
         ...input,
-        createdBy: profile._id,
+        createdBy: new mongoose.Types.ObjectId(ctx.session.user.profileId),
       });
       return challenge;
     }),
@@ -57,15 +57,15 @@ export const challengeRouter = createTRPCRouter({
       };
 
       try {
-        const profile = await Profile.findOne(
-          { email: ctx.session.user.email },
-          null,
-          { session }
-        );
+        // const profile = await Profile.findOne(
+        //   { email: ctx.session.user.email },
+        //   null,
+        //   { session }
+        // );
 
-        if (!profile) {
-          throw new Error("Profile not found");
-        }
+        // if (!profile) {
+        //   throw new Error("Profile not found");
+        // }
 
         const challenge = await Challenge.findById(input.challengeId, null, {
           session,
@@ -101,7 +101,7 @@ export const challengeRouter = createTRPCRouter({
               testIndex: input.testIndex,
               result: result.result,
               success: result.success,
-              profile: profile._id,
+              profile: new mongoose.Types.ObjectId(ctx.session.user.profileId),
             },
           ],
           { session }
@@ -124,18 +124,18 @@ export const challengeRouter = createTRPCRouter({
       }
 
       await db();
-      const profile = await Profile.findOne({ email: ctx.session.user.email });
+      // const profile = await Profile.findOne({ email: ctx.session.user.email });
 
-      if (!profile) {
-        throw new Error("Profile not found");
-      }
+      // if (!profile) {
+      //   throw new Error("Profile not found");
+      // }
 
       // aggregation to get the most recent runs with a limit of 25
       const runs = await TestRun.aggregate([
         {
           $match: {
             challenge: new mongoose.Types.ObjectId(input),
-            profile: profile._id,
+            profile: new mongoose.Types.ObjectId(ctx.session.user.profileId),
           },
         },
         {
@@ -183,15 +183,15 @@ export const challengeRouter = createTRPCRouter({
       };
 
       try {
-        const profile = await Profile.findOne(
-          { email: ctx.session.user.email },
-          null,
-          { session }
-        );
+        // const profile = await Profile.findOne(
+        //   { email: ctx.session.user.email },
+        //   null,
+        //   { session }
+        // );
 
-        if (!profile) {
-          throw new Error("Profile not found");
-        }
+        // if (!profile) {
+        //   throw new Error("Profile not found");
+        // }
 
         const challenge = await Challenge.findById(input.challengeId, null, {
           session,
@@ -218,7 +218,7 @@ export const challengeRouter = createTRPCRouter({
               tokenCount,
               challenge: challenge._id,
               results: result,
-              profile: profile._id,
+              profile: new mongoose.Types.ObjectId(ctx.session.user.profileId),
             },
           ],
           { session }
@@ -252,16 +252,16 @@ export const challengeRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       await db();
 
-      const profile = await Profile.findOne({ email: ctx.session.user.email });
+      // const profile = await Profile.findOne({ email: ctx.session.user.email });
 
-      if (!profile) {
-        throw new Error("Profile not found");
-      }
+      // if (!profile) {
+      //   throw new Error("Profile not found");
+      // }
 
       const runs = await Run.find(
         {
           challenge: new mongoose.Types.ObjectId(input),
-          profile: profile._id,
+          profile: new mongoose.Types.ObjectId(ctx.session.user.profileId),
         },
         {
           at: 1,

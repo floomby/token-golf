@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { useRouter } from "next/router";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 import { useNotificationQueue } from "~/providers/notifications";
 import { api } from "~/utils/api";
@@ -21,6 +22,8 @@ const ChallengeSubmissionsModal: React.FC<ChallengeSubmissionsModalProps> = ({
   setTrim,
   setCaseSensitive,
 }) => {
+  const router = useRouter();
+
   const notifications = useNotificationQueue();
 
   const { data: challenges } = api.challenge.getMyResults.useQuery(
@@ -58,6 +61,7 @@ const ChallengeSubmissionsModal: React.FC<ChallengeSubmissionsModalProps> = ({
                 <tr>
                   <th className="px-2 py-1">Tokens</th>
                   <th className="px-2 py-1">Results</th>
+                  <th className="px-2 py-1">Date</th>
                 </tr>
               </thead>
               <tbody>
@@ -70,13 +74,18 @@ const ChallengeSubmissionsModal: React.FC<ChallengeSubmissionsModalProps> = ({
                     <tr
                       key={i}
                       className={
-                        "bg-opacity-30" +
+                        "bg-opacity-30 cursor-pointer" +
                         // bad mongoose typing out of the projection...
                         ((challenge as unknown as { success: boolean }).success
                           ? " bg-green-300 hover:bg-green-200"
                           : " bg-red-300 hover:bg-red-200")
                       }
                       onClick={() => {
+                        if (!router.pathname.includes("/challenges/")) {
+                          void router.push(`/challenges/${challengeId}/${challenge._id}`);
+                          return;
+                        }
+
                         setTestIndex(0);
                         setPrompt(challenge.prompt);
                         setTrim(challenge.trim);
@@ -87,6 +96,9 @@ const ChallengeSubmissionsModal: React.FC<ChallengeSubmissionsModalProps> = ({
                       <td className="pl-1">{challenge.tokenCount}</td>
                       <td className="pl-1">
                         {successCount}/{challenge.results.length}
+                      </td>
+                      <td className="pl-1">
+                        {new Date(challenge.at).toLocaleString()}
                       </td>
                     </tr>
                   );
