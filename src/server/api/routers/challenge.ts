@@ -130,22 +130,52 @@ export const challengeRouter = createTRPCRouter({
         throw new Error("Profile not found");
       }
 
-      const runs = await TestRun.find(
+      // const runs = await TestRun.find(
+      //   {
+      //     challenge: new mongoose.Types.ObjectId(input),
+      //     profile: profile._id,
+      //   },
+      //   {
+      //     prompt: 1,
+      //     trim: 1,
+      //     caseSensitive: 1,
+      //     tokenCount: 1,
+      //     at: 1,
+      //     testIndex: 1,
+      //     result: 1,
+      //     success: 1,
+      //   }
+      // );
+
+      // aggregation to get the most recent runs with a limit of 25
+      const runs = await TestRun.aggregate([
         {
-          challenge: new mongoose.Types.ObjectId(input),
-          profile: profile._id,
+          $match: {
+            challenge: new mongoose.Types.ObjectId(input),
+            profile: profile._id,
+          },
         },
         {
-          prompt: 1,
-          trim: 1,
-          caseSensitive: 1,
-          tokenCount: 1,
-          at: 1,
-          testIndex: 1,
-          result: 1,
-          success: 1,
-        }
-      );
+          $sort: {
+            at: -1,
+          },
+        },
+        {
+          $limit: 25,
+        },
+        {
+          $project: {
+            prompt: 1,
+            trim: 1,
+            caseSensitive: 1,
+            tokenCount: 1,
+            at: 1,
+            testIndex: 1,
+            result: 1,
+            success: 1,
+          },
+        },
+      ]);
 
       return runs;
     }),
@@ -245,25 +275,28 @@ export const challengeRouter = createTRPCRouter({
         throw new Error("Profile not found");
       }
 
-      const runs = await Run.find({
-        challenge: new mongoose.Types.ObjectId(input),
-        profile: profile._id,
-      }, {
-        at: 1,
-        results: 1,
-        tokenCount: 1,
-        prompt: 1,
-        trim: 1,
-        caseSensitive: 1,
-        // true if all results are successful
-        success: {
-          $reduce: {
-            input: "$results",
-            initialValue: true,
-            in: { $and: ["$$value", "$$this.success"] },
-          },
+      const runs = await Run.find(
+        {
+          challenge: new mongoose.Types.ObjectId(input),
+          profile: profile._id,
         },
-      });
+        {
+          at: 1,
+          results: 1,
+          tokenCount: 1,
+          prompt: 1,
+          trim: 1,
+          caseSensitive: 1,
+          // true if all results are successful
+          success: {
+            $reduce: {
+              input: "$results",
+              initialValue: true,
+              in: { $and: ["$$value", "$$this.success"] },
+            },
+          },
+        }
+      );
 
       return runs;
     }),
