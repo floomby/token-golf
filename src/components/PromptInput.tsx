@@ -109,7 +109,7 @@ const HoverableText: React.FC<HoverableTextProps> = ({
             : " bg-opacity-40 " + colorFromIndex(index))
         }
       >
-        {text}
+        {text.replace(/ /g, "\u00a0")}
       </span>
       {linebreaks}
     </>
