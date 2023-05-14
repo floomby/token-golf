@@ -88,7 +88,7 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
                 <button
                   className={
                     "rounded px-4 py-2 font-semibold" +
-                    colorFromFeedbackLevel(FeedbackLevel.Primary, true)
+                    colorFromFeedbackLevel(FeedbackLevel.Secondary, true)
                   }
                   onClick={() => {
                     setModalShown(false);

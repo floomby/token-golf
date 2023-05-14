@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import TestCarousel from "~/components/TestCarousel";
 import Spinner from "~/components/Spinner";
 import TestRuns from "~/components/TestRuns";
+import ChallengeSubmissionsModal from "~/components/ChallengeSubmissionsModal";
 
 const flattenId = (id: string | string[] | undefined): string | undefined => {
   if (Array.isArray(id)) {
@@ -41,6 +42,9 @@ const ChallengePage: NextPage = () => {
 
   const [prompt, setPrompt] = useState("");
   const [testIndex, setTestIndex] = useState(0);
+  const [trim, setTrim] = useState(false);
+  const [caseSensitive, setCaseSensitive] = useState(false);
+  const [submissionsModalShown, setSubmissionsModalShown] = useState(false);
 
   return (
     <>
@@ -68,15 +72,32 @@ const ChallengePage: NextPage = () => {
         <PromptInput
           prompt={prompt}
           setPrompt={setPrompt}
-          onSubmit={() => {}}
           challengeId={flattenId(id) || ""}
           testIndex={testIndex}
+          trim={trim}
+          setTrim={setTrim}
+          caseSensitive={caseSensitive}
+          setCaseSensitive={setCaseSensitive}
+          showSubmissionsModal={() => setSubmissionsModalShown(true)}
         />
         <TestRuns
           challengeId={flattenId(id) || ""}
           setTestIndex={setTestIndex}
           setPrompt={setPrompt}
+          setTrim={setTrim}
+          setCaseSensitive={setCaseSensitive}
         />
+        <div className="h-0 w-0">
+          <ChallengeSubmissionsModal
+            challengeId={flattenId(id) || ""}
+            shown={submissionsModalShown}
+            setShown={setSubmissionsModalShown}
+            setPrompt={setPrompt}
+            setTrim={setTrim}
+            setCaseSensitive={setCaseSensitive}
+            setTestIndex={setTestIndex}
+          />
+        </div>
       </main>
     </>
   );

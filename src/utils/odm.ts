@@ -1,21 +1,34 @@
 import mongoose from "mongoose";
 import { ObjectId } from "mongodb";
 
+export interface IResult {
+  result: string;
+  success: boolean;
+}
+
 export interface IRun {
   prompt: string;
+  trim: boolean;
+  caseSensitive: boolean;
+  tokenCount: number;
   challenge: ObjectId;
-  results: string[];
+  at: Date;
+  results: IResult[];
   profile: ObjectId;
 }
 
 const RunSchema = new mongoose.Schema<IRun>({
   prompt: { type: String, required: true },
+  trim: { type: Boolean, required: true },
+  caseSensitive: { type: Boolean, required: true },
+  tokenCount: { type: Number, required: true },
   challenge: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Challenge",
     required: true,
   },
-  results: [{ type: String, required: true }],
+  at: { type: Date, required: true, default: Date.now },
+  results: { type: [{ result: String, success: Boolean }], required: true },
   profile: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Profile",

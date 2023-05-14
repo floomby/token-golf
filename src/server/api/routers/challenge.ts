@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { TypeOf, z } from "zod";
 import mongoose from "mongoose";
 import {
   createTRPCRouter,
@@ -6,7 +6,7 @@ import {
   protectedProcedure,
 } from "~/server/api/trpc";
 import db from "~/utils/db";
-import { Challenge, Profile, TestRun } from "~/utils/odm";
+import { Challenge, Profile, Run, TestRun } from "~/utils/odm";
 import { ChallengeUploadSchema } from "~/utils/schemas";
 import { runTest } from "~/utils/runner";
 import { countTokens, getSegments } from "~/utils/tokenize";
@@ -83,7 +83,12 @@ export const challengeRouter = createTRPCRouter({
 
         const tokenCount = countTokens(getSegments(input.prompt));
 
-        const result = await runTest(test, input.prompt, input.trim, input.caseSensitive);
+        const result = await runTest(
+          test,
+          input.prompt,
+          input.trim,
+          input.caseSensitive
+        );
 
         const testRun = await TestRun.create(
           [
@@ -141,6 +146,124 @@ export const challengeRouter = createTRPCRouter({
           success: 1,
         }
       );
+
+      return runs;
+    }),
+
+  submit: protectedProcedure
+    .input(
+      z.object({
+        challengeId: z.string(),
+        prompt: z.string(),
+        trim: z.boolean(),
+        caseSensitive: z.boolean(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      await db();
+
+      const session = await mongoose.startSession();
+      session.startTransaction();
+      const abort = async () => {
+        await session.abortTransaction();
+        await session.endSession();
+      };
+
+      try {
+        const profile = await Profile.findOne(
+          { email: ctx.session.user.email },
+          null,
+          { session }
+        );
+
+        if (!profile) {
+          throw new Error("Profile not found");
+        }
+
+        const challenge = await Challenge.findById(input.challengeId, null, {
+          session,
+        });
+
+        if (!challenge) {
+          throw new Error("Challenge not found");
+        }
+
+        const tokenCount = countTokens(getSegments(input.prompt));
+
+        const result = await Promise.all(
+          challenge.tests.map(async (test, index) =>
+            runTest(test, input.prompt, input.trim, input.caseSensitive)
+          )
+        );
+
+        const runs = await Run.create(
+          [
+            {
+              prompt: input.prompt,
+              trim: input.trim,
+              caseSensitive: input.caseSensitive,
+              tokenCount,
+              challenge: challenge._id,
+              results: result,
+              profile: profile._id,
+            },
+          ],
+          { session }
+        );
+
+        const success = result.every((r) => r.success);
+        const ret = { success, id: runs[0]!._id };
+
+        await session.commitTransaction();
+
+        return ret;
+      } catch (err) {
+        await abort();
+        throw err;
+      }
+    }),
+
+  getResult: publicProcedure.input(z.string()).query(async ({ input }) => {
+    await db();
+    const run = await Run.findById(input);
+
+    if (!run) {
+      throw new Error("Run not found");
+    }
+
+    return run;
+  }),
+
+  getMyResults: protectedProcedure
+    .input(z.string())
+    .query(async ({ input, ctx }) => {
+      await db();
+
+      const profile = await Profile.findOne({ email: ctx.session.user.email });
+
+      if (!profile) {
+        throw new Error("Profile not found");
+      }
+
+      const runs = await Run.find({
+        challenge: new mongoose.Types.ObjectId(input),
+        profile: profile._id,
+      }, {
+        at: 1,
+        results: 1,
+        tokenCount: 1,
+        prompt: 1,
+        trim: 1,
+        caseSensitive: 1,
+        // true if all results are successful
+        success: {
+          $reduce: {
+            input: "$results",
+            initialValue: true,
+            in: { $and: ["$$value", "$$this.success"] },
+          },
+        },
+      });
 
       return runs;
     }),

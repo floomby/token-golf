@@ -62,7 +62,7 @@ const UploadFileModal: React.FC<UploadFileModalProps> = ({
                 <button
                   className={
                     "rounded px-4 py-2 font-semibold" +
-                    colorFromFeedbackLevel(FeedbackLevel.Primary, true)
+                    colorFromFeedbackLevel(FeedbackLevel.Secondary, true)
                   }
                   onClick={() => {
                     setFilename("");

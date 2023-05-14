@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
-import { compile } from "html-to-text";
+// import { compile } from "html-to-text";
 import { api } from "~/utils/api";
 import { useNotificationQueue } from "~/providers/notifications";
 import Toggle from "./Toggle";
 import { countTokens, encoder, getSegments } from "~/utils/tokenize";
 
-const compiledConvert = compile({ wordwrap: false, preserveNewlines: true });
+// const compiledConvert = compile({ wordwrap: false, preserveNewlines: true });
 
 const colorFromIndex = (index: number) => {
   switch (index % 3) {
@@ -74,16 +74,24 @@ const TokenInfo: React.FC<TokenInfoProps> = ({ token }) => {
 type PromptInputProps = {
   prompt: string;
   setPrompt: (prompt: string) => void;
-  onSubmit: () => void;
   testIndex: number;
   challengeId: string;
+  trim: boolean;
+  setTrim: (trim: boolean) => void;
+  caseSensitive: boolean;
+  setCaseSensitive: (caseSensitive: boolean) => void;
+  showSubmissionsModal: () => void;
 };
 const PromptInput: React.FC<PromptInputProps> = ({
   prompt,
   setPrompt,
-  onSubmit,
   testIndex,
   challengeId,
+  trim,
+  setTrim,
+  caseSensitive,
+  setCaseSensitive,
+  showSubmissionsModal,
 }) => {
   const notifications = useNotificationQueue();
 
@@ -92,7 +100,26 @@ const PromptInput: React.FC<PromptInputProps> = ({
       const id = Math.random().toString();
       notifications.add(id, {
         message: JSON.stringify(data),
-        level: FeedbackLevel.Success,
+        level: data.success ? FeedbackLevel.Success : FeedbackLevel.Warning,
+        duration: 5000,
+      });
+    },
+    onError: (error) => {
+      const id = Math.random().toString();
+      notifications.add(id, {
+        message: error.message,
+        level: FeedbackLevel.Error,
+        duration: 5000,
+      });
+    },
+  });
+
+  const { mutate: runAllTests } = api.challenge.submit.useMutation({
+    onSuccess: (data) => {
+      const id = Math.random().toString();
+      notifications.add(id, {
+        message: JSON.stringify(data),
+        level: data.success ? FeedbackLevel.Success : FeedbackLevel.Warning,
         duration: 5000,
       });
     },
@@ -115,9 +142,6 @@ const PromptInput: React.FC<PromptInputProps> = ({
     setInfoToken(null);
   }, [prompt]);
 
-  const [trim, setTrim] = useState(false);
-  const [caseSensitive, setCaseSensitive] = useState(false);
-
   return (
     <div className="flex w-full flex-row items-start justify-center gap-4">
       <div className="flex basis-1/2 flex-col items-start justify-center gap-2">
@@ -132,16 +156,62 @@ const PromptInput: React.FC<PromptInputProps> = ({
           }}
           rows={10}
         />
-        <div className="flex flex-row items-center justify-start gap-8">
-          <div className="basis-1/2">
-            <Toggle label="Trim" checked={trim} setChecked={setTrim} />
+        <div className="flex flex-row w-full justify-between gap-4">
+          <div className="flex flex-row items-center justify-start gap-8">
+            <div className="mt-2">
+              <Toggle label="Trim" checked={trim} setChecked={setTrim} />
+            </div>
+            <div className="mt-2">
+              <Toggle
+                label="Case Sensitive"
+                checked={caseSensitive}
+                setChecked={setCaseSensitive}
+              />
+            </div>
           </div>
-          <div className="basis-1/2">
-            <Toggle
-              label="Case Sensitive"
-              checked={caseSensitive}
-              setChecked={setCaseSensitive}
-            />
+          <div className="flex flex-row items-center justify-end gap-2">
+            <button
+              className={
+                "rounded-lg px-4 py-2 font-semibold whitespace-nowrap" +
+                colorFromFeedbackLevel(FeedbackLevel.Primary, true)
+              }
+              onClick={() => {
+                void runSingleTest({
+                  prompt,
+                  testIndex,
+                  challengeId,
+                  trim,
+                  caseSensitive,
+                });
+              }}
+            >
+              Run Single Test
+            </button>
+            <button
+              className={
+                "rounded-lg px-4 py-2 font-semibold whitespace-nowrap" +
+                colorFromFeedbackLevel(FeedbackLevel.Secondary, true)
+              }
+              onClick={showSubmissionsModal}
+            >
+              View Submissions
+            </button>
+            <button
+              className={
+                "rounded-lg px-4 py-2 font-semibold whitespace-nowrap" +
+                colorFromFeedbackLevel(FeedbackLevel.Success, true)
+              }
+              onClick={() => {
+                void runAllTests({
+                  prompt,
+                  challengeId,
+                  trim,
+                  caseSensitive,
+                });
+              }}
+            >
+              Submit
+            </button>
           </div>
         </div>
       </div>
@@ -165,23 +235,6 @@ const PromptInput: React.FC<PromptInputProps> = ({
           Token Count: {segments.length > 0 ? countTokens(segments) : 0}
         </h2>
         <TokenInfo token={infoToken ?? ""} />
-        <button
-          className={
-            "rounded-lg px-4 py-2" +
-            colorFromFeedbackLevel(FeedbackLevel.Success, true)
-          }
-          onClick={() => {
-            void runSingleTest({
-              prompt,
-              testIndex,
-              challengeId,
-              trim,
-              caseSensitive,
-            });
-          }}
-        >
-          Run
-        </button>
       </div>
     </div>
   );

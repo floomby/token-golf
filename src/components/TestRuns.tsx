@@ -6,11 +6,15 @@ type TestRunsProps = {
   challengeId: string;
   setTestIndex: (index: number) => void;
   setPrompt: (prompt: string) => void;
+  setTrim: (trim: boolean) => void;
+  setCaseSensitive: (caseSensitive: boolean) => void;
 };
 const TestRuns: React.FC<TestRunsProps> = ({
   challengeId,
   setTestIndex,
   setPrompt,
+  setTrim,
+  setCaseSensitive,
 }) => {
   const { data: testRuns } = api.challenge.myTestRuns.useQuery(challengeId, {
     enabled: !!challengeId,
@@ -18,7 +22,7 @@ const TestRuns: React.FC<TestRunsProps> = ({
   });
 
   return (
-    <div className="flex w-full flex-col items-center justify-center gap-4 rounded-md p-4 align-middle">
+    <div className="flex w-full flex-col items-center justify-center gap-4 rounded-md py-4 align-middle">
       <h2 className="text-2xl">Test Runs</h2>
       <div className="flex w-full flex-col items-start justify-start divide-y-2 divide-gray-400 rounded-md border-2 text-black">
         {!!testRuns ? (
@@ -48,6 +52,8 @@ const TestRuns: React.FC<TestRunsProps> = ({
                       console.log(testRun);
                       setTestIndex(testRun.testIndex);
                       setPrompt(testRun.prompt);
+                      setTrim(testRun.trim);
+                      setCaseSensitive(testRun.caseSensitive);
                     }}
                   >
                     <td className="pl-1">{testRun.tokenCount}</td>

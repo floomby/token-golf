@@ -5,6 +5,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IChallenge } from "~/utils/odm";
 import Test from "./Test";
+import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 
 type TestCarouselProps = {
   challenge: IChallenge;
@@ -30,7 +31,7 @@ const TestCarousel: React.FC<TestCarouselProps> = ({
     <div className="flex flex-col gap-2 w-1/2">
       <div className="flex justify-between w-full">
         <button
-          className="bg-slate-300 p-2 hover:bg-slate-400 rounded h-fit w-fit"
+          className={"rounded h-fit w-fit p-2" + colorFromFeedbackLevel(FeedbackLevel.Secondary, true)}
           onClick={handleLeftClick}
         >
           <FontAwesomeIcon className="w-12 h-12 text-black" icon={faChevronLeft} />
@@ -39,7 +40,7 @@ const TestCarousel: React.FC<TestCarouselProps> = ({
           {index + 1} / {tests.length}
         </div>
         <button
-          className="bg-slate-300 p-2 hover:bg-slate-400 rounded h-fit w-fit"
+          className={"rounded h-fit w-fit p-2" + colorFromFeedbackLevel(FeedbackLevel.Secondary, true)}
           onClick={handleRightClick}
         >
           <FontAwesomeIcon className="w-12 h-12 text-black" icon={faChevronRight} />

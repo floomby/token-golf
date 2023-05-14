@@ -5,27 +5,29 @@ import { LLMChain } from "langchain/chains";
 import { env } from "~/env.mjs";
 
 const runTest = async (test: ITest, promptToTest: string, trim: boolean, caseSensitive: boolean) => {
-  const llm = new OpenAI({
-    temperature: 0.0,
-    openAIApiKey: env.OPENAI_API_KEY,
-  });
+  const resultText = Math.random() > 0.5 ? "positive" : "negative";
 
-  const prompt = new PromptTemplate({
-    template: promptToTest,
-    inputVariables: ["test"],
-  });
+  // const llm = new OpenAI({
+  //   temperature: 0.0,
+  //   openAIApiKey: env.OPENAI_API_KEY,
+  // });
 
-  const chain = new LLMChain({ llm, prompt });
+  // const prompt = new PromptTemplate({
+  //   template: promptToTest,
+  //   inputVariables: ["test"],
+  // });
 
-  const result = await chain.call({ test: test.test });
+  // const chain = new LLMChain({ llm, prompt });
 
-  console.log("result", result);
+  // const result = await chain.call({ test: test.test });
 
-  let resultText = result.text;
+  // console.log("result", result);
 
-  if (trim) {
-    resultText = result.text.trim();
-  }
+  // let resultText = result.text;
+
+  // if (trim) {
+  //   resultText = result.text.trim();
+  // }
 
   let success = false;
 
@@ -35,8 +37,8 @@ const runTest = async (test: ITest, promptToTest: string, trim: boolean, caseSen
     success = resultText === test.expected;
   }
 
-
-  return { success, result: result.text as string };
+  // return { success, result: result.text as string };
+  return { success, result: resultText };
 };
 
 export { runTest };

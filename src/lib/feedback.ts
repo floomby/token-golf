@@ -80,8 +80,8 @@ const colorFromFeedbackLevel = (
       );
     case FeedbackLevel.Secondary:
       return themeOverrider(
-        " bg-indigo-700 text-white dark:bg-indigo-400 dark:text-black disabled:bg-indigo-500 dark:disabled:bg-indigo-200 disabled:text-gray-300 dark:disabled:text-gray-700 " +
-          (hoverable ? " hover:bg-indigo-600 dark:hover:bg-indigo-300" : ""),
+        " bg-slate-700 text-white dark:bg-slate-400 dark:text-black disabled:bg-slate-500 dark:disabled:bg-slate-200 disabled:text-gray-300 dark:disabled:text-gray-700 " +
+          (hoverable ? " hover:bg-slate-600 dark:hover:bg-slate-300" : ""),
         themeOverride
       );
   }
