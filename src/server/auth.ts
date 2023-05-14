@@ -24,6 +24,7 @@ declare module "next-auth" {
       id: string;
       // ...other properties
       // role: UserRole;
+      profileId: string;
     } & DefaultSession["user"];
   }
 
@@ -55,8 +56,10 @@ export const authOptions: NextAuthOptions = {
           session: sess,
         });
 
+        let profileId = profile?._id.toString();
+
         if (!profile) {
-          await Profile.create(
+          const newProfile = await Profile.create(
             [
               {
                 email: session.user.email,
@@ -66,6 +69,8 @@ export const authOptions: NextAuthOptions = {
             ],
             { session: sess }
           );
+
+          profileId = newProfile[0]!._id.toString();
         }
 
         await sess.commitTransaction();
@@ -77,6 +82,7 @@ export const authOptions: NextAuthOptions = {
             id: user.id,
             name: profile?.name || session.user.name,
             image: profile?.image || session.user.image,
+            profileId,
           },
         };
 

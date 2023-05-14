@@ -6,15 +6,14 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 import { useNotificationQueue } from "~/providers/notifications";
-import PromptInput from "~/components/PromptInput";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import TestCarousel from "~/components/TestCarousel";
 import Spinner from "~/components/Spinner";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
 import UploadFileModal from "~/components/UploadFileModal";
+import { Tooltip } from "react-tooltip";
 
 const flattenId = (id: string | string[] | undefined): string | undefined => {
   if (Array.isArray(id)) {
@@ -94,6 +93,43 @@ const OtherUser: React.FC<OtherUserProps> = ({ name, image }) => {
   );
 };
 
+type UserChallengesProps = {
+  id: string;
+};
+const UserChallenges: React.FC<UserChallengesProps> = ({ id }) => {
+  const { data: challenges } = api.user.listChallenges.useQuery(id);
+
+  return (
+    <div className="flex flex-col items-start justify-start gap-2 p-4">
+      <h2 className="text-2xl">Challenges</h2>
+      <div className="flex flex-col items-start justify-start gap-2 border-l-2 pl-2">
+        {!!challenges ? (
+          challenges.length > 0 ? (
+            challenges.map((challenge) => (
+              <Link
+                key={challenge.id}
+                href={`/challenges/${challenge.id}`}
+                passHref
+                className="hover:underline"
+                data-tooltip-id={challenge.id}
+              >
+                <Tooltip id={challenge.id} place="right">
+                  {challenge.description}
+                </Tooltip>
+                {challenge.name}
+              </Link>
+            ))
+          ) : (
+            <p className="text-lg">No challenges</p>
+          )
+        ) : (
+          <Spinner />
+        )}
+      </div>
+    </div>
+  );
+};
+
 const UserPage: NextPage = () => {
   const router = useRouter();
 
@@ -133,6 +169,7 @@ const UserPage: NextPage = () => {
         ) : (
           <Spinner />
         )}
+        <UserChallenges id={flattenId(id) || ""} />
       </main>
     </>
   );

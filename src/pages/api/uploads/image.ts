@@ -1,9 +1,8 @@
-// Stream the uploaded file into the mongodb (GridFS)
+// Stream the uploaded file into mongodb (GridFS)
 
 import { NextApiRequest, NextApiResponse } from "next";
 import { getServerAuthSession } from "../../../server/auth";
 import { IncomingForm, Fields, Files } from "formidable";
-import { Writable } from "stream";
 import { lookup } from "mime-types";
 import db from "~/utils/db";
 import mongoose from "mongoose";
@@ -50,7 +49,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  // We may need to enforce mime type limitations in the future (I did in the project I copied this from)
+  // We may need to enforce mime type limitations in the future
   // if (mimeType !== "image/png" && mimeType !== "image/jpeg") {
   //   res.status(400);
   //   res.end();
@@ -89,6 +88,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     uploadStream.end();
 
+    // The only images we can currently upload are profile images
     await Profile.updateOne(
       { email: serverSession.user.email },
       { image: `/api/images/${uploadStream.id}` }

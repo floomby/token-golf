@@ -9,13 +9,14 @@ import { useContext } from "react";
 const UserDisplay: React.FC = () => {
   const { data: session } = useSession();
 
-  const router = useRouter();
-
   return (
     <>
       {session ? (
         <div className="flex flex-row items-center gap-4">
-          <Link href="/account" className="font-md font-semibold">
+          <Link
+            href={`/users/${session.user.profileId}`}
+            className="font-md font-semibold"
+          >
             <div className="flex flex-row items-center gap-4 font-bold text-black">
               <div className="relative h-8 w-8 shrink-0 p-0">
                 {session?.user?.image && (

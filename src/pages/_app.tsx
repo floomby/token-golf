@@ -5,6 +5,8 @@ import { SessionProvider } from "next-auth/react";
 import { api } from "~/utils/api";
 
 import "~/styles/globals.css";
+import "react-tooltip/dist/react-tooltip.css";
+
 import { NotificationProvider } from "~/providers/notifications";
 import WidthProvider from "~/providers/width";
 import NotificationList from "~/components/NotificationList";

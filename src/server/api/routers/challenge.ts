@@ -13,9 +13,15 @@ import { runTest } from "~/utils/runner";
 export const challengeRouter = createTRPCRouter({
   create: protectedProcedure
     .input(ChallengeUploadSchema)
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       await db();
-      const challenge = await Challenge.create(input);
+      const profile = await Profile.findOne({ email: ctx.session.user.email });
+
+      if (!profile) {
+        throw new Error("Profile not found");
+      }
+
+      const challenge = await Challenge.create({ ...input, createdBy: profile._id });
       return challenge;
     }),
 

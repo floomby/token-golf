@@ -73,6 +73,8 @@ export interface IChallenge {
   description: string;
   tests: ITest[];
   scores: IScore[];
+  createdAt: Date;
+  createdBy: ObjectId;
 }
 
 const ChallengeSchema = new mongoose.Schema<IChallenge>({
@@ -104,6 +106,12 @@ const ChallengeSchema = new mongoose.Schema<IChallenge>({
       },
     ],
     default: [],
+  },
+  createdAt: { type: Date, required: true, default: Date.now },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Profile",
+    required: true,
   },
 });
 

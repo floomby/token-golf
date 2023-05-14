@@ -6,7 +6,7 @@ import {
   protectedProcedure,
 } from "~/server/api/trpc";
 import db from "~/utils/db";
-import { Profile } from "~/utils/odm";
+import { Challenge, Profile } from "~/utils/odm";
 
 export const userRouter = createTRPCRouter({
   read: publicProcedure.input(z.string()).query(async ({ input, ctx }) => {
@@ -25,7 +25,7 @@ export const userRouter = createTRPCRouter({
       name: string;
       image: string;
       email: string | null;
-    }
+    };
 
     if (profile.email !== ctx.session?.user.email) {
       ret.email = null;
@@ -33,4 +33,17 @@ export const userRouter = createTRPCRouter({
 
     return profile;
   }),
+
+  listChallenges: publicProcedure
+    .input(z.string())
+    .query(async ({ input, ctx }) => {
+      await db();
+
+      const challenges = await Challenge.find(
+        { createdBy: new mongoose.Types.ObjectId(input) },
+        { name: 1, description: 1, id: "$_id" }
+      );
+
+      return challenges;
+    }),
 });
