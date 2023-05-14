@@ -25,7 +25,7 @@ const UserDisplay: React.FC = () => {
                       referrerPolicy="no-referrer"
                       className="h-full w-full rounded-full"
                       src={session.user.image}
-                      alt="SSO Picture"
+                      alt="Profile picture"
                       width={32}
                       height={32}
                     />

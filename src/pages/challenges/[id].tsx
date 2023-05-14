@@ -62,9 +62,7 @@ const ChallengePage: NextPage = () => {
             />
           </>
         ) : (
-          <>
-            <Spinner />
-          </>
+          <Spinner />
         )}
         <PromptInput
           prompt={prompt}

@@ -68,9 +68,6 @@ export const challengeRouter = createTRPCRouter({
           throw new Error("Test not found");
         }
 
-        // todo: run test
-        console.log("running test", test, "with prompt", input.prompt);
-
         const result = runTest(test, input.prompt);
 
         await session.commitTransaction();
