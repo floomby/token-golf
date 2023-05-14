@@ -4,7 +4,7 @@ import { PromptTemplate } from "langchain/prompts";
 import { LLMChain } from "langchain/chains";
 import { env } from "~/env.mjs";
 
-const runTest = async (test: ITest, promptToTest: string) => {
+const runTest = async (test: ITest, promptToTest: string, trim: boolean, caseSensitive: boolean) => {
   const llm = new OpenAI({
     temperature: 0.0,
     openAIApiKey: env.OPENAI_API_KEY,
@@ -21,7 +21,22 @@ const runTest = async (test: ITest, promptToTest: string) => {
 
   console.log("result", result);
 
-  return { success: result.text === test.expected, result: result.text };
+  let resultText = result.text;
+
+  if (trim) {
+    resultText = result.text.trim();
+  }
+
+  let success = false;
+
+  if (!caseSensitive) {
+    success = resultText.toLowerCase() === test.expected.toLowerCase();
+  } else {
+    success = resultText === test.expected;
+  }
+
+
+  return { success, result: result.text as string };
 };
 
 export { runTest };

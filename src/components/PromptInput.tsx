@@ -5,6 +5,7 @@ import { compile } from "html-to-text";
 import { api } from "~/utils/api";
 import { get_encoding } from "@dqbd/tiktoken";
 import { useNotificationQueue } from "~/providers/notifications";
+import Toggle from "./Toggle";
 
 const encoder = get_encoding("cl100k_base");
 const textDecoder = new TextDecoder();
@@ -38,6 +39,57 @@ export function getSegments(inputText: string) {
     }
   }
 
+  // NOTE: I can use this approach, but there are a bunch of edge cases that I have to handle manually
+  // Furthermore this doesn't even accurately match what is ultimately used in the tokenization after
+  // the template is filled in with the test input text
+  // Replace (90,1379,92) with (-1)
+  // Replace (314,1379,92) with a (220,-1)
+
+  // let splicedOut = 0;
+
+  // for (let idx = 0; idx < segments.length; idx++) {
+  //   for (let i = 0; i < segments[idx]!.tokens.length; i++) {
+  //     segments[idx]!.tokens[i]!.idx -= splicedOut;
+  //   }
+
+  //   if (
+  //     segments[idx]!.tokens[0]!.id === 90 &&
+  //     segments[idx + 1]?.tokens[0]!.id === 1379 &&
+  //     segments[idx + 2]?.tokens[0]!.id === 92
+  //   ) {
+  //     segments[idx] = {
+  //       text: "{input}",
+  //       tokens: [{ id: -1, idx: segments[idx]!.tokens[0]!.idx - splicedOut }],
+  //     };
+  //     // splice out the next 2 segments
+  //     segments.splice(idx + 1, 2);
+  //     splicedOut += 2;
+  //   } else {
+  //     if (
+  //       segments[idx]!.tokens[0]!.id === 314 &&
+  //       segments[idx + 1]?.tokens[0]!.id === 1379 &&
+  //       segments[idx + 2]?.tokens[0]!.id === 92
+  //     ) {
+  //       segments[idx] = {
+  //         text: " ",
+  //         tokens: [
+  //           { id: 220, idx: segments[idx]!.tokens[0]!.idx - splicedOut },
+  //         ],
+  //       };
+  //       segments[idx + 1] = {
+  //         text: "{input}",
+  //         tokens: [
+  //           { id: -1, idx: segments[idx + 1]!.tokens[0]!.idx - splicedOut + 1 },
+  //         ],
+  //       };
+
+  //       // splice out the next segment
+  //       segments.splice(idx + 2, 1);
+  //       splicedOut += 1;
+  //     }
+  //   }
+  // }
+
   return segments;
 }
 
@@ -54,40 +106,14 @@ const colorFromIndex = (index: number) => {
 
 type HoverableTextProps = {
   text: string;
-  mousePosition: { x: number; y: number };
   index: number;
   setInfoToken: (token: string | null) => void;
 };
 const HoverableText: React.FC<HoverableTextProps> = ({
   text,
-  mousePosition,
   index,
   setInfoToken,
 }) => {
-  const spanRef = useRef<HTMLSpanElement>(null);
-
-  const [hovered, setHovered] = useState(false);
-
-  useEffect(() => {
-    const span = spanRef.current;
-    if (!span) return;
-
-    const rect = span.getBoundingClientRect();
-    const topLeft = { x: rect.left, y: rect.top };
-    const bottomRight = { x: rect.right, y: rect.bottom };
-
-    const isHovered =
-      mousePosition.x >= topLeft.x &&
-      mousePosition.x <= bottomRight.x &&
-      mousePosition.y >= topLeft.y &&
-      mousePosition.y <= bottomRight.y;
-
-    setHovered(isHovered);
-    if (isHovered) {
-      setInfoToken(text);
-    }
-  }, [spanRef, mousePosition]);
-
   const newLineCount = text.split("\n").length - 1;
 
   const linebreaks = (
@@ -101,13 +127,13 @@ const HoverableText: React.FC<HoverableTextProps> = ({
   return (
     <>
       <span
-        ref={spanRef}
         className={
-          "rounded-sm " +
-          (hovered
-            ? " bg-red-400 bg-opacity-60"
-            : " bg-opacity-40 " + colorFromIndex(index))
+          "rounded-sm hover:bg-red-400 hover:bg-opacity-60" +
+          colorFromIndex(index)
         }
+        onMouseEnter={() => {
+          setInfoToken(text);
+        }}
       >
         {text.replace(/ /g, "\u00a0")}
       </span>
@@ -165,8 +191,6 @@ const PromptInput: React.FC<PromptInputProps> = ({
     },
   });
 
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
   const [segments, setSegments] = useState<ReturnType<typeof getSegments>>([]);
   const [infoToken, setInfoToken] = useState<string | null>(null);
 
@@ -176,10 +200,39 @@ const PromptInput: React.FC<PromptInputProps> = ({
     setInfoToken(null);
   }, [prompt]);
 
+  const [trim, setTrim] = useState(false);
+  const [caseSensitive, setCaseSensitive] = useState(false);
+
   return (
-    <div className="flex flex-row items-center justify-center gap-4">
-      <div className="relative h-64 w-96 text-black">
-        <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-full rounded-md border-2"
+    <div className="flex w-full flex-row items-start justify-center gap-4">
+      <div className="flex basis-1/2 flex-col items-start justify-center gap-2">
+        <textarea
+          className="min-h-[128px] w-full rounded-md border-2 border-gray-300 bg-gray-200 text-black"
+          value={prompt}
+          onChange={(e) => {
+            setPrompt(e.currentTarget.value);
+          }}
+          style={{
+            wordBreak: "normal",
+          }}
+          rows={10}
+        />
+        <div className="flex flex-row items-center justify-start gap-8">
+          <div className="basis-1/2">
+            <Toggle label="Trim" checked={trim} setChecked={setTrim} />
+          </div>
+          <div className="basis-1/2">
+            <Toggle
+              label="Case Sensitive"
+              checked={caseSensitive}
+              setChecked={setCaseSensitive}
+            />
+          </div>
+        </div>
+      </div>
+      <div className="flex basis-1/2 flex-col items-start justify-center gap-2">
+        <div
+          className="min-h-[128px] w-full rounded-md border-2 bg-gray-300 text-black"
           style={{
             wordBreak: "break-word",
           }}
@@ -189,29 +242,11 @@ const PromptInput: React.FC<PromptInputProps> = ({
               key={i}
               index={i}
               text={segment.text}
-              mousePosition={mousePosition}
               setInfoToken={setInfoToken}
             />
           ))}
         </div>
-        <div
-          className="absolute left-0 top-0 h-full w-full"
-          onMouseMove={(e) => {
-            setInfoToken(null);
-            setMousePosition({ x: e.clientX, y: e.clientY });
-          }}
-        >
-          <textarea
-            className="h-full w-full rounded-md border-2 border-gray-300 bg-gray-200"
-            value={prompt}
-            onChange={(e) => {
-              setPrompt(e.currentTarget.value);
-            }}
-          />
-        </div>
-      </div>
-      <div className="flex flex-col items-center justify-center gap-2">
-        <h2 className="text-2xl">Token Count: {segments.length}</h2>
+        <h2 className="text-xl">Token Count: {segments.length}</h2>
         <TokenInfo token={infoToken ?? ""} />
         <button
           className={
@@ -219,7 +254,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
             colorFromFeedbackLevel(FeedbackLevel.Success, true)
           }
           onClick={() => {
-            void runSingleTest({ prompt, testIndex, challengeId });
+            void runSingleTest({ prompt, testIndex, challengeId, trim, caseSensitive });
           }}
         >
           Run

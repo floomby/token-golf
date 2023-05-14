@@ -11,6 +11,7 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import TestCarousel from "~/components/TestCarousel";
 import Spinner from "~/components/Spinner";
+import TestRuns from "~/components/TestRuns";
 
 const flattenId = (id: string | string[] | undefined): string | undefined => {
   if (Array.isArray(id)) {
@@ -70,6 +71,11 @@ const ChallengePage: NextPage = () => {
           onSubmit={() => {}}
           challengeId={flattenId(id) || ""}
           testIndex={testIndex}
+        />
+        <TestRuns
+          challengeId={flattenId(id) || ""}
+          setTestIndex={setTestIndex}
+          setPrompt={setPrompt}
         />
       </main>
     </>

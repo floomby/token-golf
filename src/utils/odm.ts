@@ -29,15 +29,20 @@ const Run =
 
 export interface ITestRun {
   prompt: string;
+  trim: boolean;
+  caseSensitive: boolean;
   challenge: ObjectId;
   at: Date;
   testIndex: number;
   result: string;
+  success: boolean;
   profile: ObjectId;
 }
 
 const TestRunSchema = new mongoose.Schema<ITestRun>({
   prompt: { type: String, required: true },
+  trim: { type: Boolean, required: true },
+  caseSensitive: { type: Boolean, required: true },
   challenge: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Challenge",
@@ -46,6 +51,7 @@ const TestRunSchema = new mongoose.Schema<ITestRun>({
   at: { type: Date, required: true, default: Date.now },
   testIndex: { type: Number, required: true },
   result: { type: String, required: true },
+  success: { type: Boolean, required: true },
   profile: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Profile",
