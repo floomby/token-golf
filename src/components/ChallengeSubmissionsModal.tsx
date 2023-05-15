@@ -26,7 +26,7 @@ const ChallengeSubmissionsModal: React.FC<ChallengeSubmissionsModalProps> = ({
 
   const notifications = useNotificationQueue();
 
-  const { data: challenges } = api.challenge.getMyResults.useQuery(
+  const { data: runs } = api.challenge.getMyResults.useQuery(
     challengeId,
     {
       enabled: shown,
@@ -65,8 +65,8 @@ const ChallengeSubmissionsModal: React.FC<ChallengeSubmissionsModalProps> = ({
                 </tr>
               </thead>
               <tbody>
-                {challenges?.map((challenge, i) => {
-                  const successCount = challenge.results.filter(
+                {runs?.map((run, i) => {
+                  const successCount = run.results.filter(
                     (r) => r.success
                   ).length;
 
@@ -76,29 +76,29 @@ const ChallengeSubmissionsModal: React.FC<ChallengeSubmissionsModalProps> = ({
                       className={
                         "bg-opacity-30 cursor-pointer" +
                         // bad mongoose typing out of the projection...
-                        ((challenge as unknown as { success: boolean }).success
+                        ((run as unknown as { success: boolean }).success
                           ? " bg-green-300 hover:bg-green-200"
                           : " bg-red-300 hover:bg-red-200")
                       }
                       onClick={() => {
                         if (!router.pathname.includes("/challenges/")) {
-                          void router.push(`/challenges/${challengeId}/${challenge._id}`);
+                          void router.push(`/challenges/${challengeId}/${run._id}`);
                           return;
                         }
 
                         setTestIndex(0);
-                        setPrompt(challenge.prompt);
-                        setTrim(challenge.trim);
-                        setCaseSensitive(challenge.caseSensitive);
+                        setPrompt(run.prompt);
+                        setTrim(run.trim);
+                        setCaseSensitive(run.caseSensitive);
                         setShown(false);
                       }}
                     >
-                      <td className="pl-1">{challenge.tokenCount}</td>
+                      <td className="pl-1">{run.tokenCount}</td>
                       <td className="pl-1">
-                        {successCount}/{challenge.results.length}
+                        {successCount}/{run.results.length}
                       </td>
                       <td className="pl-1">
-                        {new Date(challenge.at).toLocaleString()}
+                        {new Date(run.at).toLocaleString()}
                       </td>
                     </tr>
                   );

@@ -87,9 +87,13 @@ const getSegments = (inputText: string) => {
 
 const countTokens = (segments: { text: string; tokens: { id: number; idx: number }[] }[]) => {
   // just return the last index of the last token
+  if (segments.length === 0) {
+    return 0;
+  }
+
   return segments[segments.length - 1]!.tokens[
     segments[segments.length - 1]!.tokens.length - 1
-  ]!.idx;
+  ]!.idx + 1;
 };
 
 export { encoder, getSegments, countTokens };

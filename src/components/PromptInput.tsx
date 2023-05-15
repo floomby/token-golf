@@ -118,7 +118,13 @@ const PromptInput: React.FC<PromptInputProps> = ({
     onSuccess: (data) => {
       const id = Math.random().toString();
       notifications.add(id, {
-        message: JSON.stringify(data),
+        message: data.success
+          ? "Success!"
+          : `Failed test(s): ${data.results
+              .map((r, i) => ({ idx: i + 1, suc: r.success }))
+              .filter((r) => !r.suc)
+              .map((r) => r.idx)
+              .join(", ")}`,
         level: data.success ? FeedbackLevel.Success : FeedbackLevel.Warning,
         duration: 5000,
       });
@@ -156,7 +162,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
           }}
           rows={10}
         />
-        <div className="flex flex-row w-full justify-between gap-4">
+        <div className="flex w-full flex-row justify-between gap-4">
           <div className="flex flex-row items-center justify-start gap-8">
             <div className="mt-2">
               <Toggle label="Trim" checked={trim} setChecked={setTrim} />
@@ -172,7 +178,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
           <div className="flex flex-row items-center justify-end gap-2">
             <button
               className={
-                "rounded-lg px-4 py-2 font-semibold whitespace-nowrap" +
+                "whitespace-nowrap rounded-lg px-4 py-2 font-semibold" +
                 colorFromFeedbackLevel(FeedbackLevel.Primary, true)
               }
               onClick={() => {
@@ -189,7 +195,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
             </button>
             <button
               className={
-                "rounded-lg px-4 py-2 font-semibold whitespace-nowrap" +
+                "whitespace-nowrap rounded-lg px-4 py-2 font-semibold" +
                 colorFromFeedbackLevel(FeedbackLevel.Secondary, true)
               }
               onClick={showSubmissionsModal}
@@ -198,7 +204,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
             </button>
             <button
               className={
-                "rounded-lg px-4 py-2 font-semibold whitespace-nowrap" +
+                "whitespace-nowrap rounded-lg px-4 py-2 font-semibold" +
                 colorFromFeedbackLevel(FeedbackLevel.Success, true)
               }
               onClick={() => {

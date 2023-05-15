@@ -16,11 +16,6 @@ export const challengeRouter = createTRPCRouter({
     .input(ChallengeUploadSchema)
     .mutation(async ({ input, ctx }) => {
       await db();
-      // const profile = await Profile.findOne({ email: ctx.session.user.email });
-
-      // if (!profile) {
-      //   throw new Error("Profile not found");
-      // }
 
       const challenge = await Challenge.create({
         ...input,
@@ -57,15 +52,6 @@ export const challengeRouter = createTRPCRouter({
       };
 
       try {
-        // const profile = await Profile.findOne(
-        //   { email: ctx.session.user.email },
-        //   null,
-        //   { session }
-        // );
-
-        // if (!profile) {
-        //   throw new Error("Profile not found");
-        // }
 
         const challenge = await Challenge.findById(input.challengeId, null, {
           session,
@@ -124,11 +110,6 @@ export const challengeRouter = createTRPCRouter({
       }
 
       await db();
-      // const profile = await Profile.findOne({ email: ctx.session.user.email });
-
-      // if (!profile) {
-      //   throw new Error("Profile not found");
-      // }
 
       // aggregation to get the most recent runs with a limit of 25
       const runs = await TestRun.aggregate([
@@ -183,16 +164,6 @@ export const challengeRouter = createTRPCRouter({
       };
 
       try {
-        // const profile = await Profile.findOne(
-        //   { email: ctx.session.user.email },
-        //   null,
-        //   { session }
-        // );
-
-        // if (!profile) {
-        //   throw new Error("Profile not found");
-        // }
-
         const challenge = await Challenge.findById(input.challengeId, null, {
           session,
         });
@@ -219,17 +190,15 @@ export const challengeRouter = createTRPCRouter({
               challenge: challenge._id,
               results: result,
               profile: new mongoose.Types.ObjectId(ctx.session.user.profileId),
+              success: result.every((r) => r.success),
             },
           ],
           { session }
         );
 
-        const success = result.every((r) => r.success);
-        const ret = { success, id: runs[0]!._id };
-
         await session.commitTransaction();
 
-        return ret;
+        return runs[0]!;
       } catch (err) {
         await abort();
         throw err;
@@ -251,12 +220,6 @@ export const challengeRouter = createTRPCRouter({
     .input(z.string())
     .query(async ({ input, ctx }) => {
       await db();
-
-      // const profile = await Profile.findOne({ email: ctx.session.user.email });
-
-      // if (!profile) {
-      //   throw new Error("Profile not found");
-      // }
 
       const runs = await Run.find(
         {
@@ -283,4 +246,71 @@ export const challengeRouter = createTRPCRouter({
 
       return runs;
     }),
+  
+  getLeaderboard: publicProcedure
+    .input(z.object({
+      challengeId: z.string(),
+      limit: z.number().default(10),
+    }))
+    .query(async ({ input }) => {
+      await db();
+
+      // get the lowest token counts for each profile returning the run id, the profile, and the token count
+      const runs = await Run.aggregate([
+        {
+          $match: {
+            challenge: new mongoose.Types.ObjectId(input.challengeId),
+            success: true,
+          },
+        },
+        {
+          $group: {
+            _id: "$profile",
+            tokenCount: {
+              $min: "$tokenCount",
+            },
+            runId: {
+              $first: "$_id",
+            },
+            at: {
+              $first: "$at",
+            },
+          },
+        },
+        {
+          $sort: {
+            tokenCount: 1,
+          },
+        },
+        {
+          $limit: input.limit,
+        },
+        {
+          $lookup: {
+            from: "profiles",
+            localField: "_id",
+            foreignField: "_id",
+            as: "profile",
+          },
+        },
+        {
+          $unwind: "$profile",
+        },
+        {
+          $project: {
+            tokenCount: 1,
+            at: 1,
+            runId: 1,
+            profile: {
+              _id: 1,
+              name: 1,
+              image: 1,
+            },
+          },
+        },
+      ]);
+
+      return runs;
+    }),
+        
 });

@@ -15,6 +15,7 @@ import TestRuns from "~/components/TestRuns";
 import ChallengeSubmissionsModal from "~/components/ChallengeSubmissionsModal";
 import Image from "next/image";
 import { flattenId } from "~/utils/flatten";
+import Leaderboard from "~/components/Leaderboard";
 
 const OverviewPage: NextPage = () => {
   const router = useRouter();
@@ -109,7 +110,7 @@ const OverviewPage: NextPage = () => {
                     "ml-4 whitespace-nowrap rounded-lg px-4 py-2 font-semibold" +
                     colorFromFeedbackLevel(FeedbackLevel.Success, true)
                   }
-                  onClick={() => setSubmissionsModalShown(true)}
+                  onClick={() => void router.push(`/challenges/${id}`)}
                 >
                   Play
                 </button>
@@ -120,6 +121,7 @@ const OverviewPage: NextPage = () => {
         ) : (
           <Spinner className="mt-24" />
         )}
+        <Leaderboard challengeId={flattenId(id) || ""} />
         <div className="h-0 w-0">
           <ChallengeSubmissionsModal
             challengeId={flattenId(id) || ""}

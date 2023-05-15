@@ -86,7 +86,9 @@ const ChallengePage: NextPage = () => {
           <>
             <div className="text-semibold mb-4 flex min-w-[50%] flex-col gap-1">
               <div className="flex flex-row items-center">
-                <h1 className="text-4xl">{challenge.name}</h1>
+                <h1 className="text-4xl cursor-pointer"
+                  onClick={() => router.push(`/overviews/${flattenId(id)}`)}
+                >{challenge.name}</h1>
                 {!!author ? (
                   <>
                     <span className="ml-4 mr-1 text-gray-500 dark:text-gray-400">

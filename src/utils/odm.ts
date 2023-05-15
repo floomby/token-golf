@@ -14,6 +14,7 @@ export interface IRun {
   challenge: ObjectId;
   at: Date;
   results: IResult[];
+  success: boolean;
   profile: ObjectId;
 }
 
@@ -29,6 +30,7 @@ const RunSchema = new mongoose.Schema<IRun>({
   },
   at: { type: Date, required: true, default: Date.now },
   results: { type: [{ result: String, success: Boolean }], required: true },
+  success: { type: Boolean, required: true },
   profile: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Profile",
