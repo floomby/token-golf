@@ -50,6 +50,14 @@ export const userRouter = createTRPCRouter({
   setDisplayName: protectedProcedure
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
+      if (input.length === 0) {
+        throw new Error("Display name cannot be empty");
+      }
+
+      if (input.length > 50) {
+        throw new Error("Display name cannot be longer than 30 characters");
+      }
+
       await db();
 
       const profile = await Profile.findOneAndUpdate(

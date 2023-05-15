@@ -86,17 +86,17 @@ const ChallengePage: NextPage = () => {
           <>
             <div className="text-semibold mb-4 flex min-w-[50%] flex-col gap-1">
               <div className="flex flex-row items-center">
-                <h1 className="text-4xl cursor-pointer"
+                <h1 className={"text-4xl cursor-pointer" + colorFromFeedbackLevel(FeedbackLevel.Invisible, true)}
                   onClick={() => router.push(`/overviews/${flattenId(id)}`)}
                 >{challenge.name}</h1>
                 {!!author ? (
                   <>
-                    <span className="ml-4 mr-1 text-gray-500 dark:text-gray-400">
+                    <span className="ml-4 mr-2 text-gray-500 dark:text-gray-400">
                       by
                     </span>
                     <Link
                       href={`/users/${challenge.createdBy}`}
-                      className="flex flex-row items-center gap-2 rounded-lg bg-opacity-30 p-2 hover:bg-slate-400"
+                      className={"flex flex-row items-center gap-2 hover:scale-105" + colorFromFeedbackLevel(FeedbackLevel.Invisible, true)}
                     >
                       <div className="relative h-8 w-8 shrink-0 p-0">
                         <div className="absolute left-0 top-0 h-full w-full rounded-full shadow-inner shadow-gray-600 dark:shadow-gray-800"></div>

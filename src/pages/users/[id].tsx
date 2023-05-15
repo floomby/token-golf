@@ -57,8 +57,8 @@ const MeUser: React.FC<MeUserProps> = ({ name, email, image }) => {
         <div className="relative h-20 w-20 shrink-0 p-0">
           <button
             className={
-              "absolute bottom-0 left-0 z-10 w-6 rounded-md p-1 opacity-80 hover:opacity-100" +
-              colorFromFeedbackLevel(FeedbackLevel.Primary, true)
+              "absolute bottom-0 left-0 z-10 w-6 rounded-full p-1 opacity-80 hover:opacity-100 hover:scale-110" +
+              colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
             }
             onClick={() => {
               setShowAvatarUploader(true);
@@ -78,8 +78,8 @@ const MeUser: React.FC<MeUserProps> = ({ name, email, image }) => {
         </div>
         <button
           className={
-            "w-6 translate-x-[100%] translate-y-1/2 rounded-lg opacity-80 hover:opacity-100" +
-            colorFromFeedbackLevel(FeedbackLevel.Primary, true)
+            "w-6 translate-x-[100%] translate-y-1/2 rounded-full opacity-80 hover:opacity-100 hover:scale-110" +
+            colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
           }
           onClick={() => {
             setEditingName(true);
@@ -173,23 +173,28 @@ const UserChallenges: React.FC<UserChallengesProps> = ({ id }) => {
   return (
     <div className="flex flex-col items-start justify-start gap-2 p-4">
       <h2 className="text-2xl">Challenges</h2>
-      <div className="flex flex-row items-start justify-start gap-4 w-full">
-        <div className="flex flex-col items-start justify-start gap-2 border-l-2 pl-2 basis-1/4">
+      <div className="flex w-full flex-row items-start justify-start gap-4">
+        <div className="flex basis-1/4 flex-col items-start justify-start gap-2 border-l-2 pl-2">
           {!!challenges ? (
             challenges.length > 0 ? (
               challenges.map((challenge) => (
-                <Link
-                  key={challenge.id}
-                  href={`/overviews/${challenge.id}`}
-                  passHref
-                  className="hover:underline"
-                  data-tooltip-id={challenge.id}
-                >
+                <span>
                   <Tooltip id={challenge.id} place="right">
                     {challenge.description}
                   </Tooltip>
-                  {challenge.name}
-                </Link>
+                  <Link
+                    key={challenge.id}
+                    href={`/overviews/${challenge.id}`}
+                    passHref
+                    className={colorFromFeedbackLevel(
+                      FeedbackLevel.Invisible,
+                      true
+                    )}
+                    data-tooltip-id={challenge.id}
+                  >
+                    {challenge.name}
+                  </Link>
+                </span>
               ))
             ) : (
               <p className="text-lg">No challenges</p>
@@ -198,7 +203,6 @@ const UserChallenges: React.FC<UserChallengesProps> = ({ id }) => {
             <Spinner />
           )}
         </div>
-        {id && <Completed userId={flattenId(id) || ""} />}
       </div>
     </div>
   );
@@ -243,7 +247,10 @@ const UserPage: NextPage = () => {
         ) : (
           <Spinner />
         )}
-        <UserChallenges id={flattenId(id) || ""} />
+        <div className="flex flex-row items-start justify-start gap-4">
+          <UserChallenges id={flattenId(id) || ""} />
+          {id && <Completed userId={flattenId(id) || ""} />}
+        </div>
       </main>
     </>
   );

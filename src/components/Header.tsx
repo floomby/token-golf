@@ -4,6 +4,7 @@ import Image from "next/image";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 import { useState } from "react";
 import CreateChallengeModal from "./CreateChallengeModal";
+import { useRouter } from "next/router";
 // import EnvironmentIndicator from "./EnvironmentIndicator";
 
 const Header: React.FC = () => {
@@ -17,7 +18,7 @@ const Header: React.FC = () => {
           <div className="flex items-center gap-4">
             {/* <EnvironmentIndicator /> */}
             <Link href="/">
-              <h1 className="ml-2 pr-2 text-2xl font-semibold text-stone-800">
+              <h1 className={"ml-2 pr-2 text-2xl font-semibold" + colorFromFeedbackLevel(FeedbackLevel.Invisible, true, "light")}>
                 {/* <Image src="/logo.svg" alt="Logo" width={64} height={64} /> */}
                 LLM Golf
               </h1>
@@ -25,7 +26,7 @@ const Header: React.FC = () => {
             <button
               className={
                 "rounded px-4 py-2 font-semibold" +
-                colorFromFeedbackLevel(FeedbackLevel.Primary, true)
+                colorFromFeedbackLevel(FeedbackLevel.Invisible, true, "light")
               }
               onClick={() => {
                 setCreateChallengeModalOpen(true);

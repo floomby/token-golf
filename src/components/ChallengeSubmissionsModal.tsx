@@ -53,6 +53,7 @@ const ChallengeSubmissionsModal: React.FC<ChallengeSubmissionsModalProps> = ({
               "h-fit border-2 border-teal-500 bg-stone-300 dark:bg-stone-800"
             }
           >
+            <h1 className="text-2xl font-bold">Past Submissions</h1>
             <div className="max-h-96 w-full overflow-y-auto">
               <table className="w-full">
                 <thead className="text-left">
@@ -109,7 +110,7 @@ const ChallengeSubmissionsModal: React.FC<ChallengeSubmissionsModalProps> = ({
             <div className="m-2 flex flex-row items-center justify-center gap-2">
               <button
                 className={
-                  "rounded px-4 py-2 font-semibold" +
+                  "rounded-full px-4 py-2 font-semibold" +
                   colorFromFeedbackLevel(FeedbackLevel.Secondary, true)
                 }
                 onClick={() => {

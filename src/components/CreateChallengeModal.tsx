@@ -72,7 +72,7 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
               <h2 className="text-md font-bold">Upload a challenge</h2>
               <textarea
                 className={
-                  "bg-grey-200 h-32 w-full rounded-md p-2 text-black outline-none font-mono" +
+                  "bg-grey-200 h-32 w-full rounded-md p-2 text-black outline-none font-mono max-h-[80vh]" +
                   (valid
                     ? " border-2 border-green-800 focus:border-green-500"
                     : " border-2 border-red-800 focus:border-red-500")
@@ -87,7 +87,7 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
               <div className="m-2 flex flex-row items-center justify-center gap-2">
                 <button
                   className={
-                    "rounded px-4 py-2 font-semibold" +
+                    "rounded-full px-4 py-2 font-semibold" +
                     colorFromFeedbackLevel(FeedbackLevel.Secondary, true)
                   }
                   onClick={() => {
@@ -98,7 +98,7 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
                 </button>
                 <button
                   className={
-                    "rounded px-4 py-2 font-semibold" +
+                    "rounded-full px-4 py-2 font-semibold" +
                     colorFromFeedbackLevel(FeedbackLevel.Success, true)
                   }
                   disabled={!valid}

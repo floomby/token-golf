@@ -16,6 +16,8 @@ import ChallengeSubmissionsModal from "~/components/ChallengeSubmissionsModal";
 import Image from "next/image";
 import { flattenId } from "~/utils/flatten";
 import Leaderboard from "~/components/Leaderboard";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlay } from "@fortawesome/free-solid-svg-icons";
 
 const OverviewPage: NextPage = () => {
   const router = useRouter();
@@ -57,6 +59,8 @@ const OverviewPage: NextPage = () => {
     }
   );
 
+  const { status } = useSession();
+
   return (
     <>
       <Head>
@@ -72,12 +76,12 @@ const OverviewPage: NextPage = () => {
                 <h1 className="text-4xl">{challenge.name}</h1>
                 {!!author ? (
                   <>
-                    <span className="ml-4 mr-1 text-gray-500 dark:text-gray-400">
+                    <span className="ml-4 mr-2 text-gray-500 dark:text-gray-400">
                       by
                     </span>
                     <Link
                       href={`/users/${challenge.createdBy}`}
-                      className="flex flex-row items-center gap-2 rounded-lg bg-opacity-30 p-2 hover:bg-slate-400"
+                      className={"flex flex-row items-center gap-2 hover:scale-105" + colorFromFeedbackLevel(FeedbackLevel.Invisible, true)}
                     >
                       <div className="relative h-8 w-8 shrink-0 p-0">
                         <div className="absolute left-0 top-0 h-full w-full rounded-full shadow-inner shadow-gray-600 dark:shadow-gray-800"></div>
@@ -96,23 +100,25 @@ const OverviewPage: NextPage = () => {
                     </Link>
                   </>
                 ) : null}
+                {status === "authenticated" && (
+                  <button
+                    className={
+                      "ml-8 whitespace-nowrap px-4 py-2 font-semibold" +
+                      colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
+                    }
+                    onClick={() => setSubmissionsModalShown(true)}
+                  >
+                    View My Submissions
+                  </button>
+                )}
                 <button
                   className={
-                    "ml-8 whitespace-nowrap rounded-lg px-4 py-2 font-semibold" +
-                    colorFromFeedbackLevel(FeedbackLevel.Secondary, true)
-                  }
-                  onClick={() => setSubmissionsModalShown(true)}
-                >
-                  View My Submissions
-                </button>
-                <button
-                  className={
-                    "ml-4 whitespace-nowrap rounded-lg px-4 py-2 font-semibold" +
-                    colorFromFeedbackLevel(FeedbackLevel.Success, true)
+                    "ml-4 whitespace-nowrap rounded-full font-semibold px-2 hover:scale-105" +
+                    colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
                   }
                   onClick={() => void router.push(`/challenges/${id}`)}
                 >
-                  Play
+                  <FontAwesomeIcon icon={faPlay} className="mr-2 h-8 w-fit translate-x-2" />
                 </button>
               </div>
               <p>{challenge.description}</p>

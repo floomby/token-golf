@@ -9,9 +9,10 @@ enum FeedbackLevel {
   Info = "info",
   Primary = "primary",
   Secondary = "secondary",
+  Invisible = "invisible",
 }
 
-type ThemeOverride = "light" | "dark" | null;
+export type ThemeOverride = "light" | "dark" | null;
 
 // I do this a dumb way because I am lazy (Idk how robust this actually is)
 // dark theme override has a strange bug (it has something to do with css classes not being applied (something is purging them or something))
@@ -50,38 +51,58 @@ const colorFromFeedbackLevel = (
   switch (level) {
     case FeedbackLevel.Success:
       return themeOverrider(
-        " bg-green-700 text-white dark:bg-green-400 dark:text-black disabled:bg-green-300 dark:disabled:bg-green-100 disabled:text-gray-300 dark:disabled:text-gray-700 " +
-          (hoverable ? " hover:bg-green-600 dark:hover:bg-green-300" : ""),
+        " bg-green-700 text-white dark:bg-green-400 dark:text-black disabled:bg-green-400 dark:disabled:bg-green-100 disabled:text-gray-300 dark:disabled:text-gray-700 " +
+          (hoverable
+            ? " hover:bg-green-600 dark:hover:bg-green-300 ease-in-out transition-all duration-200"
+            : ""),
         themeOverride
       );
     case FeedbackLevel.Error:
       return themeOverrider(
         " bg-red-700 text-white dark:bg-red-400 dark:text-black disabled:bg-red-500 dark:disabled:bg-red-200 disabled:text-gray-300 dark:disabled:text-gray-700 " +
-          (hoverable ? " hover:bg-red-600 dark:hover:bg-red-300" : ""),
+          (hoverable
+            ? " hover:bg-red-600 dark:hover:bg-red-300 ease-in-out transition-all duration-200"
+            : ""),
         themeOverride
       );
     case FeedbackLevel.Warning:
       return themeOverrider(
         " bg-yellow-500 text-white dark:bg-yellow-400 dark:text-black disabled:bg-yellow-500 disabled:text-gray-300 dark:disabled:text-gray-700 " +
-          (hoverable ? " hover:bg-yellow-600 dark:hover:bg-yellow-300" : ""),
+          (hoverable
+            ? " hover:bg-yellow-600 dark:hover:bg-yellow-300 ease-in-out transition-all duration-200"
+            : ""),
         themeOverride
       );
     case FeedbackLevel.Info:
       return themeOverrider(
         " bg-gray-700 text-white dark:bg-gray-400 dark:text-black disabled:bg-gray-500 dark:disabled:bg-gray-200 disabled:text-gray-300 dark:disabled:text-gray-700 " +
-          (hoverable ? " hover:bg-gray-600 dark:hover:bg-gray-300" : ""),
+          (hoverable
+            ? " hover:bg-gray-600 dark:hover:bg-gray-300 ease-in-out transition-all duration-200"
+            : ""),
         themeOverride
       );
     case FeedbackLevel.Primary:
       return themeOverrider(
         " bg-blue-700 text-white dark:bg-blue-400 dark:text-black disabled:bg-stone-500 dark:disabled:bg-stone-200 disabled:text-gray-300 dark:disabled:text-gray-700 " +
-          (hoverable ? " hover:bg-blue-600 dark:hover:bg-blue-300" : ""),
+          (hoverable
+            ? " hover:bg-blue-600 dark:hover:bg-blue-300 ease-in-out transition-all duration-200"
+            : ""),
         themeOverride
       );
     case FeedbackLevel.Secondary:
       return themeOverrider(
         " bg-slate-700 text-white dark:bg-slate-400 dark:text-black disabled:bg-slate-500 dark:disabled:bg-slate-200 disabled:text-gray-300 dark:disabled:text-gray-700 " +
-          (hoverable ? " hover:bg-slate-600 dark:hover:bg-slate-300" : ""),
+          (hoverable
+            ? " hover:bg-slate-600 dark:hover:bg-slate-300 ease-in-out transition-all duration-200"
+            : ""),
+        themeOverride
+      );
+    case FeedbackLevel.Invisible:
+      return themeOverrider(
+        " disabled:text-gray-800 dark:disabled:text-gray-300 dark:text-white text-black" +
+          (hoverable
+            ? " hover:text-shadow-sm hover:dark:text-shadow-lg dark:shadow-teal-300 shadow-blue-800 ease-in-out transition-all duration-200 hover:text-blue-800 dark:hover:text-teal-200"
+            : ""),
         themeOverride
       );
   }

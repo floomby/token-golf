@@ -8,6 +8,7 @@ import { useContext } from "react";
 // Not named the best, this is the component that displays the users name and the sign in/out button (it goes on the right side of the header)
 const UserDisplay: React.FC = () => {
   const { data: session } = useSession();
+  const router = useRouter();
 
   return (
     <>
@@ -15,7 +16,7 @@ const UserDisplay: React.FC = () => {
         <div className="flex flex-row items-center gap-4">
           <Link
             href={`/users/${session.user.profileId}`}
-            className="font-md font-semibold"
+            className="font-md font-semibold shadow-black transition-all duration-200 ease-in-out hover:text-blue-800 hover:text-shadow-lg hover:scale-105"
           >
             <div className="flex flex-row items-center gap-4 font-bold text-black">
               <div className="relative h-8 w-8 shrink-0 p-0">
@@ -39,7 +40,7 @@ const UserDisplay: React.FC = () => {
           <div className="dark">
             <button
               className={
-                "whitespace-nowrap rounded px-4 py-2 font-bold" +
+                "whitespace-nowrap rounded-full px-4 py-2 font-bold" +
                 colorFromFeedbackLevel(FeedbackLevel.Error, true)
               }
               onClick={() => void signOut()}
@@ -53,8 +54,11 @@ const UserDisplay: React.FC = () => {
           <div className="dark">
             <button
               className={
-                "whitespace-nowrap rounded px-4 py-2 font-bold " +
-                colorFromFeedbackLevel(FeedbackLevel.Primary, true)
+                "whitespace-nowrap rounded-full px-4 py-2 font-bold " +
+                colorFromFeedbackLevel(FeedbackLevel.Success, true) +
+                (router.pathname.includes("/challenges/")
+                  ? " animate-subtle-bounce"
+                  : "")
               }
               onClick={() => void signIn("github")}
             >

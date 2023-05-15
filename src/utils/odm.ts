@@ -146,12 +146,14 @@ export interface IProfile {
   email: string;
   name: string;
   image: string;
+  newUser: boolean;
 }
 
 const ProfileSchema = new mongoose.Schema<IProfile>({
   email: { type: String, required: true },
   name: { type: String, required: true },
   image: { type: String, required: true },
+  newUser: { type: Boolean, required: true, default: true },
 });
 
 const Profile =

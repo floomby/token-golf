@@ -26,7 +26,8 @@ const Completed: React.FC<CompletedProps> = ({ userId }) => {
   });
 
   return (
-    <>
+    <div className="m-4 flex h-full w-full flex-col items-start justify-start rounded-lg bg-gray-800 p-4">
+      <h1 className="text-2xl font-semibold">Completed Challenges</h1>
       {!!runs ? (
         <table className="w-full">
           <thead className="text-left">
@@ -41,13 +42,18 @@ const Completed: React.FC<CompletedProps> = ({ userId }) => {
               return (
                 <tr
                   key={i}
-                  className="cursor-pointer bg-stone-300 bg-opacity-30 hover:bg-stone-200"
+                  className="cursor-pointer bg-stone-300 bg-opacity-30 transition-all duration-200 ease-in-out hover:bg-stone-200 dark:hover:bg-stone-700"
                   onClick={() => {
-                    void router.push(`/challenges/${run.challenge.id}/${run.runId}`);
+                    void router.push(
+                      `/challenges/${run.challenge.id}/${run.runId}`
+                    );
                   }}
                 >
                   <td className="pl-1">
-                    <ClampText text={`${run.challenge.name} - ${run.challenge.description}`} maxLength={20} />
+                    <ClampText
+                      text={`${run.challenge.name} - ${run.challenge.description}`}
+                      maxLength={20}
+                    />
                   </td>
                   <td className="pl-1">{run.tokenCount}</td>
                   <td className="pl-1">{new Date(run.at).toLocaleString()}</td>
@@ -59,7 +65,7 @@ const Completed: React.FC<CompletedProps> = ({ userId }) => {
       ) : (
         <Spinner />
       )}
-    </>
+    </div>
   );
 };
 

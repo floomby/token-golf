@@ -1,6 +1,7 @@
 import { api } from "~/utils/api";
 import Spinner from "./Spinner";
 import ClampText from "./ClampText";
+import { useSession } from "next-auth/react";
 
 type TestRunsProps = {
   challengeId: string;
@@ -21,66 +22,74 @@ const TestRuns: React.FC<TestRunsProps> = ({
     refetchInterval: 1000,
   });
 
+  const { status } = useSession();
+
   return (
     <div className="flex w-full flex-col items-center justify-center gap-4 rounded-md py-4 align-middle">
       <h2 className="text-2xl">Test Runs</h2>
-      <div className="flex w-full flex-col items-start justify-start divide-y-2 divide-gray-400 rounded-md border-2 text-black">
-        {!!testRuns ? (
-          <table className="w-full">
-            <thead>
-              <tr className="bg-gray-200 text-left">
-                <th>Tokens</th>
-                <th>Prompt</th>
-                <th>Trim</th>
-                <th>Case Sensitive</th>
-                <th>Test Index</th>
-                <th>Result</th>
-              </tr>
-            </thead>
-            <tbody>
-              {testRuns.length > 0 ? (
-                testRuns.map((testRun, index) => (
-                  <tr
-                    key={index}
-                    className={
-                      "bg-opacity-30" +
-                      (testRun.success
-                        ? " bg-green-300 hover:bg-green-200"
-                        : " bg-red-300 hover:bg-red-200")
-                    }
-                    onClick={() => {
-                      console.log(testRun);
-                      setTestIndex(testRun.testIndex);
-                      setPrompt(testRun.prompt);
-                      setTrim(testRun.trim);
-                      setCaseSensitive(testRun.caseSensitive);
-                    }}
-                  >
-                    <td className="pl-1">{testRun.tokenCount}</td>
-                    <td className="pl-1">
-                      <ClampText maxLength={12} text={testRun.prompt} />
-                    </td>
-                    <td className="pl-1">{testRun.trim ? "Yes" : "No"}</td>
-                    <td className="pl-1">
-                      {testRun.caseSensitive ? "Yes" : "No"}
-                    </td>
-                    <td className="pl-1">{testRun.testIndex}</td>
-                    <td className="pl-1">
-                      {testRun.success ? "Success" : "Failure"}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <p className="text-lg">No test runs</p>
-              )}
-            </tbody>
-          </table>
-        ) : (
-          <div className="flex w-full items-center justify-center">
-            <Spinner />
-          </div>
-        )}
-      </div>
+      {status === "authenticated" ? (
+        <div className="flex w-full flex-col items-start justify-start divide-y-2 divide-gray-400 rounded-md border-2 text-black">
+          {!!testRuns ? (
+            <table className="w-full">
+              <thead>
+                <tr className="bg-gray-200 text-left">
+                  <th>Tokens</th>
+                  <th>Prompt</th>
+                  <th>Trim</th>
+                  <th>Case Sensitive</th>
+                  <th>Test Index</th>
+                  <th>Result</th>
+                </tr>
+              </thead>
+              <tbody>
+                {testRuns.length > 0 ? (
+                  testRuns.map((testRun, index) => (
+                    <tr
+                      key={index}
+                      className={
+                        "bg-opacity-30 ease-in-out transition-all duration-200 cursor-pointer" +
+                        (testRun.success
+                          ? " bg-green-300 dark:hover:bg-green-200 hover:bg-green-400"
+                          : " bg-red-300 dark:hover:bg-red-200 hover:bg-red-400")
+                      }
+                      onClick={() => {
+                        console.log(testRun);
+                        setTestIndex(testRun.testIndex);
+                        setPrompt(testRun.prompt);
+                        setTrim(testRun.trim);
+                        setCaseSensitive(testRun.caseSensitive);
+                      }}
+                    >
+                      <td className="pl-1">{testRun.tokenCount}</td>
+                      <td className="pl-1">
+                        <ClampText maxLength={12} text={testRun.prompt} />
+                      </td>
+                      <td className="pl-1">{testRun.trim ? "Yes" : "No"}</td>
+                      <td className="pl-1">
+                        {testRun.caseSensitive ? "Yes" : "No"}
+                      </td>
+                      <td className="pl-1">{testRun.testIndex}</td>
+                      <td className="pl-1">
+                        {testRun.success ? "Success" : "Failure"}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <p className="text-lg">No test runs</p>
+                )}
+              </tbody>
+            </table>
+          ) : (
+            <div className="flex w-full items-center justify-center">
+              <Spinner />
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="flex w-full items-center justify-center">
+          <p className="text-lg">Log in to view your test results</p>
+        </div>
+      )}
     </div>
   );
 };

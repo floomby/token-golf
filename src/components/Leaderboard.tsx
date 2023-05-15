@@ -31,10 +31,10 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ challengeId }) => {
   );
 
   return (
-    <div className="flex w-full flex-col items-start">
+    <div className="flex w-full flex-col items-end">
       <button
         className={
-          "w-8 rounded p-2" + colorFromFeedbackLevel(FeedbackLevel.Primary)
+          "w-8 rounded p-2 hover:scale-105" + colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
         }
         onClick={() => {
           void refetch();

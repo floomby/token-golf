@@ -5,6 +5,8 @@ import { api } from "~/utils/api";
 import { useNotificationQueue } from "~/providers/notifications";
 import Toggle from "./Toggle";
 import { countTokens, encoder, getSegments } from "~/utils/tokenize";
+import { Tooltip } from "react-tooltip";
+import { useSession } from "next-auth/react";
 
 // const compiledConvert = compile({ wordwrap: false, preserveNewlines: true });
 
@@ -142,6 +144,8 @@ const PromptInput: React.FC<PromptInputProps> = ({
   const [segments, setSegments] = useState<ReturnType<typeof getSegments>>([]);
   const [infoToken, setInfoToken] = useState<string | null>(null);
 
+  const { status } = useSession();
+
   useEffect(() => {
     const segments = getSegments(prompt);
     setSegments(segments);
@@ -175,11 +179,13 @@ const PromptInput: React.FC<PromptInputProps> = ({
               />
             </div>
           </div>
-          <div className="flex flex-row items-center gap-2 sm:justify-start md:justify-end lg:justify-end xl:justify-start 2xl:justify-end">
+          <div className="flex flex-row items-center gap-2 sm:justify-start md:justify-end lg:justify-end xl:justify-start 2xl:justify-end"
+            data-tooltip-id={status === "authenticated" ? undefined : "run-tooltip"}
+          >
             <button
               className={
-                "whitespace-nowrap rounded-lg px-4 py-2 font-semibold" +
-                colorFromFeedbackLevel(FeedbackLevel.Primary, true)
+                "whitespace-nowrap rounded-full px-4 py-2 font-semibold" +
+                colorFromFeedbackLevel(FeedbackLevel.Secondary, true)
               }
               onClick={() => {
                 void runSingleTest({
@@ -190,21 +196,23 @@ const PromptInput: React.FC<PromptInputProps> = ({
                   caseSensitive,
                 });
               }}
+              disabled={status !== "authenticated"}
             >
               Run Single Test
             </button>
             <button
               className={
-                "whitespace-nowrap rounded-lg px-4 py-2 font-semibold" +
+                "whitespace-nowrap rounded-full px-4 py-2 font-semibold" +
                 colorFromFeedbackLevel(FeedbackLevel.Secondary, true)
               }
               onClick={showSubmissionsModal}
+              disabled={status !== "authenticated"}
             >
               View Submissions
             </button>
             <button
               className={
-                "whitespace-nowrap rounded-lg px-4 py-2 font-semibold" +
+                "whitespace-nowrap rounded-full px-4 py-2 font-semibold" +
                 colorFromFeedbackLevel(FeedbackLevel.Success, true)
               }
               onClick={() => {
@@ -215,9 +223,13 @@ const PromptInput: React.FC<PromptInputProps> = ({
                   caseSensitive,
                 });
               }}
+              disabled={status !== "authenticated"}
             >
               Submit
             </button>
+            {status === "authenticated" ? null : (
+              <Tooltip id={"run-tooltip"}>Log In to Run Prompts</Tooltip>
+            )}
           </div>
         </div>
       </div>
