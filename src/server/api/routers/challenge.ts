@@ -367,4 +367,43 @@ export const challengeRouter = createTRPCRouter({
 
       return runs;
     }),
+
+  randomChallenges: publicProcedure.query(async () => {
+    await db();
+
+    const challenges = await Challenge.aggregate([
+      {
+        $sample: {
+          size: 10,
+        },
+      },
+      {
+        $lookup: {
+          from: "profiles",
+          localField: "createdBy",
+          foreignField: "_id",
+          as: "creator",
+        },
+      },
+      {
+        $unwind: "$creator",
+      },
+      {
+        $project: {
+          name: 1,
+          description: 1,
+          difficulty: 1,
+          id: "$_id",
+          creator: {
+            id: "$creator._id",
+            name: "$creator.name",
+            image: "$creator.image",
+          },
+          createdAt: 1,
+        },
+      },
+    ]);
+
+    return challenges;
+  }),
 });

@@ -26,10 +26,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ challengeId }) => {
           duration: 5000,
         });
       },
-      onSuccess: (data) => {
-        console.log(data);
-      },
-      // refetchOnWindowFocus: false,
+      refetchOnWindowFocus: false,
     }
   );
 
