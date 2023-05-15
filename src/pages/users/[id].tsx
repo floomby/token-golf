@@ -15,6 +15,7 @@ import { faCamera, faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 import UploadFileModal from "~/components/UploadFileModal";
 import { Tooltip } from "react-tooltip";
 import { flattenId } from "~/utils/flatten";
+import Completed from "~/components/Completed";
 
 type MeUserProps = {
   name: string;
@@ -56,7 +57,7 @@ const MeUser: React.FC<MeUserProps> = ({ name, email, image }) => {
         <div className="relative h-20 w-20 shrink-0 p-0">
           <button
             className={
-              "absolute bottom-0 left-0 w-6 rounded-md p-1 opacity-80 hover:opacity-100" +
+              "absolute bottom-0 left-0 z-10 w-6 rounded-md p-1 opacity-80 hover:opacity-100" +
               colorFromFeedbackLevel(FeedbackLevel.Primary, true)
             }
             onClick={() => {
@@ -90,8 +91,10 @@ const MeUser: React.FC<MeUserProps> = ({ name, email, image }) => {
         </button>
         <input
           className={
-            "z-10 rounded-lg border-0 px-2 text-2xl font-semibold ease-in-out duration-200" +
-            (editingName ? " shadow-md text-black bg-white" : " pointer-events-none text-black dark:text-white bg-transparent")
+            "z-10 rounded-lg border-0 px-2 text-2xl font-semibold duration-200 ease-in-out" +
+            (editingName
+              ? " bg-white text-black shadow-md"
+              : " pointer-events-none bg-transparent text-black dark:text-white")
           }
           value={nameValue}
           onChange={(e) => setNameValue(e.target.value)}
@@ -153,7 +156,7 @@ const OtherUser: React.FC<OtherUserProps> = ({ name, image }) => {
             height={32}
           />
         </div>
-        <h2 className="text-2xl">{name}</h2>
+        <h2 className="text-2xl font-semibold">{name}</h2>
       </div>
     </div>
   );
@@ -170,29 +173,32 @@ const UserChallenges: React.FC<UserChallengesProps> = ({ id }) => {
   return (
     <div className="flex flex-col items-start justify-start gap-2 p-4">
       <h2 className="text-2xl">Challenges</h2>
-      <div className="flex flex-col items-start justify-start gap-2 border-l-2 pl-2">
-        {!!challenges ? (
-          challenges.length > 0 ? (
-            challenges.map((challenge) => (
-              <Link
-                key={challenge.id}
-                href={`/overviews/${challenge.id}`}
-                passHref
-                className="hover:underline"
-                data-tooltip-id={challenge.id}
-              >
-                <Tooltip id={challenge.id} place="right">
-                  {challenge.description}
-                </Tooltip>
-                {challenge.name}
-              </Link>
-            ))
+      <div className="flex flex-row items-start justify-start gap-4 w-full">
+        <div className="flex flex-col items-start justify-start gap-2 border-l-2 pl-2 basis-1/4">
+          {!!challenges ? (
+            challenges.length > 0 ? (
+              challenges.map((challenge) => (
+                <Link
+                  key={challenge.id}
+                  href={`/overviews/${challenge.id}`}
+                  passHref
+                  className="hover:underline"
+                  data-tooltip-id={challenge.id}
+                >
+                  <Tooltip id={challenge.id} place="right">
+                    {challenge.description}
+                  </Tooltip>
+                  {challenge.name}
+                </Link>
+              ))
+            ) : (
+              <p className="text-lg">No challenges</p>
+            )
           ) : (
-            <p className="text-lg">No challenges</p>
-          )
-        ) : (
-          <Spinner />
-        )}
+            <Spinner />
+          )}
+        </div>
+        {id && <Completed userId={flattenId(id) || ""} />}
       </div>
     </div>
   );

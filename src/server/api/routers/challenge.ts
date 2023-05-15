@@ -52,7 +52,6 @@ export const challengeRouter = createTRPCRouter({
       };
 
       try {
-
         const challenge = await Challenge.findById(input.challengeId, null, {
           session,
         });
@@ -246,12 +245,14 @@ export const challengeRouter = createTRPCRouter({
 
       return runs;
     }),
-  
+
   getLeaderboard: publicProcedure
-    .input(z.object({
-      challengeId: z.string(),
-      limit: z.number().default(10),
-    }))
+    .input(
+      z.object({
+        challengeId: z.string(),
+        limit: z.number().default(10),
+      })
+    )
     .query(async ({ input }) => {
       await db();
 
@@ -312,5 +313,58 @@ export const challengeRouter = createTRPCRouter({
 
       return runs;
     }),
-        
+
+  getUserCompleted: publicProcedure
+    .input(z.string())
+    .query(async ({ input }) => {
+      await db();
+
+      const runs = await Run.aggregate([
+        {
+          $match: {
+            profile: new mongoose.Types.ObjectId(input),
+            success: true,
+          },
+        },
+        {
+          $group: {
+            _id: "$challenge",
+            tokenCount: {
+              $min: "$tokenCount",
+            },
+            runId: {
+              $first: "$_id",
+            },
+            at: {
+              $first: "$at",
+            },
+          },
+        },
+        {
+          $lookup: {
+            from: "challenges",
+            localField: "_id",
+            foreignField: "_id",
+            as: "challenge",
+          },
+        },
+        {
+          $unwind: "$challenge",
+        },
+        {
+          $project: {
+            tokenCount: 1,
+            at: 1,
+            runId: 1,
+            challenge: {
+              id: "$challenge._id",
+              name: 1,
+              description: 1,
+            },
+          },
+        },
+      ]);
+
+      return runs;
+    }),
 });
