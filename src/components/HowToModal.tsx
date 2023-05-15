@@ -119,7 +119,7 @@ const HowToModal: React.FC<HowToModalProps> = ({ shown, setModalShown }) => {
             <button
               onClick={() => setModalShown(false)}
               className={
-                "mt-4 rounded-full px-4 py-2" +
+                "mt-4 rounded-full px-4 py-2 font-semibold" +
                 colorFromFeedbackLevel(FeedbackLevel.Secondary, true)
               }
             >
