@@ -34,7 +34,7 @@ const TestCarousel: React.FC<TestCarouselProps> = ({
           className={"rounded h-fit w-fit p-2" + colorFromFeedbackLevel(FeedbackLevel.Secondary, true)}
           onClick={handleLeftClick}
         >
-          <FontAwesomeIcon className="w-12 h-12 text-black" icon={faChevronLeft} />
+          <FontAwesomeIcon className="w-12 h-12" icon={faChevronLeft} />
         </button>
         <div className="font-semibold flex flex-row items-center justify-center text-2xl">
           {index + 1} / {tests.length}
@@ -43,7 +43,7 @@ const TestCarousel: React.FC<TestCarouselProps> = ({
           className={"rounded h-fit w-fit p-2" + colorFromFeedbackLevel(FeedbackLevel.Secondary, true)}
           onClick={handleRightClick}
         >
-          <FontAwesomeIcon className="w-12 h-12 text-black" icon={faChevronRight} />
+          <FontAwesomeIcon className="w-12 h-12" icon={faChevronRight} />
         </button>
       </div>
       <Test

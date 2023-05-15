@@ -109,7 +109,7 @@ const ChallengePage: NextPage = () => {
                           height={32}
                         />
                       </div>
-                      <span className="text-lg font-semibold text-white">
+                      <span className="text-lg font-semibold dark:text-white text-black">
                         {author.name}
                       </span>
                     </Link>

@@ -90,7 +90,7 @@ const OverviewPage: NextPage = () => {
                           height={32}
                         />
                       </div>
-                      <span className="text-lg font-semibold text-white">
+                      <span className="text-lg font-semibold text-black dark:text-white">
                         {author.name}
                       </span>
                     </Link>

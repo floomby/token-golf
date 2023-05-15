@@ -90,15 +90,9 @@ const MeUser: React.FC<MeUserProps> = ({ name, email, image }) => {
         </button>
         <input
           className={
-            "z-10 rounded-lg border-0 px-2 text-2xl font-semibold" +
-            colorFromFeedbackLevel(FeedbackLevel.Primary, true) +
-            (editingName ? " shadow-md" : " pointer-events-none")
+            "z-10 rounded-lg border-0 px-2 text-2xl font-semibold ease-in-out duration-200" +
+            (editingName ? " shadow-md text-black bg-white" : " pointer-events-none text-black dark:text-white bg-transparent")
           }
-          style={{
-            background: editingName ? "white" : "transparent",
-            transition: "all 0.2s ease",
-            color: editingName ? "black" : "white",
-          }}
           value={nameValue}
           onChange={(e) => setNameValue(e.target.value)}
           disabled={!editingName}

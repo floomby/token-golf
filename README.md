@@ -4,5 +4,8 @@ Compete to solve nlp challenges using an llm with as few tokens as possible.
 
 ## My TODO
 
-- Design stuff - consistent theme, make light theme work
+- Page titles and descriptions
 - Random challenge feed
+- Challenge scores on profile page
+- Favicon + og image
+- SEO
