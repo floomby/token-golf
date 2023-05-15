@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
 import { useRouter } from "next/router";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 import { useNotificationQueue } from "~/providers/notifications";
@@ -34,7 +37,8 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ challengeId }) => {
     <div className="flex w-full flex-col items-end">
       <button
         className={
-          "w-8 rounded p-2 hover:scale-105" + colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
+          "w-8 rounded p-2 hover:scale-105" +
+          colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
         }
         onClick={() => {
           void refetch();
@@ -63,7 +67,9 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ challengeId }) => {
                 >
                   <td className="pl-1">{run.tokenCount}</td>
                   <td className="pl-1">{run.profile.name}</td>
-                  <td className="pl-1">{new Date(run.at).toLocaleString()}</td>
+                  <td className="pl-1">
+                    {new Date(run.at as string).toLocaleString()}
+                  </td>
                 </tr>
               );
             })}

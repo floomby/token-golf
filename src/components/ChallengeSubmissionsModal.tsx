@@ -82,7 +82,7 @@ const ChallengeSubmissionsModal: React.FC<ChallengeSubmissionsModalProps> = ({
                         onClick={() => {
                           if (!router.pathname.includes("/challenges/")) {
                             void router.push(
-                              `/challenges/${challengeId}/${run._id}`
+                              `/challenges/${challengeId.toString()}/${run._id.toString()}`
                             );
                             return;
                           }

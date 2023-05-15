@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
 import { useRouter } from "next/router";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 import { useNotificationQueue } from "~/providers/notifications";
@@ -22,9 +25,6 @@ const RandomChallenges: React.FC = () => {
           level: FeedbackLevel.Error,
           duration: 5000,
         });
-      },
-      onSuccess: (data) => {
-        console.log(data);
       },
       refetchOnWindowFocus: false,
     }
@@ -79,7 +79,7 @@ const RandomChallenges: React.FC = () => {
                       {challenge.creator.name}
                     </td>
                     <td className="pl-1">
-                      {new Date(challenge.createdAt).toLocaleString()}
+                      {new Date(challenge.createdAt as string).toLocaleString()}
                     </td>
                   </tr>
                 );

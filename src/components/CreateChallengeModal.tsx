@@ -5,6 +5,8 @@ import { Debouncer } from "~/lib/debouncers";
 import { type ChallengeUpload, ChallengeUploadSchema } from "~/utils/schemas";
 import { api } from "~/utils/api";
 import { useNotificationQueue } from "~/providers/notifications";
+import { useSession } from "next-auth/react";
+import { Tooltip } from "react-tooltip";
 
 type CreateChallengeModalProps = {
   shown: boolean;
@@ -48,10 +50,11 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
         const data = JSON.parse(challenge) as ChallengeUpload;
         setParsed(ChallengeUploadSchema.parse(data));
         setValid(true);
-      } catch (e) {
-      }
+      } catch (e) {}
     });
   }, [challenge, setValid, setParsed, debouncer]);
+
+  const { status } = useSession();
 
   return (
     <AnimatePresence>
@@ -64,15 +67,15 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
         >
           <div
             className={
-              "w-3/4 m-2 flex h-fit flex-col items-center justify-center rounded-2xl px-0 pt-1 shadow-lg " +
+              "m-2 flex h-fit w-3/4 flex-col items-center justify-center rounded-2xl px-0 pt-1 shadow-lg " +
               "overflow-y-auto border-2 border-teal-500 bg-stone-300 dark:bg-stone-800"
             }
           >
-            <div className="flex flex-col items-center justify-center gap-2 w-full px-4">
+            <div className="flex w-full flex-col items-center justify-center gap-2 px-4">
               <h2 className="text-md font-bold">Upload a challenge</h2>
               <textarea
                 className={
-                  "bg-grey-200 h-32 w-full rounded-md p-2 text-black outline-none font-mono max-h-[80vh]" +
+                  "bg-grey-200 h-32 max-h-[80vh] w-full rounded-md p-2 font-mono text-black outline-none" +
                   (valid
                     ? " border-2 border-green-800 focus:border-green-500"
                     : " border-2 border-red-800 focus:border-red-500")
@@ -101,7 +104,7 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
                     "rounded-full px-4 py-2 font-semibold" +
                     colorFromFeedbackLevel(FeedbackLevel.Success, true)
                   }
-                  disabled={!valid}
+                  disabled={!valid || status !== "authenticated"}
                   onClick={() => {
                     if (valid && parsed) {
                       create(parsed);
@@ -109,8 +112,19 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
                     }
                   }}
                 >
-                  Upload
+                  <span
+                    data-tooltip-id={
+                      status !== "authenticated" ? "login" : undefined
+                    }
+                  >
+                    Upload
+                  </span>
                 </button>
+                {status !== "authenticated" && (
+                  <Tooltip id="login" place="top">
+                    You must be logged in to upload a challenge.
+                  </Tooltip>
+                )}
               </div>
             </div>
           </div>

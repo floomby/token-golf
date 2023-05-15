@@ -7,13 +7,15 @@ import { colorFromFeedbackLevel } from "../lib/feedback";
 
 type NotificationProps = {
   id: string;
-  message: string;
+  message?: string;
+  html?: string;
   level: FeedbackLevel;
   duration: number;
 };
 const Notification: React.FC<NotificationProps> = ({
   id,
   message,
+  html,
   duration,
   level,
 }) => {
@@ -34,7 +36,8 @@ const Notification: React.FC<NotificationProps> = ({
         "m-4 flex rounded-md p-4 shadow-md" + colorFromFeedbackLevel(level)
       }
     >
-      <p>{message}</p>
+      {message && <p>{message}</p>}
+      {html && <div dangerouslySetInnerHTML={{ __html: html }} />}
     </div>
   );
 };

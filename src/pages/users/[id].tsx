@@ -16,6 +16,7 @@ import UploadFileModal from "~/components/UploadFileModal";
 import { Tooltip } from "react-tooltip";
 import { flattenId } from "~/utils/flatten";
 import Completed from "~/components/Completed";
+import mongoose from "mongoose";
 
 type MeUserProps = {
   name: string;
@@ -57,7 +58,7 @@ const MeUser: React.FC<MeUserProps> = ({ name, email, image }) => {
         <div className="relative h-20 w-20 shrink-0 p-0">
           <button
             className={
-              "absolute bottom-0 left-0 z-10 w-6 rounded-full p-1 opacity-80 hover:opacity-100 hover:scale-110" +
+              "absolute bottom-0 left-0 z-10 w-6 rounded-full p-1 opacity-80 hover:scale-110 hover:opacity-100" +
               colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
             }
             onClick={() => {
@@ -78,12 +79,11 @@ const MeUser: React.FC<MeUserProps> = ({ name, email, image }) => {
         </div>
         <button
           className={
-            "w-6 translate-x-[100%] translate-y-1/2 rounded-full opacity-80 hover:opacity-100 hover:scale-110" +
+            "w-6 translate-x-[100%] translate-y-1/2 rounded-full opacity-80 hover:scale-110 hover:opacity-100" +
             colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
           }
           onClick={() => {
             setEditingName(true);
-            console.log(inputRef.current);
             inputRef.current?.focus();
           }}
         >
@@ -178,19 +178,18 @@ const UserChallenges: React.FC<UserChallengesProps> = ({ id }) => {
           {!!challenges ? (
             challenges.length > 0 ? (
               challenges.map((challenge) => (
-                <span>
-                  <Tooltip id={challenge.id} place="right">
+                <span key={(challenge.id as mongoose.Types.ObjectId).toString()}>
+                  <Tooltip id={challenge.id as string} place="right">
                     {challenge.description}
                   </Tooltip>
                   <Link
-                    key={challenge.id}
-                    href={`/overviews/${challenge.id}`}
+                    href={`/overviews/${(challenge.id as mongoose.Types.ObjectId).toString()}`}
                     passHref
                     className={colorFromFeedbackLevel(
                       FeedbackLevel.Invisible,
                       true
                     )}
-                    data-tooltip-id={challenge.id}
+                    data-tooltip-id={(challenge.id as mongoose.Types.ObjectId).toString()}
                   >
                     {challenge.name}
                   </Link>
@@ -233,7 +232,7 @@ const UserPage: NextPage = () => {
   return (
     <>
       <Head>
-        <title>User {user ? ` - ${user.name}` : ""}</title>
+        <title>{user ? `User - ${user.name}` : "User"}</title>
         <meta name="description" content="Token golf user profile page" />
         <link rel="icon" href="/favicon.ico" />
       </Head>

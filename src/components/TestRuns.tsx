@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
 import { api } from "~/utils/api";
 import Spinner from "./Spinner";
 import ClampText from "./ClampText";
@@ -47,22 +50,24 @@ const TestRuns: React.FC<TestRunsProps> = ({
                     <tr
                       key={index}
                       className={
-                        "bg-opacity-30 ease-in-out transition-all duration-200 cursor-pointer" +
+                        "cursor-pointer bg-opacity-30 transition-all duration-200 ease-in-out" +
                         (testRun.success
-                          ? " bg-green-300 dark:hover:bg-green-200 hover:bg-green-400"
-                          : " bg-red-300 dark:hover:bg-red-200 hover:bg-red-400")
+                          ? " bg-green-300 hover:bg-green-400 dark:hover:bg-green-200"
+                          : " bg-red-300 hover:bg-red-400 dark:hover:bg-red-200")
                       }
                       onClick={() => {
-                        console.log(testRun);
-                        setTestIndex(testRun.testIndex);
-                        setPrompt(testRun.prompt);
-                        setTrim(testRun.trim);
-                        setCaseSensitive(testRun.caseSensitive);
+                        setTestIndex(testRun.testIndex as number);
+                        setPrompt(testRun.prompt as string);
+                        setTrim(testRun.trim as boolean);
+                        setCaseSensitive(testRun.caseSensitive as boolean);
                       }}
                     >
                       <td className="pl-1">{testRun.tokenCount}</td>
                       <td className="pl-1">
-                        <ClampText maxLength={12} text={testRun.prompt} />
+                        <ClampText
+                          maxLength={12}
+                          text={testRun.prompt as string}
+                        />
                       </td>
                       <td className="pl-1">{testRun.trim ? "Yes" : "No"}</td>
                       <td className="pl-1">

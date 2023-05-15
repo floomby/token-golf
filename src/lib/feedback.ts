@@ -15,7 +15,7 @@ enum FeedbackLevel {
 export type ThemeOverride = "light" | "dark" | null;
 
 // I do this a dumb way because I am lazy (Idk how robust this actually is)
-// dark theme override has a strange bug (it has something to do with css classes not being applied (something is purging them or something))
+// dark theme override has a strange bug (it has something to do with css classes not being applied properly or something)
 const themeOverrider = (
   classNames: string,
   themeOverride: ThemeOverride
@@ -27,13 +27,6 @@ const themeOverrider = (
   if (themeOverride === "light") {
     return " " + classes.filter((c) => !c.includes("dark:")).join(" ");
   }
-  // return classNames;
-  // console.log(
-  //   classes
-  //     .filter((c) => c.includes("dark:"))
-  //     .map((c) => c.replace("dark:", ""))
-  //     .join(" ")
-  //   );
   return (
     " " +
     classes

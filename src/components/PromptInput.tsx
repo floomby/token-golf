@@ -44,10 +44,9 @@ const HoverableText: React.FC<HoverableTextProps> = ({
   return (
     <>
       <span
-        className={
-          "rounded-sm hover:bg-red-400 hover:bg-opacity-60" +
-          colorFromIndex(index)
-        }
+        className={`rounded-sm hover:bg-red-400 hover:bg-opacity-60 ${
+          colorFromIndex(index) || ""
+        }`}
         onMouseEnter={() => {
           setInfoToken(text);
         }}
@@ -67,7 +66,7 @@ const TokenInfo: React.FC<TokenInfoProps> = ({ token }) => {
 
   return (
     <div className="flex w-48 flex-col justify-start gap-2">
-      <h3 className="text-lg font-bold">"{token}"</h3>
+      <h3 className="text-lg font-bold">&quot;{token}&quot;</h3>
       <h3 className="text-lg font-bold">Encoding: {encoding.join(", ")}</h3>
     </div>
   );
@@ -101,7 +100,9 @@ const PromptInput: React.FC<PromptInputProps> = ({
     onSuccess: (data) => {
       const id = Math.random().toString();
       notifications.add(id, {
-        message: JSON.stringify(data),
+        html: data.success
+          ? `<b>Success:</b> <code>&quot;${data.result}&quot;</code>`
+          : `<b>Failed:</b> <code>&quot;${data.result}&quot;</code>`,
         level: data.success ? FeedbackLevel.Success : FeedbackLevel.Warning,
         duration: 5000,
       });
@@ -179,8 +180,11 @@ const PromptInput: React.FC<PromptInputProps> = ({
               />
             </div>
           </div>
-          <div className="flex flex-row items-center gap-2 sm:justify-start md:justify-end lg:justify-end xl:justify-start 2xl:justify-end"
-            data-tooltip-id={status === "authenticated" ? undefined : "run-tooltip"}
+          <div
+            className="flex flex-row items-center gap-2 sm:justify-start md:justify-end lg:justify-end xl:justify-start 2xl:justify-end"
+            data-tooltip-id={
+              status === "authenticated" ? undefined : "run-tooltip"
+            }
           >
             <button
               className={

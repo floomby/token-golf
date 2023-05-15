@@ -1,3 +1,6 @@
+// FIXME: This is really terrible to be disabling in a trpc router
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+
 import { TypeOf, z } from "zod";
 import mongoose from "mongoose";
 import {

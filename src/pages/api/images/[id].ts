@@ -32,8 +32,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     const contentTypeValue = contentType(image.contentType || "");
 
-    console.log(contentTypeValue, image.length);
-
     // If this is false we are in trouble whatever we do
     if (contentTypeValue) res.setHeader("Content-Type", contentTypeValue);
     res.setHeader("Content-Length", image.length.toString());

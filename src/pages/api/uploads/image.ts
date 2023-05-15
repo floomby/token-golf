@@ -74,7 +74,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         });
 
         form.onPart = (part) => {
-          part.on("data", (chunk) => {
+          part.on("data", (chunk: Buffer) => {
             uploadStream.write(chunk);
           });
         };
@@ -91,7 +91,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     // The only images we can currently upload are profile images
     await Profile.updateOne(
       { email: serverSession.user.email },
-      { image: `/api/images/${uploadStream.id}` }
+      { image: `/api/images/${uploadStream.id.toString()}` }
     );
 
     res.status(200);

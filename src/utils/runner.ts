@@ -4,30 +4,37 @@ import { PromptTemplate } from "langchain/prompts";
 import { LLMChain } from "langchain/chains";
 import { env } from "~/env.mjs";
 
-const runTest = async (test: ITest, promptToTest: string, trim: boolean, caseSensitive: boolean) => {
-  const resultText = Math.random() > 0.5 ? "positive" : "negative";
+const runTest = async (
+  test: ITest,
+  promptToTest: string,
+  trim: boolean,
+  caseSensitive: boolean
+) => {
+  if (!!env.MOCK_LLMAPI) {
+    const success = Math.random() > 0.5;
+    const resultText = success ? test.expected : "not " + test.expected;
+    return { success, result: resultText };
+  }
 
-  // const llm = new OpenAI({
-  //   temperature: 0.0,
-  //   openAIApiKey: env.OPENAI_API_KEY,
-  // });
+  const llm = new OpenAI({
+    temperature: 0.0,
+    openAIApiKey: env.OPENAI_API_KEY,
+  });
 
-  // const prompt = new PromptTemplate({
-  //   template: promptToTest,
-  //   inputVariables: ["test"],
-  // });
+  const prompt = new PromptTemplate({
+    template: promptToTest,
+    inputVariables: ["test"],
+  });
 
-  // const chain = new LLMChain({ llm, prompt });
+  const chain = new LLMChain({ llm, prompt });
 
-  // const result = await chain.call({ test: test.test });
+  const result = (await chain.call({ test: test.test })) as { text: string };
 
-  // console.log("result", result);
+  let resultText = result.text;
 
-  // let resultText = result.text;
-
-  // if (trim) {
-  //   resultText = result.text.trim();
-  // }
+  if (trim) {
+    resultText = result.text.trim();
+  }
 
   let success = false;
 
@@ -37,8 +44,7 @@ const runTest = async (test: ITest, promptToTest: string, trim: boolean, caseSen
     success = resultText === test.expected;
   }
 
-  // return { success, result: result.text as string };
-  return { success, result: resultText };
+  return { success, result: result.text };
 };
 
 export { runTest };

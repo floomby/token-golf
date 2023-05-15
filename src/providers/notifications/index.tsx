@@ -3,7 +3,8 @@ import { FeedbackLevel } from "../../lib/feedback";
 
 // You can customize the notification interface to include whatever props your notifications need to render.
 interface Notification {
-  message: string;
+  message?: string;
+  html?: string;
   duration: number;
   level: FeedbackLevel;
 }

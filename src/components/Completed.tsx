@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
 import { FeedbackLevel } from "~/lib/feedback";
 import { useNotificationQueue } from "~/providers/notifications";
 import { api } from "~/utils/api";
@@ -26,7 +29,7 @@ const Completed: React.FC<CompletedProps> = ({ userId }) => {
   });
 
   return (
-    <div className="m-4 flex h-full w-full flex-col items-start justify-start rounded-lg bg-zinc-200 dark:bg-gray-800 p-4">
+    <div className="m-4 flex h-full w-full flex-col items-start justify-start rounded-lg bg-zinc-200 p-4 dark:bg-gray-800">
       <h1 className="text-2xl font-semibold">Completed Challenges</h1>
       {!!runs ? (
         <table className="w-full">
@@ -56,7 +59,9 @@ const Completed: React.FC<CompletedProps> = ({ userId }) => {
                     />
                   </td>
                   <td className="pl-1">{run.tokenCount}</td>
-                  <td className="pl-1">{new Date(run.at).toLocaleString()}</td>
+                  <td className="pl-1">
+                    {new Date(run.at as string).toLocaleString()}
+                  </td>
                 </tr>
               );
             })}

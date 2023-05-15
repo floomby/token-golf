@@ -26,6 +26,7 @@ const NotificationList: React.FC = () => {
             <Notification
               id={id}
               message={data.message}
+              html={data.html}
               duration={data.duration}
               level={data.level}
             />

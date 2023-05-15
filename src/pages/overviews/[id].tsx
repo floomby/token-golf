@@ -64,7 +64,7 @@ const OverviewPage: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Overview {challenge ? ` - ${challenge.name}` : ""}</title>
+        <title>{challenge ? `Overview - ${challenge.name}` : "Overview"}</title>
         <meta name="description" content="Overview of a token golf challenge" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -80,8 +80,11 @@ const OverviewPage: NextPage = () => {
                       by
                     </span>
                     <Link
-                      href={`/users/${challenge.createdBy}`}
-                      className={"flex flex-row items-center gap-2 hover:scale-105" + colorFromFeedbackLevel(FeedbackLevel.Invisible, true)}
+                      href={`/users/${challenge.createdBy.toString()}`}
+                      className={
+                        "flex flex-row items-center gap-2 hover:scale-105" +
+                        colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
+                      }
                     >
                       <div className="relative h-8 w-8 shrink-0 p-0">
                         <div className="absolute left-0 top-0 h-full w-full rounded-full shadow-inner shadow-gray-600 dark:shadow-gray-800"></div>
@@ -113,12 +116,17 @@ const OverviewPage: NextPage = () => {
                 )}
                 <button
                   className={
-                    "ml-4 whitespace-nowrap rounded-full font-semibold px-2 hover:scale-105" +
+                    "ml-4 whitespace-nowrap rounded-full px-2 font-semibold hover:scale-105" +
                     colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
                   }
-                  onClick={() => void router.push(`/challenges/${id}`)}
+                  onClick={() =>
+                    void router.push(`/challenges/${id as string}`)
+                  }
                 >
-                  <FontAwesomeIcon icon={faPlay} className="mr-2 h-8 w-fit translate-x-2" />
+                  <FontAwesomeIcon
+                    icon={faPlay}
+                    className="mr-2 h-8 w-fit translate-x-2"
+                  />
                 </button>
               </div>
               <p>{challenge.description}</p>
@@ -133,9 +141,13 @@ const OverviewPage: NextPage = () => {
             challengeId={flattenId(id) || ""}
             shown={submissionsModalShown}
             setShown={setSubmissionsModalShown}
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
             setPrompt={() => {}}
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
             setTrim={() => {}}
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
             setCaseSensitive={() => {}}
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
             setTestIndex={() => {}}
           />
         </div>

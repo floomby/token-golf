@@ -23,7 +23,7 @@ const HowToModal: React.FC<HowToModalProps> = ({ shown, setModalShown }) => {
   };
 
   const howTo = [
-    <div className="flex flex-col items-start justify-center gap-4">
+    <div className="flex flex-col items-start justify-center gap-4" key={0}>
       <h2 className="text-2xl font-semibold">Writing a Prompt</h2>
       <p className="text-lg">
         A prompt is a template which will be interpolated with the test input.
@@ -46,8 +46,8 @@ const HowToModal: React.FC<HowToModalProps> = ({ shown, setModalShown }) => {
         output as well as control case sensitivity.
       </p>
       <p className="text-lg">
-        <b>Question</b> - But inference isn't deterministic, even at zero
-        temperature. Doesn't that make this whole thing screwy?
+        <b>Question</b> - But inference isn&apos;t deterministic, even at zero
+        temperature. Doesn&apos;t that make this whole thing screwy?
         <br />
         <b>Answer</b> - Work around this. Every test in the challenge is run
         once on submission with the requirement that they all pass. If you are
@@ -61,7 +61,7 @@ const HowToModal: React.FC<HowToModalProps> = ({ shown, setModalShown }) => {
         by clicking on the entries in this history.
       </p>
     </div>,
-    <div className="flex flex-col items-start justify-center gap-4">
+    <div className="flex flex-col items-start justify-center gap-4" key={1}>
       <h2 className="text-2xl font-semibold">Creating a Challenge</h2>
       <p>
         You can create your own challenges. Doing this requires creating a JSON

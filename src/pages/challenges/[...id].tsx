@@ -55,7 +55,7 @@ const ChallengePage: NextPage = () => {
 
   const [prompt, setPrompt] = useState("");
   const [testIndex, setTestIndex] = useState(0);
-  const [trim, setTrim] = useState(false);
+  const [trim, setTrim] = useState(true);
   const [caseSensitive, setCaseSensitive] = useState(false);
   const [submissionsModalShown, setSubmissionsModalShown] = useState(false);
 
@@ -77,8 +77,8 @@ const ChallengePage: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Challenge {challenge ? ` - ${challenge.name}` : ""}</title>
-        <meta name="description" content="Token Golf Real World Problems" />
+        <title>{challenge ? `Challenge - ${challenge.name}` : "Challenge"}</title>
+        <meta name="description" content="Completing a token golf challenge" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center p-4">
@@ -86,17 +86,28 @@ const ChallengePage: NextPage = () => {
           <>
             <div className="text-semibold mb-4 flex min-w-[50%] flex-col gap-1">
               <div className="flex flex-row items-center">
-                <h1 className={"text-4xl cursor-pointer" + colorFromFeedbackLevel(FeedbackLevel.Invisible, true)}
-                  onClick={() => router.push(`/overviews/${flattenId(id)}`)}
-                >{challenge.name}</h1>
+                <h1
+                  className={
+                    "cursor-pointer text-4xl" +
+                    colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
+                  }
+                  onClick={() =>
+                    void router.push(`/overviews/${flattenId(id) || ""}`)
+                  }
+                >
+                  {challenge.name}
+                </h1>
                 {!!author ? (
                   <>
                     <span className="ml-4 mr-2 text-gray-500 dark:text-gray-400">
                       by
                     </span>
                     <Link
-                      href={`/users/${challenge.createdBy}`}
-                      className={"flex flex-row items-center gap-2 hover:scale-105" + colorFromFeedbackLevel(FeedbackLevel.Invisible, true)}
+                      href={`/users/${challenge.createdBy.toString()}`}
+                      className={
+                        "flex flex-row items-center gap-2 hover:scale-105" +
+                        colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
+                      }
                     >
                       <div className="relative h-8 w-8 shrink-0 p-0">
                         <div className="absolute left-0 top-0 h-full w-full rounded-full shadow-inner shadow-gray-600 dark:shadow-gray-800"></div>
@@ -109,7 +120,7 @@ const ChallengePage: NextPage = () => {
                           height={32}
                         />
                       </div>
-                      <span className="text-lg font-semibold dark:text-white text-black">
+                      <span className="text-lg font-semibold text-black dark:text-white">
                         {author.name}
                       </span>
                     </Link>
