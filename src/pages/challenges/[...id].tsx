@@ -81,7 +81,7 @@ const ChallengePage: NextPage = () => {
         <meta name="description" content="Completing a token golf challenge" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center p-4">
+      <main className="flex flex-col items-center justify-center p-4">
         {!!challenge ? (
           <>
             <div className="text-semibold mb-4 flex min-w-[50%] flex-col gap-1">
