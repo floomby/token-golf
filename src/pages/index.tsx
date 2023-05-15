@@ -11,7 +11,7 @@ const Home: NextPage = () => {
         <meta name="description" content="Token golf problem feed" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
+      <main className="p-4">
         <RandomChallenges />
       </main>
     </>

@@ -31,9 +31,10 @@ const RandomChallenges: React.FC = () => {
   );
 
   return (
-    <div className="l flex w-full flex-col items-end px-2">
-      {!!challenges ? (
-        <>
+    <div className="flex h-full w-full flex-col items-start justify-start rounded-lg bg-zinc-200 p-4 dark:bg-gray-800">
+      <div className="flex w-full justify-between">
+        <h1 className="text-2xl font-semibold">Random Challenges</h1>
+        {!!challenges && (
           <button
             className={
               "mt-2 w-8 rounded p-2 hover:scale-110" +
@@ -45,53 +46,61 @@ const RandomChallenges: React.FC = () => {
           >
             <FontAwesomeIcon icon={faRefresh} />
           </button>
-          <table className="w-full">
-            <thead className="text-left">
-              <tr>
-                <th className="px-2 py-1">Challenge</th>
-                <th className="px-2 py-1">Creator</th>
-                <th className="px-2 py-1">Creation Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {challenges?.map((challenge, i) => {
-                return (
-                  <tr
-                    key={i}
-                    className="cursor-pointer bg-stone-300 bg-opacity-30 transition-all duration-200 ease-in-out hover:bg-stone-200 dark:hover:bg-stone-700"
-                    onClick={() => {
-                      void router.push(`/overviews/${challenge.id}`);
-                    }}
-                  >
-                    <td className="pl-1">
-                      <ClampText
-                        text={`${challenge.name} - ${challenge.description}`}
-                        maxLength={20}
-                      />
-                    </td>
-                    <td
-                      className="pl-1 hover:text-blue-500"
-                      onClick={(e) => {
-                        void router.push(`/users/${challenge.creator.id}`);
-                        e.stopPropagation();
+        )}
+      </div>
+      <div className="flex w-full flex-col items-end px-2">
+        {!!challenges ? (
+          <>
+            <table className="w-full">
+              <thead className="text-left">
+                <tr>
+                  <th className="px-2 py-1">Title</th>
+                  <th className="px-2 py-1">Creator</th>
+                  <th className="px-2 py-1">Creation Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {challenges?.map((challenge, i) => {
+                  return (
+                    <tr
+                      key={i}
+                      className="cursor-pointer bg-stone-300 bg-opacity-30 transition-all duration-200 ease-in-out hover:bg-stone-300 dark:hover:bg-stone-700"
+                      onClick={() => {
+                        void router.push(`/overviews/${challenge.id}`);
                       }}
                     >
-                      {challenge.creator.name}
-                    </td>
-                    <td className="pl-1">
-                      {new Date(challenge.createdAt as string).toLocaleString()}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </>
-      ) : (
-        <div className="flex w-full justify-center">
-          <Spinner />
-        </div>
-      )}
+                      <td className="pl-1">
+                        <ClampText
+                          text={`${challenge.name} - ${challenge.description}`}
+                          maxLength={20}
+                        />
+                      </td>
+                      <td
+                        className="pl-1 hover:text-blue-500"
+                        onClick={(e) => {
+                          void router.push(`/users/${challenge.creator.id}`);
+                          e.stopPropagation();
+                        }}
+                      >
+                        {challenge.creator.name}
+                      </td>
+                      <td className="pl-1">
+                        {new Date(
+                          challenge.createdAt as string
+                        ).toLocaleString()}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </>
+        ) : (
+          <div className="flex w-full justify-center">
+            <Spinner />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
