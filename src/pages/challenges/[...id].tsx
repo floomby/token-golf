@@ -77,7 +77,7 @@ const ChallengePage: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Token Golf</title>
+        <title>Challenge {challenge ? ` - ${challenge.name}` : ""}</title>
         <meta name="description" content="Token Golf Real World Problems" />
         <link rel="icon" href="/favicon.ico" />
       </Head>

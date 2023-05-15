@@ -7,8 +7,8 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Token Golf</title>
-        <meta name="description" content="Token Golf Real World Problems" />
+        <title>Token Golf - Home</title>
+        <meta name="description" content="Token golf problem feed" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>

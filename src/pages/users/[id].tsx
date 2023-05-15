@@ -233,8 +233,8 @@ const UserPage: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Token Golf</title>
-        <meta name="description" content="Token Golf Real World Problems" />
+        <title>User {user ? ` - ${user.name}` : ""}</title>
+        <meta name="description" content="Token golf user profile page" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>

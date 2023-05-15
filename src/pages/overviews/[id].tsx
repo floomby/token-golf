@@ -64,8 +64,8 @@ const OverviewPage: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Token Golf</title>
-        <meta name="description" content="Token Golf Real World Problems" />
+        <title>Overview {challenge ? ` - ${challenge.name}` : ""}</title>
+        <meta name="description" content="Overview of a token golf challenge" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-start p-4">

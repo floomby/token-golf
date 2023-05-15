@@ -57,9 +57,9 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
     <AnimatePresence>
       {shown && (
         <motion.div
-          initial={{ opacity: 0, y: 0, scale: 1 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, scale: 1, transition: { duration: 0.2 } }}
+          initial={{ opacity: 0, y: 0 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, transition: { duration: 0.2 } }}
           className="fixed left-0 top-0 z-50 flex min-h-full w-full flex-col items-center justify-center overflow-y-auto bg-black bg-opacity-50"
         >
           <div
