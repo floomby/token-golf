@@ -149,8 +149,8 @@ const PromptInput: React.FC<PromptInputProps> = ({
   }, [prompt]);
 
   return (
-    <div className="flex w-full flex-row items-start justify-center gap-4">
-      <div className="flex basis-1/2 flex-col items-start justify-center gap-2">
+    <div className="flex w-full items-start justify-center gap-4 sm:flex-col md:flex-col lg:flex-col xl:flex-row 2xl:flex-row">
+      <div className="flex flex-col items-start justify-center gap-2 sm:w-full md:w-full lg:w-full xl:basis-1/2 2xl:basis-1/2">
         <textarea
           className="min-h-[128px] w-full rounded-md border-2 border-gray-300 bg-gray-200 text-black"
           value={prompt}
@@ -162,7 +162,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
           }}
           rows={10}
         />
-        <div className="flex w-full flex-row justify-between gap-4">
+        <div className="flex w-full justify-between gap-4 sm:flex-col md:flex-row lg:flex-row xl:flex-col 2xl:flex-row">
           <div className="flex flex-row items-center justify-start gap-8">
             <div className="mt-2">
               <Toggle label="Trim" checked={trim} setChecked={setTrim} />
@@ -175,7 +175,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
               />
             </div>
           </div>
-          <div className="flex flex-row items-center justify-end gap-2">
+          <div className="flex flex-row items-center gap-2 sm:justify-start md:justify-end lg:justify-end xl:justify-start 2xl:justify-end">
             <button
               className={
                 "whitespace-nowrap rounded-lg px-4 py-2 font-semibold" +
@@ -221,7 +221,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
           </div>
         </div>
       </div>
-      <div className="flex basis-1/2 flex-col items-start justify-center gap-2">
+      <div className="flex flex-col items-start justify-center gap-2 sm:w-full md:w-full lg:w-full xl:basis-1/2 2xl:basis-1/2">
         <div
           className="min-h-[128px] w-full rounded-md border-2 bg-gray-300 text-black"
           style={{
