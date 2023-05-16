@@ -8,23 +8,32 @@ type TestProps = {
 };
 const Test: React.FC<TestProps> = ({ test, expected, result, className }) => {
   return (
-    <div className={"my-2 flex flex-col gap-2 " + (className ?? "")}>
-      <div
-        className="rounded-lg bg-slate-300 p-2 font-semibold text-black"
-        style={{
-          wordBreak: "break-word",
-        }}
-      >
-        Test Case:{" "}
-        <span className="rounded-sm border-2 border-gray-500 p-1 font-mono">
-          {test}
-        </span>
-      </div>
-      <div className="rounded-lg bg-slate-300 p-2 font-semibold text-black">
-        Expected Output:{" "}
-        <span className="rounded-sm border-2 border-gray-500 p-1 font-mono">
-          {expected}
-        </span>
+    <div className={"my-2 flex w-full flex-col gap-2 " + (className ?? "")}>
+      <div className="grid w-full grid-cols-4 gap-2 rounded-lg bg-slate-300 p-2 font-semibold text-black">
+        <span className="col-span-1">Test Case</span>
+        <div className="col-span-3">
+          <code
+            className="whitespace-pre-wrap rounded-sm border-2 border-gray-500 p-1"
+            style={{
+              wordBreak: "break-word",
+              display: "block",
+            }}
+          >
+            {test}
+          </code>
+        </div>
+        <span className="col-span-1">Expected Output</span>
+        <div className="col-span-3">
+          <code
+            className="whitespace-pre-wrap rounded-sm border-2 border-gray-500 p-1"
+            style={{
+              wordBreak: "break-word",
+              display: "block",
+            }}
+          >
+            {expected}
+          </code>
+        </div>
       </div>
       {!!result && (
         <div
