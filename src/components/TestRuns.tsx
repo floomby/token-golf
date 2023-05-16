@@ -20,12 +20,12 @@ const TestRuns: React.FC<TestRunsProps> = ({
   setTrim,
   setCaseSensitive,
 }) => {
+  const { status } = useSession();
+
   const { data: testRuns } = api.challenge.myTestRuns.useQuery(challengeId, {
-    enabled: !!challengeId,
+    enabled: !!challengeId && status === "authenticated",
     refetchInterval: 1000,
   });
-
-  const { status } = useSession();
 
   return (
     <div className="flex w-full flex-col items-center justify-center gap-4 rounded-md py-4 align-middle">

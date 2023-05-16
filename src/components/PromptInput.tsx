@@ -117,7 +117,54 @@ const PromptInput: React.FC<PromptInputProps> = ({
     },
   });
 
+  const { mutate: runSingleTestAnon } =
+    api.challenge.runSingleTestAnon.useMutation({
+      onSuccess: (data) => {
+        const id = Math.random().toString();
+        notifications.add(id, {
+          html: data.success
+            ? `<b>Success:</b> <code>&quot;${data.result}&quot;</code>`
+            : `<b>Failed:</b> <code>&quot;${data.result}&quot;</code>`,
+          level: data.success ? FeedbackLevel.Success : FeedbackLevel.Warning,
+          duration: 5000,
+        });
+      },
+      onError: (error) => {
+        const id = Math.random().toString();
+        notifications.add(id, {
+          message: error.message,
+          level: FeedbackLevel.Error,
+          duration: 5000,
+        });
+      },
+    });
+
   const { mutate: runAllTests } = api.challenge.submit.useMutation({
+    onSuccess: (data) => {
+      const id = Math.random().toString();
+      notifications.add(id, {
+        message: data.success
+          ? "Success!"
+          : `Failed test(s): ${data.results
+              .map((r, i) => ({ idx: i + 1, suc: r.success }))
+              .filter((r) => !r.suc)
+              .map((r) => r.idx)
+              .join(", ")}`,
+        level: data.success ? FeedbackLevel.Success : FeedbackLevel.Warning,
+        duration: 5000,
+      });
+    },
+    onError: (error) => {
+      const id = Math.random().toString();
+      notifications.add(id, {
+        message: error.message,
+        level: FeedbackLevel.Error,
+        duration: 5000,
+      });
+    },
+  });
+
+  const { mutate: submitAnon } = api.challenge.submitAnon.useMutation({
     onSuccess: (data) => {
       const id = Math.random().toString();
       notifications.add(id, {
@@ -192,15 +239,25 @@ const PromptInput: React.FC<PromptInputProps> = ({
                 colorFromFeedbackLevel(FeedbackLevel.Secondary, true)
               }
               onClick={() => {
-                void runSingleTest({
-                  prompt,
-                  testIndex,
-                  challengeId,
-                  trim,
-                  caseSensitive,
-                });
+                if (status === "authenticated") {
+                  void runSingleTest({
+                    prompt,
+                    testIndex,
+                    challengeId,
+                    trim,
+                    caseSensitive,
+                  });
+                } else {
+                  void runSingleTestAnon({
+                    prompt,
+                    testIndex,
+                    challengeId,
+                    trim,
+                    caseSensitive,
+                  });
+                }
               }}
-              disabled={status !== "authenticated"}
+              // disabled={status !== "authenticated"}
             >
               Run Single Test
             </button>
@@ -220,19 +277,27 @@ const PromptInput: React.FC<PromptInputProps> = ({
                 colorFromFeedbackLevel(FeedbackLevel.Success, true)
               }
               onClick={() => {
-                void runAllTests({
-                  prompt,
-                  challengeId,
-                  trim,
-                  caseSensitive,
-                });
+                if (status === "authenticated") {
+                  void runAllTests({
+                    prompt,
+                    challengeId,
+                    trim,
+                    caseSensitive,
+                  });
+                } else {
+                  void submitAnon({
+                    prompt,
+                    challengeId,
+                    trim,
+                    caseSensitive,
+                  });
+                }
               }}
-              disabled={status !== "authenticated"}
             >
               Submit
             </button>
             {status === "authenticated" ? null : (
-              <Tooltip id={"run-tooltip"}>Log In to Run Prompts</Tooltip>
+              <Tooltip id={"run-tooltip"}>Log In to Save Results</Tooltip>
             )}
           </div>
         </div>

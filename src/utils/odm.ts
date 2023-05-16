@@ -15,7 +15,7 @@ export interface IRun {
   at: Date;
   results: IResult[];
   success: boolean;
-  profile: ObjectId;
+  profile?: ObjectId;
 }
 
 const RunSchema = new mongoose.Schema<IRun>({
@@ -34,7 +34,7 @@ const RunSchema = new mongoose.Schema<IRun>({
   profile: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Profile",
-    required: true,
+    required: false,
   },
 });
 

@@ -1,3 +1,4 @@
+// FIXME: The endpoint naming is really bad (the schema names are also not amazing either)
 // FIXME: This is really terrible to be disabling in a trpc router
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 
@@ -104,6 +105,41 @@ export const challengeRouter = createTRPCRouter({
       }
     }),
 
+  runSingleTestAnon: publicProcedure
+    .input(
+      z.object({
+        challengeId: z.string(),
+        testIndex: z.number(),
+        prompt: z.string(),
+        trim: z.boolean(),
+        caseSensitive: z.boolean(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      await db();
+
+      const challenge = await Challenge.findById(input.challengeId);
+
+      if (!challenge) {
+        throw new Error("Challenge not found");
+      }
+
+      const test = challenge.tests[input.testIndex];
+
+      if (!test) {
+        throw new Error("Test not found");
+      }
+
+      const result = await runTest(
+        test,
+        input.prompt,
+        input.trim,
+        input.caseSensitive
+      );
+
+      return result;
+    }),
+
   myTestRuns: protectedProcedure
     .input(z.string())
     .query(async ({ input, ctx }) => {
@@ -207,6 +243,66 @@ export const challengeRouter = createTRPCRouter({
       }
     }),
 
+  submitAnon: publicProcedure
+    .input(
+      z.object({
+        challengeId: z.string(),
+        prompt: z.string(),
+        trim: z.boolean(),
+        caseSensitive: z.boolean(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      await db();
+
+      const session = await mongoose.startSession();
+      session.startTransaction();
+      const abort = async () => {
+        await session.abortTransaction();
+        await session.endSession();
+      };
+
+      try {
+        const challenge = await Challenge.findById(input.challengeId, null, {
+          session,
+        });
+
+        if (!challenge) {
+          throw new Error("Challenge not found");
+        }
+
+        const tokenCount = countTokens(getSegments(input.prompt));
+
+        const result = await Promise.all(
+          challenge.tests.map(async (test, index) =>
+            runTest(test, input.prompt, input.trim, input.caseSensitive)
+          )
+        );
+
+        const runs = await Run.create(
+          [
+            {
+              prompt: input.prompt,
+              trim: input.trim,
+              caseSensitive: input.caseSensitive,
+              tokenCount,
+              challenge: challenge._id,
+              results: result,
+              success: result.every((r) => r.success),
+            },
+          ],
+          { session }
+        );
+
+        await session.commitTransaction();
+
+        return runs[0]!;
+      } catch (err) {
+        await abort();
+        throw err;
+      }
+    }),
+
   getResult: publicProcedure.input(z.string()).query(async ({ input }) => {
     await db();
     const run = await Run.findById(input);
@@ -264,6 +360,7 @@ export const challengeRouter = createTRPCRouter({
         {
           $match: {
             challenge: new mongoose.Types.ObjectId(input.challengeId),
+            profile: { $exists: true },
             success: true,
           },
         },

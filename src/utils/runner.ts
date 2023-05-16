@@ -11,6 +11,7 @@ const runTest = async (
   caseSensitive: boolean
 ) => {
   if (!!env.MOCK_LLMAPI) {
+    console.log("MOCKING LLMAPI");
     const success = Math.random() > 0.5;
     const resultText = success ? test.expected : "not " + test.expected;
     return { success, result: resultText };
