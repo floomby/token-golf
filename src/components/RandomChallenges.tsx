@@ -75,14 +75,16 @@ const RandomChallenges: React.FC = () => {
                           maxLength={20}
                         />
                       </td>
-                      <td
-                        className="pl-1 hover:text-blue-500"
-                        onClick={(e) => {
-                          void router.push(`/users/${challenge.creator.id}`);
-                          e.stopPropagation();
-                        }}
-                      >
-                        {challenge.creator.name}
+                      <td className="pl-1">
+                        <span
+                          className="transition-all duration-200 ease-in-out hover:text-blue-500"
+                          onClick={(e) => {
+                            void router.push(`/users/${challenge.creator.id}`);
+                            e.stopPropagation();
+                          }}
+                        >
+                          {challenge.creator.name}
+                        </span>
                       </td>
                       <td className="pl-1">
                         {new Date(
