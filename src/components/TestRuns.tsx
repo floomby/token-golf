@@ -80,7 +80,7 @@ const TestRuns: React.FC<TestRunsProps> = ({
                     </tr>
                   ))
                 ) : (
-                  <p className="text-lg">No test runs</p>
+                  <p className="text-lg dark:text-white">No test runs</p>
                 )}
               </tbody>
             </table>
