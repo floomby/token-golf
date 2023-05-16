@@ -268,10 +268,15 @@ export const challengeRouter = createTRPCRouter({
           },
         },
         {
+          $sort: {
+            tokenCount: 1,
+          },
+        },
+        {
           $group: {
             _id: "$profile",
             tokenCount: {
-              $min: "$tokenCount",
+              $first: "$tokenCount",
             },
             runId: {
               $first: "$_id",
@@ -279,11 +284,6 @@ export const challengeRouter = createTRPCRouter({
             at: {
               $first: "$at",
             },
-          },
-        },
-        {
-          $sort: {
-            tokenCount: 1,
           },
         },
         {

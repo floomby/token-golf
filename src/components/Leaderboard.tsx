@@ -8,6 +8,7 @@ import { api } from "~/utils/api";
 import Spinner from "./Spinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRefresh } from "@fortawesome/free-solid-svg-icons";
+import { Tooltip } from "react-tooltip";
 
 type LeaderboardProps = {
   challengeId: string;
@@ -34,18 +35,23 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ challengeId }) => {
   );
 
   return (
-    <div className="flex w-full flex-col items-end">
-      <button
-        className={
-          "w-8 rounded p-2 hover:scale-105" +
-          colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
-        }
-        onClick={() => {
-          void refetch();
-        }}
-      >
-        <FontAwesomeIcon icon={faRefresh} />
-      </button>
+    <div className="flex w-full flex-col items-start justify-start rounded-lg bg-zinc-200 p-4 dark:bg-gray-800">
+      <div className="flex w-full justify-between">
+        <h1 className="text-2xl font-semibold">Leaderboard</h1>
+        {!!runs && (
+          <button
+            className={
+              "w-8 rounded p-2 hover:scale-105" +
+              colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
+            }
+            onClick={() => {
+              void refetch();
+            }}
+          >
+            <FontAwesomeIcon icon={faRefresh} />
+          </button>
+        )}
+      </div>
       {!!runs ? (
         <table className="w-full">
           <thead className="text-left">
@@ -60,16 +66,26 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ challengeId }) => {
               return (
                 <tr
                   key={i}
-                  className="cursor-pointer bg-stone-300 bg-opacity-30 hover:bg-stone-200"
+                  className="cursor-pointer bg-stone-300 bg-opacity-30 transition-all duration-200 ease-in-out hover:bg-stone-300 dark:hover:bg-stone-700"
                   onClick={() => {
                     void router.push(`/challenges/${challengeId}/${run.runId}`);
                   }}
+                  data-tooltip-id={`view-${i}`}
                 >
                   <td className="pl-1">{run.tokenCount}</td>
-                  <td className="pl-1">{run.profile.name}</td>
+                  <td
+                    className="pl-1 hover:text-blue-500"
+                    onClick={(e) => {
+                      void router.push(`/users/${run.profile._id}`);
+                      e.stopPropagation();
+                    }}
+                  >
+                    {run.profile.name}
+                  </td>
                   <td className="pl-1">
                     {new Date(run.at as string).toLocaleString()}
                   </td>
+                  <Tooltip id={`view-${i}`}>View this submission</Tooltip>
                 </tr>
               );
             })}
