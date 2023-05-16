@@ -73,14 +73,16 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ challengeId }) => {
                   data-tooltip-id={`view-${i}`}
                 >
                   <td className="pl-1">{run.tokenCount}</td>
-                  <td
-                    className="pl-1 hover:text-blue-500"
-                    onClick={(e) => {
-                      void router.push(`/users/${run.profile._id}`);
-                      e.stopPropagation();
-                    }}
-                  >
-                    {run.profile.name}
+                  <td className="pl-1">
+                    <span
+                      className="hover:text-blue-500 ease-in-out transition-all duration-200"
+                      onClick={(e) => {
+                        void router.push(`/users/${run.profile._id}`);
+                        e.stopPropagation();
+                      }}
+                    >
+                      {run.profile.name}
+                    </span>
                   </td>
                   <td className="pl-1">
                     {new Date(run.at as string).toLocaleString()}
