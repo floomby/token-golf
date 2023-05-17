@@ -75,7 +75,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ challengeId }) => {
                   <td className="pl-1">{run.tokenCount}</td>
                   <td className="pl-1">
                     <span
-                      className="hover:text-blue-500 ease-in-out transition-all duration-200"
+                      className="transition-all duration-200 ease-in-out hover:text-blue-500"
                       onClick={(e) => {
                         void router.push(`/users/${run.profile._id}`);
                         e.stopPropagation();
@@ -91,6 +91,11 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ challengeId }) => {
                 </tr>
               );
             })}
+            {runs?.length === 0 && (
+              <p className="pl-2 text-lg font-semibold text-gray-800 dark:text-gray-200">
+                No submissions yet! (Be the first)
+              </p>
+            )}
           </tbody>
         </table>
       ) : (

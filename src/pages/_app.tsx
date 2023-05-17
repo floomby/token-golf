@@ -12,6 +12,8 @@ import WidthProvider from "~/providers/width";
 import NotificationList from "~/components/NotificationList";
 import Header from "~/components/Header";
 import { NextSeo } from "next-seo";
+import SubmissionModalProvider from "~/providers/submissionModal";
+import ModalCloser from "~/components/ModalCloser";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -19,8 +21,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <NotificationProvider>
-        <WidthProvider>
+      <SubmissionModalProvider>
+        <NotificationProvider>
+          {/* <WidthProvider> */}
           <NextSeo
             title="Token Golf"
             description="Gamify LLM prompting to solve nlp problems"
@@ -49,9 +52,11 @@ const MyApp: AppType<{ session: Session | null }> = ({
             <Header />
             <Component {...pageProps} />
             <NotificationList />
+            <ModalCloser />
           </div>
-        </WidthProvider>
-      </NotificationProvider>
+          {/* </WidthProvider> */}
+        </NotificationProvider>
+      </SubmissionModalProvider>
     </SessionProvider>
   );
 };

@@ -7,7 +7,7 @@ import { api } from "~/utils/api";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 import { useNotificationQueue } from "~/providers/notifications";
 import PromptInput from "~/components/PromptInput";
-import { use, useEffect, useState } from "react";
+import { use, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import TestCarousel from "~/components/TestCarousel";
 import Spinner from "~/components/Spinner";
@@ -15,6 +15,7 @@ import TestRuns from "~/components/TestRuns";
 import ChallengeSubmissionsModal from "~/components/ChallengeSubmissionsModal";
 import Image from "next/image";
 import { flattenId, getSecond } from "~/utils/flatten";
+import { SubmissionModalContext } from "~/providers/submissionModal";
 
 const ChallengePage: NextPage = () => {
   const router = useRouter();
@@ -57,7 +58,6 @@ const ChallengePage: NextPage = () => {
   const [testIndex, setTestIndex] = useState(0);
   const [trim, setTrim] = useState(true);
   const [caseSensitive, setCaseSensitive] = useState(false);
-  const [submissionsModalShown, setSubmissionsModalShown] = useState(false);
 
   const { data: author } = api.user.read.useQuery(
     challenge?.createdBy.toString() || "",
@@ -73,6 +73,12 @@ const ChallengePage: NextPage = () => {
       },
     }
   );
+
+  const { setChallengeId } = useContext(SubmissionModalContext);
+
+  useEffect(() => {
+    setChallengeId(flattenId(id) || null);
+  }, [id, setChallengeId]);
 
   return (
     <>
@@ -147,7 +153,6 @@ const ChallengePage: NextPage = () => {
           setTrim={setTrim}
           caseSensitive={caseSensitive}
           setCaseSensitive={setCaseSensitive}
-          showSubmissionsModal={() => setSubmissionsModalShown(true)}
         />
         <TestRuns
           challengeId={flattenId(id) || ""}
@@ -158,9 +163,6 @@ const ChallengePage: NextPage = () => {
         />
         <div className="h-0 w-0">
           <ChallengeSubmissionsModal
-            challengeId={flattenId(id) || ""}
-            shown={submissionsModalShown}
-            setShown={setSubmissionsModalShown}
             setPrompt={setPrompt}
             setTrim={setTrim}
             setCaseSensitive={setCaseSensitive}

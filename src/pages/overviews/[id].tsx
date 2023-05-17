@@ -7,7 +7,7 @@ import { api } from "~/utils/api";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 import { useNotificationQueue } from "~/providers/notifications";
 import PromptInput from "~/components/PromptInput";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import TestCarousel from "~/components/TestCarousel";
 import Spinner from "~/components/Spinner";
@@ -18,6 +18,7 @@ import { flattenId } from "~/utils/flatten";
 import Leaderboard from "~/components/Leaderboard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
+import { SubmissionModalContext } from "~/providers/submissionModal";
 
 const OverviewPage: NextPage = () => {
   const router = useRouter();
@@ -38,12 +39,6 @@ const OverviewPage: NextPage = () => {
     },
   });
 
-  // const [prompt, setPrompt] = useState("");
-  const [testIndex, setTestIndex] = useState(0);
-  // const [trim, setTrim] = useState(false);
-  // const [caseSensitive, setCaseSensitive] = useState(false);
-  const [submissionsModalShown, setSubmissionsModalShown] = useState(false);
-
   const { data: author } = api.user.read.useQuery(
     challenge?.createdBy.toString() || "",
     {
@@ -60,6 +55,12 @@ const OverviewPage: NextPage = () => {
   );
 
   const { status } = useSession();
+
+  const { setChallengeId, setShown: setSubmissionModalShown } = useContext(SubmissionModalContext);
+
+  useEffect(() => {
+    setChallengeId(flattenId(id) || null);
+  }, [id, setChallengeId]);
 
   return (
     <>
@@ -109,7 +110,7 @@ const OverviewPage: NextPage = () => {
                       "ml-8 whitespace-nowrap px-4 py-2 font-semibold" +
                       colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
                     }
-                    onClick={() => setSubmissionsModalShown(true)}
+                    onClick={() => setSubmissionModalShown(true)}
                   >
                     View My Submissions
                   </button>
@@ -123,6 +124,7 @@ const OverviewPage: NextPage = () => {
                     void router.push(`/challenges/${id as string}`)
                   }
                 >
+                  <span>PLAY</span>
                   <FontAwesomeIcon
                     icon={faPlay}
                     className="mr-2 h-8 w-6 translate-x-2"
@@ -138,9 +140,6 @@ const OverviewPage: NextPage = () => {
         <Leaderboard challengeId={flattenId(id) || ""} />
         <div className="h-0 w-0">
           <ChallengeSubmissionsModal
-            challengeId={flattenId(id) || ""}
-            shown={submissionsModalShown}
-            setShown={setSubmissionsModalShown}
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             setPrompt={() => {}}
             // eslint-disable-next-line @typescript-eslint/no-empty-function

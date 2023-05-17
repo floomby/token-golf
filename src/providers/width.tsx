@@ -1,6 +1,5 @@
 import { createContext, useEffect, useState } from "react";
 
-
 const WidthContext = createContext<{
   width: number;
   setWidth: (width: number) => void;

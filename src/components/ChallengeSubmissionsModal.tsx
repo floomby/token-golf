@@ -2,25 +2,26 @@ import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 import { useNotificationQueue } from "~/providers/notifications";
 import { api } from "~/utils/api";
 import Test from "./Test";
+import { SubmissionModalContext } from "~/providers/submissionModal";
 
 type ChallengeSubmissionsModalProps = {
-  shown: boolean;
-  setShown: (show: boolean) => void;
-  challengeId: string;
+  // shown: boolean;
+  // setShown: (show: boolean) => void;
+  // challengeId: string;
   setTestIndex: (index: number) => void;
   setPrompt: (prompt: string) => void;
   setTrim: (trim: boolean) => void;
   setCaseSensitive: (caseSensitive: boolean) => void;
 };
 const ChallengeSubmissionsModal: React.FC<ChallengeSubmissionsModalProps> = ({
-  shown,
-  setShown,
-  challengeId,
+  // shown,
+  // setShown,
+  // challengeId,
   setTestIndex,
   setPrompt,
   setTrim,
@@ -30,8 +31,10 @@ const ChallengeSubmissionsModal: React.FC<ChallengeSubmissionsModalProps> = ({
 
   const notifications = useNotificationQueue();
 
+  const { shown, setShown, challengeId, detailsId, setDetailsId } = useContext(SubmissionModalContext);
+
   const { data: runs, refetch } = api.challenge.getMyResults.useQuery(
-    challengeId,
+    challengeId ?? "",
     {
       enabled: shown && !!challengeId,
       onError: (error) => {
@@ -45,17 +48,17 @@ const ChallengeSubmissionsModal: React.FC<ChallengeSubmissionsModalProps> = ({
     }
   );
 
-  const [detailId, setDetailId] = useState<string | null>(null);
+  // const [detailsId, setDetailsId] = useState<string | null>(null);
 
   useEffect(() => {
     if (shown && !!challengeId) {
-      setDetailId(null);
+      setDetailsId(null);
       void refetch();
     }
   }, [shown, challengeId, refetch]);
 
-  const { data: result } = api.challenge.getResult.useQuery(detailId ?? "", {
-    enabled: shown && !!challengeId && !!detailId,
+  const { data: result } = api.challenge.getResult.useQuery(detailsId ?? "", {
+    enabled: shown && !!challengeId && !!detailsId,
     onError: (error) => {
       const id = Math.random().toString(36).substring(7);
       notifications.add(id, {
@@ -66,7 +69,7 @@ const ChallengeSubmissionsModal: React.FC<ChallengeSubmissionsModalProps> = ({
     },
   });
 
-  const { data: challenge } = api.challenge.read.useQuery(challengeId, {
+  const { data: challenge } = api.challenge.read.useQuery(challengeId ?? "", {
     enabled: shown && !!challengeId,
     onError: (error) => {
       const id = Math.random().toString(36).substring(7);
@@ -93,7 +96,7 @@ const ChallengeSubmissionsModal: React.FC<ChallengeSubmissionsModalProps> = ({
               "h-fit border-2 border-teal-500 bg-stone-300 dark:bg-stone-800"
             }
           >
-            {!detailId ? (
+            {!detailsId ? (
               <>
                 <h1 className="text-2xl font-bold">Past Submissions</h1>
                 <div className="max-h-[80vh] w-full overflow-y-auto">
@@ -123,9 +126,9 @@ const ChallengeSubmissionsModal: React.FC<ChallengeSubmissionsModalProps> = ({
                                 : " bg-red-200 hover:bg-red-300 dark:bg-red-800 dark:hover:bg-red-700")
                             }
                             onClick={() => {
-                              if (!router.pathname.includes("/challenges/")) {
+                              if (!router.pathname.includes("/challenges/") && challengeId) {
                                 void router.push(
-                                  `/challenges/${challengeId.toString()}/${run._id.toString()}`
+                                  `/challenges/${challengeId}/${run._id.toString()}`
                                 );
                                 return;
                               }
@@ -148,7 +151,7 @@ const ChallengeSubmissionsModal: React.FC<ChallengeSubmissionsModalProps> = ({
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  setDetailId(run._id.toString());
+                                  setDetailsId(run._id.toString());
                                 }}
                                 className="h-full translate-y-[3px] px-1 transition-all duration-200 ease-in-out hover:scale-110 hover:text-blue-500"
                               >
@@ -193,14 +196,14 @@ const ChallengeSubmissionsModal: React.FC<ChallengeSubmissionsModalProps> = ({
               </>
             )}
             <div className="m-2 flex flex-row items-center justify-center gap-2">
-              {!!detailId && (
+              {!!detailsId && (
                 <button
                   className={
                     "rounded-full px-4 py-2 font-semibold" +
                     colorFromFeedbackLevel(FeedbackLevel.Secondary, true)
                   }
                   onClick={() => {
-                    setDetailId(null);
+                    setDetailsId(null);
                   }}
                 >
                   Back

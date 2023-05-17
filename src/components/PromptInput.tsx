@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 // import { compile } from "html-to-text";
 import { api } from "~/utils/api";
@@ -7,6 +7,7 @@ import Toggle from "./Toggle";
 import { countTokens, encoder, getSegments } from "~/utils/tokenize";
 import { Tooltip } from "react-tooltip";
 import { useSession } from "next-auth/react";
+import { SubmissionModalContext } from "~/providers/submissionModal";
 
 // const compiledConvert = compile({ wordwrap: false, preserveNewlines: true });
 
@@ -81,7 +82,7 @@ type PromptInputProps = {
   setTrim: (trim: boolean) => void;
   caseSensitive: boolean;
   setCaseSensitive: (caseSensitive: boolean) => void;
-  showSubmissionsModal: () => void;
+  // showSubmissionsModal: () => void;
 };
 const PromptInput: React.FC<PromptInputProps> = ({
   prompt,
@@ -92,8 +93,12 @@ const PromptInput: React.FC<PromptInputProps> = ({
   setTrim,
   caseSensitive,
   setCaseSensitive,
-  showSubmissionsModal,
+  // showSubmissionsModal,
 }) => {
+  const { setShown: setSubmissionModalShown } = useContext(
+    SubmissionModalContext
+  );
+
   const notifications = useNotificationQueue();
 
   const { mutate: runSingleTest } = api.challenge.runSingleTest.useMutation({
@@ -266,10 +271,14 @@ const PromptInput: React.FC<PromptInputProps> = ({
                 "whitespace-nowrap rounded-full px-4 py-2 font-semibold" +
                 colorFromFeedbackLevel(FeedbackLevel.Secondary, true)
               }
-              onClick={showSubmissionsModal}
+              onClick={() => {
+                if (status === "authenticated") {
+                  setSubmissionModalShown(true);
+                }
+              }}
               disabled={status !== "authenticated"}
             >
-              View Submissions
+              View Submission Details
             </button>
             <button
               className={
