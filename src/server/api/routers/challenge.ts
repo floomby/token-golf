@@ -420,6 +420,11 @@ export const challengeRouter = createTRPCRouter({
           $limit: input.limit,
         },
         {
+          $sort: {
+            tokenCount: 1,
+          },
+        },
+        {
           $lookup: {
             from: "profiles",
             localField: "_id",

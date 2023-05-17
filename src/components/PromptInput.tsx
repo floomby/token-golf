@@ -8,6 +8,7 @@ import { countTokens, encoder, getSegments } from "~/utils/tokenize";
 import { Tooltip } from "react-tooltip";
 import { useSession } from "next-auth/react";
 import { SubmissionModalContext } from "~/providers/submissionModal";
+import { EditorContext } from "~/providers/editor";
 
 // const compiledConvert = compile({ wordwrap: false, preserveNewlines: true });
 
@@ -74,32 +75,24 @@ const TokenInfo: React.FC<TokenInfoProps> = ({ token }) => {
 };
 
 type PromptInputProps = {
-  prompt: string;
-  setPrompt: (prompt: string) => void;
-  testIndex: number;
   challengeId: string;
-  trim: boolean;
-  setTrim: (trim: boolean) => void;
-  caseSensitive: boolean;
-  setCaseSensitive: (caseSensitive: boolean) => void;
-  // showSubmissionsModal: () => void;
 };
-const PromptInput: React.FC<PromptInputProps> = ({
-  prompt,
-  setPrompt,
-  testIndex,
-  challengeId,
-  trim,
-  setTrim,
-  caseSensitive,
-  setCaseSensitive,
-  // showSubmissionsModal,
-}) => {
-  const { setShown: setSubmissionModalShown } = useContext(
+const PromptInput: React.FC<PromptInputProps> = ({ challengeId }) => {
+  const { setShown: setSubmissionModalShown, setDetailsId } = useContext(
     SubmissionModalContext
   );
 
   const notifications = useNotificationQueue();
+
+  const {
+    prompt,
+    setPrompt,
+    testIndex,
+    trim,
+    setTrim,
+    caseSensitive,
+    setCaseSensitive,
+  } = useContext(EditorContext);
 
   const { mutate: runSingleTest } = api.challenge.runSingleTest.useMutation({
     onSuccess: (data) => {
@@ -147,16 +140,27 @@ const PromptInput: React.FC<PromptInputProps> = ({
   const { mutate: runAllTests } = api.challenge.submit.useMutation({
     onSuccess: (data) => {
       const id = Math.random().toString();
+      console.log("HERE");
       notifications.add(id, {
         message: data.success
           ? "Success!"
+          : undefined,
+        html: data.success
+          ? undefined
           : `Failed test(s): ${data.results
               .map((r, i) => ({ idx: i + 1, suc: r.success }))
               .filter((r) => !r.suc)
               .map((r) => r.idx)
-              .join(", ")}`,
+              .join(", ")}<br />
+              <i>Click to view details</i>`,
         level: data.success ? FeedbackLevel.Success : FeedbackLevel.Warning,
         duration: 5000,
+        onClick: data.success
+          ? undefined
+          : () => {
+              setDetailsId(data._id.toString());
+              setSubmissionModalShown(true);
+            },
       });
     },
     onError: (error) => {

@@ -1,21 +1,20 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { signIn, signOut, useSession } from "next-auth/react";
 
 import { api } from "~/utils/api";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 import { useNotificationQueue } from "~/providers/notifications";
 import PromptInput from "~/components/PromptInput";
-import { use, useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { useRouter } from "next/router";
 import TestCarousel from "~/components/TestCarousel";
 import Spinner from "~/components/Spinner";
 import TestRuns from "~/components/TestRuns";
-import ChallengeSubmissionsModal from "~/components/ChallengeSubmissionsModal";
 import Image from "next/image";
 import { flattenId, getSecond } from "~/utils/flatten";
 import { SubmissionModalContext } from "~/providers/submissionModal";
+import { EditorContext } from "~/providers/editor";
 
 const ChallengePage: NextPage = () => {
   const router = useRouter();
@@ -36,6 +35,9 @@ const ChallengePage: NextPage = () => {
     },
   });
 
+  // I have mixed feeling about having the run submission be in the url like it is
+  // It has some advantages, but with the editor state being in a provider it is no
+  // longer needed for the original reason I did it
   const {} = api.challenge.getResult.useQuery(getSecond(id) || "", {
     enabled: !!getSecond(id),
     onError: (error) => {
@@ -54,10 +56,7 @@ const ChallengePage: NextPage = () => {
     refetchOnWindowFocus: false,
   });
 
-  const [prompt, setPrompt] = useState("");
-  const [testIndex, setTestIndex] = useState(0);
-  const [trim, setTrim] = useState(true);
-  const [caseSensitive, setCaseSensitive] = useState(false);
+  const { setPrompt, setTrim, setCaseSensitive } = useContext(EditorContext);
 
   const { data: author } = api.user.read.useQuery(
     challenge?.createdBy.toString() || "",
@@ -83,7 +82,9 @@ const ChallengePage: NextPage = () => {
   return (
     <>
       <Head>
-        <title>{challenge ? `Challenge - ${challenge.name}` : "Challenge"}</title>
+        <title>
+          {challenge ? `Challenge - ${challenge.name}` : "Challenge"}
+        </title>
         <meta name="description" content="Completing a token golf challenge" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -135,40 +136,13 @@ const ChallengePage: NextPage = () => {
               </div>
               <p>{challenge.description}</p>
             </div>
-            <TestCarousel
-              challenge={challenge}
-              index={testIndex}
-              setIndex={setTestIndex}
-            />
+            <TestCarousel challenge={challenge} />
           </>
         ) : (
           <Spinner />
         )}
-        <PromptInput
-          prompt={prompt}
-          setPrompt={setPrompt}
-          challengeId={flattenId(id) || ""}
-          testIndex={testIndex}
-          trim={trim}
-          setTrim={setTrim}
-          caseSensitive={caseSensitive}
-          setCaseSensitive={setCaseSensitive}
-        />
-        <TestRuns
-          challengeId={flattenId(id) || ""}
-          setTestIndex={setTestIndex}
-          setPrompt={setPrompt}
-          setTrim={setTrim}
-          setCaseSensitive={setCaseSensitive}
-        />
-        <div className="h-0 w-0">
-          <ChallengeSubmissionsModal
-            setPrompt={setPrompt}
-            setTrim={setTrim}
-            setCaseSensitive={setCaseSensitive}
-            setTestIndex={setTestIndex}
-          />
-        </div>
+        <PromptInput challengeId={flattenId(id) || ""} />
+        <TestRuns challengeId={flattenId(id) || ""} />
       </main>
     </>
   );

@@ -1,18 +1,13 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { signIn, signOut, useSession } from "next-auth/react";
-
+import { useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 import { useNotificationQueue } from "~/providers/notifications";
-import PromptInput from "~/components/PromptInput";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { useRouter } from "next/router";
-import TestCarousel from "~/components/TestCarousel";
 import Spinner from "~/components/Spinner";
-import TestRuns from "~/components/TestRuns";
-import ChallengeSubmissionsModal from "~/components/ChallengeSubmissionsModal";
 import Image from "next/image";
 import { flattenId } from "~/utils/flatten";
 import Leaderboard from "~/components/Leaderboard";
@@ -56,7 +51,9 @@ const OverviewPage: NextPage = () => {
 
   const { status } = useSession();
 
-  const { setChallengeId, setShown: setSubmissionModalShown } = useContext(SubmissionModalContext);
+  const { setChallengeId, setShown: setSubmissionModalShown } = useContext(
+    SubmissionModalContext
+  );
 
   useEffect(() => {
     setChallengeId(flattenId(id) || null);
@@ -138,18 +135,6 @@ const OverviewPage: NextPage = () => {
           <Spinner className="mt-24" />
         )}
         <Leaderboard challengeId={flattenId(id) || ""} />
-        <div className="h-0 w-0">
-          <ChallengeSubmissionsModal
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
-            setPrompt={() => {}}
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
-            setTrim={() => {}}
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
-            setCaseSensitive={() => {}}
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
-            setTestIndex={() => {}}
-          />
-        </div>
       </main>
     </>
   );

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { use, useEffect } from "react";
 import {
   type FeedbackLevel,
   useNotificationQueue,
@@ -11,6 +11,7 @@ type NotificationProps = {
   html?: string;
   level: FeedbackLevel;
   duration: number;
+  onClick?: () => void;
 };
 const Notification: React.FC<NotificationProps> = ({
   id,
@@ -18,6 +19,7 @@ const Notification: React.FC<NotificationProps> = ({
   html,
   duration,
   level,
+  onClick,
 }) => {
   const notifications = useNotificationQueue();
 
@@ -28,13 +30,25 @@ const Notification: React.FC<NotificationProps> = ({
     return (): void => {
       clearTimeout(timeout);
     };
-  }, [id, duration, notifications]);
+  }, [id, duration]);
+
+  const clickCallback = (): void => {
+    if (onClick) {
+      onClick();
+      notifications.remove(id);
+    }
+  };
 
   return (
     <div
       className={
-        "m-4 flex rounded-md p-4 shadow-md" + colorFromFeedbackLevel(level)
+        "m-4 flex rounded-md p-4 shadow-md" +
+        colorFromFeedbackLevel(level, !!onclick) +
+        (onClick
+          ? " cursor-pointer transition-all duration-200 ease-in-out hover:scale-105"
+          : "")
       }
+      onClick={clickCallback}
     >
       {message && <p>{message}</p>}
       {html && <div dangerouslySetInnerHTML={{ __html: html }} />}

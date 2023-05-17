@@ -8,30 +8,38 @@ import { useNotificationQueue } from "~/providers/notifications";
 import { api } from "~/utils/api";
 import Test from "./Test";
 import { SubmissionModalContext } from "~/providers/submissionModal";
+import { EditorContext } from "~/providers/editor";
 
 type ChallengeSubmissionsModalProps = {
   // shown: boolean;
   // setShown: (show: boolean) => void;
   // challengeId: string;
-  setTestIndex: (index: number) => void;
-  setPrompt: (prompt: string) => void;
-  setTrim: (trim: boolean) => void;
-  setCaseSensitive: (caseSensitive: boolean) => void;
+  // setTestIndex: (index: number) => void;
+  // setPrompt: (prompt: string) => void;
+  // setTrim: (trim: boolean) => void;
+  // setCaseSensitive: (caseSensitive: boolean) => void;
 };
-const ChallengeSubmissionsModal: React.FC<ChallengeSubmissionsModalProps> = ({
-  // shown,
-  // setShown,
-  // challengeId,
-  setTestIndex,
-  setPrompt,
-  setTrim,
-  setCaseSensitive,
-}) => {
+const ChallengeSubmissionsModal: React.FC<ChallengeSubmissionsModalProps> = (
+  {
+    // shown,
+    // setShown,
+    // challengeId,
+    // setTestIndex,
+    // setPrompt,
+    // setTrim,
+    // setCaseSensitive,
+  }
+) => {
   const router = useRouter();
 
   const notifications = useNotificationQueue();
 
-  const { shown, setShown, challengeId, detailsId, setDetailsId } = useContext(SubmissionModalContext);
+  const { shown, setShown, challengeId, detailsId, setDetailsId } = useContext(
+    SubmissionModalContext
+  );
+
+  const { setPrompt, setTrim, setCaseSensitive, setTestIndex } =
+    useContext(EditorContext);
 
   const { data: runs, refetch } = api.challenge.getMyResults.useQuery(
     challengeId ?? "",
@@ -48,11 +56,8 @@ const ChallengeSubmissionsModal: React.FC<ChallengeSubmissionsModalProps> = ({
     }
   );
 
-  // const [detailsId, setDetailsId] = useState<string | null>(null);
-
   useEffect(() => {
     if (shown && !!challengeId) {
-      setDetailsId(null);
       void refetch();
     }
   }, [shown, challengeId, refetch]);
@@ -93,7 +98,7 @@ const ChallengeSubmissionsModal: React.FC<ChallengeSubmissionsModalProps> = ({
           <div
             className={
               "m-2 flex min-w-[50%] flex-col items-center justify-center rounded-2xl px-0 pt-1 shadow-lg " +
-              "h-fit border-2 border-teal-500 bg-stone-300 dark:bg-stone-800"
+              "h-fit border-2 border-teal-500 bg-stone-300 dark:bg-stone-800 dark:text-white text-black"
             }
           >
             {!detailsId ? (
@@ -126,7 +131,10 @@ const ChallengeSubmissionsModal: React.FC<ChallengeSubmissionsModalProps> = ({
                                 : " bg-red-200 hover:bg-red-300 dark:bg-red-800 dark:hover:bg-red-700")
                             }
                             onClick={() => {
-                              if (!router.pathname.includes("/challenges/") && challengeId) {
+                              if (
+                                !router.pathname.includes("/challenges/") &&
+                                challengeId
+                              ) {
                                 void router.push(
                                   `/challenges/${challengeId}/${run._id.toString()}`
                                 );

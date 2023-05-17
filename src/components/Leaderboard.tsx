@@ -83,11 +83,11 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ challengeId }) => {
                     >
                       {run.profile.name}
                     </span>
+                    <Tooltip id={`view-${i}`}>View this submission</Tooltip>
                   </td>
                   <td className="pl-1">
                     {new Date(run.at as string).toLocaleString()}
                   </td>
-                  <Tooltip id={`view-${i}`}>View this submission</Tooltip>
                 </tr>
               );
             })}

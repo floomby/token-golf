@@ -7,6 +7,7 @@ interface Notification {
   html?: string;
   duration: number;
   level: FeedbackLevel;
+  onClick?: () => void;
 }
 
 // This function creates a React context and hooks for you so you'll want to export these.

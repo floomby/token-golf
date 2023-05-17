@@ -5,22 +5,17 @@ import { api } from "~/utils/api";
 import Spinner from "./Spinner";
 import ClampText from "./ClampText";
 import { useSession } from "next-auth/react";
+import { EditorContext } from "~/providers/editor";
+import { useContext } from "react";
 
 type TestRunsProps = {
   challengeId: string;
-  setTestIndex: (index: number) => void;
-  setPrompt: (prompt: string) => void;
-  setTrim: (trim: boolean) => void;
-  setCaseSensitive: (caseSensitive: boolean) => void;
 };
-const TestRuns: React.FC<TestRunsProps> = ({
-  challengeId,
-  setTestIndex,
-  setPrompt,
-  setTrim,
-  setCaseSensitive,
-}) => {
+const TestRuns: React.FC<TestRunsProps> = ({ challengeId }) => {
   const { status } = useSession();
+
+  const { setTestIndex, setPrompt, setTrim, setCaseSensitive } =
+    useContext(EditorContext);
 
   const { data: testRuns } = api.challenge.myTestRuns.useQuery(challengeId, {
     enabled: !!challengeId && status === "authenticated",
@@ -80,7 +75,9 @@ const TestRuns: React.FC<TestRunsProps> = ({
                     </tr>
                   ))
                 ) : (
-                  <p className="text-lg dark:text-white font-semibold ml-2">No test runs</p>
+                  <p className="ml-2 text-lg font-semibold dark:text-white">
+                    No test runs
+                  </p>
                 )}
               </tbody>
             </table>

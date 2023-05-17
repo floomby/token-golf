@@ -38,10 +38,10 @@ const Test: React.FC<TestProps> = ({ test, expected, result, className }) => {
       {!!result && (
         <div
           className={
-            "grid w-full grid-cols-4 gap-2 rounded-lg bg-slate-300 p-2 font-semibold text-black dark:text-white " +
+            "grid w-full grid-cols-4 gap-2 rounded-lg p-2 font-semibold text-black dark:text-white ring-2" +
             (result.success
-              ? " border-green-500 bg-green-200 dark:bg-green-900"
-              : " border-red-500 bg-red-200 dark:bg-red-900")
+              ? " ring-green-500 bg-green-200 dark:bg-green-900"
+              : " ring-red-500 bg-red-200 dark:bg-red-900")
           }
         >
           <span className="col-span-1">Produced Output</span>
