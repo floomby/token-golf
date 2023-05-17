@@ -125,7 +125,7 @@ const OverviewPage: NextPage = () => {
                 >
                   <FontAwesomeIcon
                     icon={faPlay}
-                    className="mr-2 h-8 w-fit translate-x-2"
+                    className="mr-2 h-8 w-6 translate-x-2"
                   />
                 </button>
               </div>

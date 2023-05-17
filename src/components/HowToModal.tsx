@@ -103,7 +103,7 @@ const HowToModal: React.FC<HowToModalProps> = ({ shown, setModalShown }) => {
                   colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
                 }
               >
-                <FontAwesomeIcon className="h-20 w-fit" icon={faChevronLeft} />
+                <FontAwesomeIcon className="h-20 w-12" icon={faChevronLeft} />
               </button>
               {howTo[index]}
               <button
@@ -113,7 +113,7 @@ const HowToModal: React.FC<HowToModalProps> = ({ shown, setModalShown }) => {
                   colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
                 }
               >
-                <FontAwesomeIcon className="h-20 w-fit" icon={faChevronRight} />
+                <FontAwesomeIcon className="h-20 w-12" icon={faChevronRight} />
               </button>
             </div>
             <button

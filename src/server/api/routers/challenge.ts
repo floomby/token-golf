@@ -45,6 +45,10 @@ export const challengeRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      if (input.prompt === "") {
+        throw new Error("Prompt cannot be empty");
+      }
+
       await db();
 
       // Unneeded here tbh
@@ -116,6 +120,10 @@ export const challengeRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      if (input.prompt === "") {
+        throw new Error("Prompt cannot be empty");
+      }
+
       await db();
 
       const challenge = await Challenge.findById(input.challengeId);
@@ -192,6 +200,10 @@ export const challengeRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      if (input.prompt === "") {
+        throw new Error("Prompt cannot be empty");
+      }
+
       await db();
 
       const session = await mongoose.startSession();
@@ -253,6 +265,10 @@ export const challengeRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      if (input.prompt === "") {
+        throw new Error("Prompt cannot be empty");
+      }
+
       await db();
 
       const session = await mongoose.startSession();
