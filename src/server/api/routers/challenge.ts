@@ -10,7 +10,7 @@ import {
   protectedProcedure,
 } from "~/server/api/trpc";
 import db from "~/utils/db";
-import { Challenge, Profile, Run, TestRun } from "~/utils/odm";
+import { Challenge, IRun, Profile, Run, TestRun } from "~/utils/odm";
 import { ChallengeUploadSchema } from "~/utils/schemas";
 import { runTest } from "~/utils/runner";
 import { countTokens, getSegments } from "~/utils/tokenize";
@@ -319,30 +319,47 @@ export const challengeRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       await db();
 
-      const runs = await Run.find(
+      const runs = await Run.aggregate([
         {
-          challenge: new mongoose.Types.ObjectId(input),
-          profile: new mongoose.Types.ObjectId(ctx.session.user.profileId),
+          $match: {
+            challenge: new mongoose.Types.ObjectId(input),
+            profile: new mongoose.Types.ObjectId(ctx.session.user.profileId),
+          },
         },
         {
-          at: 1,
-          results: 1,
-          tokenCount: 1,
-          prompt: 1,
-          trim: 1,
-          caseSensitive: 1,
-          // true if all results are successful
-          success: {
-            $reduce: {
-              input: "$results",
-              initialValue: true,
-              in: { $and: ["$$value", "$$this.success"] },
+          $sort: {
+            at: -1,
+          },
+        },
+        // {
+        //   $limit: 25,
+        // },
+        {
+          $project: {
+            at: 1,
+            results: 1,
+            tokenCount: 1,
+            prompt: 1,
+            trim: 1,
+            caseSensitive: 1,
+            success: {
+              $reduce: {
+                input: "$results",
+                initialValue: true,
+                in: { $and: ["$$value", "$$this.success"] },
+              },
             },
           },
-        }
-      );
+        },
+      ]);
 
-      return runs;
+      return runs as (mongoose.Document<unknown, object, IRun> &
+        Omit<
+          IRun & {
+            _id: mongoose.Types.ObjectId;
+          },
+          never
+        >)[];
     }),
 
   getLeaderboard: publicProcedure
