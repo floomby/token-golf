@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 // import { compile } from "html-to-text";
 import { api } from "~/utils/api";

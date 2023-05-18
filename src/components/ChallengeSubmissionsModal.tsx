@@ -2,7 +2,7 @@ import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 import { useNotificationQueue } from "~/providers/notifications";
 import { api } from "~/utils/api";

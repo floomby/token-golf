@@ -34,6 +34,18 @@ const OverviewPage: NextPage = () => {
     },
   });
 
+  const { data: stats } = api.challenge.getChallengeStats.useQuery(flattenId(id) || "", {
+    enabled: !!id,
+    onError: (error) => {
+      const id = Math.random().toString(36).substring(7);
+      notifications.add(id, {
+        message: error.message,
+        level: FeedbackLevel.Error,
+        duration: 5000,
+      });
+    },
+  });
+
   const { data: author } = api.user.read.useQuery(
     challenge?.createdBy.toString() || "",
     {

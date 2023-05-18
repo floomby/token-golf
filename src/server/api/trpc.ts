@@ -127,3 +127,21 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+
+/** Adds the session and user to the context, but does not enforce authentication. */
+export const eitherProcedure = t.procedure.use(({ ctx, next }) => {
+  if (ctx.session && ctx.session.user) {
+    return next({
+      ctx: {
+        // infers the `session` as non-nullable
+        session: { ...ctx.session, user: ctx.session.user },
+      },
+    });
+  }
+
+  return next({
+    ctx: {
+      session: null,
+    },
+  });
+});

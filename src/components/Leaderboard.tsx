@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-
 import { useRouter } from "next/router";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 import { useNotificationQueue } from "~/providers/notifications";
@@ -86,7 +83,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ challengeId }) => {
                     <Tooltip id={`view-${i}`}>View this submission</Tooltip>
                   </td>
                   <td className="pl-1">
-                    {new Date(run.at as string).toLocaleString()}
+                    {run.at.toLocaleString()}
                   </td>
                 </tr>
               );

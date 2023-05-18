@@ -1,10 +1,8 @@
 import Link from "next/link";
 import UserDisplay from "./UserDisplay";
-import Image from "next/image";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 import { useState } from "react";
 import CreateChallengeModal from "./CreateChallengeModal";
-import { useRouter } from "next/router";
 import HowToModal from "./HowToModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";

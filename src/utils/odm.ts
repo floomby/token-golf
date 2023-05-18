@@ -91,13 +91,27 @@ export interface ITest {
   expected: string;
 }
 
+export interface ILike {
+  profile: ObjectId;
+  at: Date;
+}
+
+const LikeSchema = new mongoose.Schema<ILike>({
+  profile: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Profile",
+    required: true,
+  },
+  at: { type: Date, required: true, default: Date.now },
+});
+
 export interface IChallenge {
   name: string;
   description: string;
   tests: ITest[];
-  scores: IScore[];
   createdAt: Date;
   createdBy: ObjectId;
+  likes?: ILike[];
 }
 
 const ChallengeSchema = new mongoose.Schema<IChallenge>({
@@ -112,30 +126,13 @@ const ChallengeSchema = new mongoose.Schema<IChallenge>({
     ],
     required: true,
   },
-  scores: {
-    type: [
-      {
-        tokenCount: { type: Number, required: true },
-        profile: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Profile",
-          required: true,
-        },
-        run: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Run",
-          required: true,
-        },
-      },
-    ],
-    default: [],
-  },
   createdAt: { type: Date, required: true, default: Date.now },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Profile",
     required: true,
   },
+  likes: { type: [LikeSchema], default: [] },
 });
 
 const Challenge =

@@ -8,12 +8,14 @@ import {
   createTRPCRouter,
   publicProcedure,
   protectedProcedure,
+  eitherProcedure,
 } from "~/server/api/trpc";
 import db from "~/utils/db";
 import { Challenge, IRun, Profile, Run, TestRun } from "~/utils/odm";
 import { ChallengeUploadSchema } from "~/utils/schemas";
 import { runTest } from "~/utils/runner";
 import { countTokens, getSegments } from "~/utils/tokenize";
+import { inspect } from "util";
 
 export const challengeRouter = createTRPCRouter({
   create: protectedProcedure
@@ -443,13 +445,18 @@ export const challengeRouter = createTRPCRouter({
             profile: {
               _id: 1,
               name: 1,
-              image: 1,
+              // image: 1,
             },
           },
         },
       ]);
 
-      return runs;
+      return runs as {
+        tokenCount: number;
+        at: Date;
+        runId: string;
+        profile: { _id: string; name: string };
+      }[];
     }),
 
   getUserCompleted: publicProcedure
@@ -540,12 +547,11 @@ export const challengeRouter = createTRPCRouter({
         $project: {
           name: 1,
           description: 1,
-          difficulty: 1,
           id: "$_id",
           creator: {
             id: "$creator._id",
             name: "$creator.name",
-            image: "$creator.image",
+            // image: "$creator.image",
           },
           createdAt: 1,
         },
@@ -554,4 +560,160 @@ export const challengeRouter = createTRPCRouter({
 
     return challenges;
   }),
+
+  getChallengeStats: protectedProcedure
+    .input(z.string())
+    .query(async ({ input, ctx }) => {
+      if (input === "") {
+        throw new Error("Invalid challenge id");
+      }
+
+      await db();
+
+      const profileId = new mongoose.Types.ObjectId(ctx.session.user.profileId);
+
+      const stats = await Challenge.aggregate([
+        {
+          $match: {
+            _id: new mongoose.Types.ObjectId(input),
+          },
+        },
+        {
+          $lookup: {
+            from: "runs",
+            let: {
+              challengeId: "$_id",
+            },
+            pipeline: [
+              {
+                $match: {
+                  challenge: new mongoose.Types.ObjectId(input),
+                  profile: profileId,
+                  success: true,
+                },
+              },
+              {
+                $sort: {
+                  tokenCount: 1,
+                },
+              },
+              {
+                $group: {
+                  _id: "$profile",
+                  tokenCount: {
+                    $first: "$tokenCount",
+                  },
+                  runId: {
+                    $first: "$_id",
+                  },
+                  at: {
+                    $first: "$at",
+                  },
+                },
+              },
+              {
+                $limit: 1,
+              },
+              {
+                $project: {
+                  tokenCount: 1,
+                  at: 1,
+                  runId: 1,
+                },
+              },
+            ],
+            as: "bestScore",
+          },
+        },
+        {
+          $lookup: {
+            from: "runs",
+            let: {
+              challengeId: "$_id",
+            },
+            pipeline: [
+              {
+                $match: {
+                  challenge: new mongoose.Types.ObjectId(input),
+                  // must exist and be equal to the current user's profile id
+                  profile: profileId,
+                },
+              },
+              {
+                $sort: {
+                  at: -1,
+                },
+              },
+              {
+                $limit: 1,
+              },
+              {
+                $project: {
+                  at: 1,
+                },
+              },
+            ],
+            as: "lastAttempted",
+          },
+        },
+        {
+          $lookup: {
+            from: "testruns",
+            let: {
+              challengeId: "$_id",
+            },
+            pipeline: [
+              {
+                $match: {
+                  challenge: new mongoose.Types.ObjectId(input),
+                  // must exist and be equal to the current user's profile id
+                  profile: profileId,
+                },
+              },
+              {
+                $sort: {
+                  at: -1,
+                },
+              },
+              {
+                $limit: 1,
+              },
+              {
+                $project: {
+                  at: 1,
+                },
+              },
+            ],
+            as: "lastTested",
+          },
+        },
+        {
+          $project: {
+            bestScore: {
+              $first: "$bestScore",
+            },
+            // last attempted should be the most recent of either a test run or a real run
+            lastAttempted: {
+              $max: ["$lastAttempted.at", "$lastTested.at"],
+            },
+            liked: {
+              $in: [profileId, "$likes"],
+            },
+          },
+        },
+      ]);
+
+      console.log(inspect(stats, false, 10));
+
+      return stats as {
+        bestScore: {
+          tokenCount: number;
+          at: Date;
+          runId: string;
+        }
+        lastAttempted: [Date] | [];
+        liked: boolean;
+      }[];
+
+    }),
 });

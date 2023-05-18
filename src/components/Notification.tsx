@@ -1,4 +1,4 @@
-import { use, useEffect } from "react";
+import { useEffect } from "react";
 import {
   type FeedbackLevel,
   useNotificationQueue,
@@ -30,6 +30,7 @@ const Notification: React.FC<NotificationProps> = ({
     return (): void => {
       clearTimeout(timeout);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, duration]);
 
   const clickCallback = (): void => {

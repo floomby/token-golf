@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { colorFromFeedbackLevel, FeedbackLevel } from "../lib/feedback";
 import { Debouncer } from "~/lib/debouncers";
 import { type ChallengeUpload, ChallengeUploadSchema } from "~/utils/schemas";
