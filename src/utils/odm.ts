@@ -143,7 +143,10 @@ export interface IProfile {
   email: string;
   name: string;
   image: string;
+  // The idea is to use the newUser field for deciding whether to show the tutorial or not
+  // (the tutorial does not exist yet)
   newUser: boolean;
+  joined: Date;
 }
 
 const ProfileSchema = new mongoose.Schema<IProfile>({
@@ -151,6 +154,7 @@ const ProfileSchema = new mongoose.Schema<IProfile>({
   name: { type: String, required: true },
   image: { type: String, required: true },
   newUser: { type: Boolean, required: true, default: true },
+  joined: { type: Date, required: true, default: Date.now },
 });
 
 const Profile =

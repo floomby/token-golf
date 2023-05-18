@@ -94,7 +94,7 @@ const colorFromFeedbackLevel = (
       return themeOverrider(
         " disabled:text-gray-800 dark:disabled:text-gray-300 dark:text-white text-black" +
           (hoverable
-            ? " hover:text-shadow-sm hover:dark:text-shadow-lg dark:shadow-teal-300 shadow-blue-800 ease-in-out transition-all duration-200 hover:text-blue-800 dark:hover:text-teal-200"
+            ? " hover:text-shadow hover:dark:text-shadow-lg dark:shadow-teal-300 shadow-blue-800 ease-in-out transition-all duration-200 hover:text-blue-800 dark:hover:text-teal-200"
             : ""),
         themeOverride
       );

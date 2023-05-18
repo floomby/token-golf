@@ -22,8 +22,9 @@ type MeUserProps = {
   name: string;
   email: string;
   image: string;
+  joined: Date;
 };
-const MeUser: React.FC<MeUserProps> = ({ name, email, image }) => {
+const MeUser: React.FC<MeUserProps> = ({ name, email, image, joined }) => {
   const [showAvatarUploader, setShowAvatarUploader] = useState(false);
 
   const [editingName, setEditingName] = useState(false);
@@ -113,6 +114,14 @@ const MeUser: React.FC<MeUserProps> = ({ name, email, image }) => {
           }}
         />
       </div>
+      <p className="ml-4 text-sm text-gray-800 dark:text-gray-400">
+        Joined:{" "}
+        {joined.toLocaleString(undefined, {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        })}
+      </p>
       <p className="text-lg">{email}</p>
       <div className="h-0 w-0 overflow-hidden">
         <UploadFileModal
@@ -140,8 +149,9 @@ const MeUser: React.FC<MeUserProps> = ({ name, email, image }) => {
 type OtherUserProps = {
   name: string;
   image: string;
+  joined: Date;
 };
-const OtherUser: React.FC<OtherUserProps> = ({ name, image }) => {
+const OtherUser: React.FC<OtherUserProps> = ({ name, image, joined }) => {
   return (
     <div className="flex min-w-[50%] flex-col items-start justify-start gap-2 p-4">
       <div className="flex flex-row items-center justify-start gap-2">
@@ -158,6 +168,14 @@ const OtherUser: React.FC<OtherUserProps> = ({ name, image }) => {
         </div>
         <h2 className="text-2xl font-semibold">{name}</h2>
       </div>
+      <p className="ml-4 text-sm text-gray-800 dark:text-gray-400">
+        Joined:{" "}
+        {joined.toLocaleString(undefined, {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        })}
+      </p>
     </div>
   );
 };
@@ -178,18 +196,24 @@ const UserChallenges: React.FC<UserChallengesProps> = ({ id }) => {
           {!!challenges ? (
             challenges.length > 0 ? (
               challenges.map((challenge) => (
-                <span key={(challenge.id as mongoose.Types.ObjectId).toString()}>
+                <span
+                  key={(challenge.id as mongoose.Types.ObjectId).toString()}
+                >
                   <Tooltip id={challenge.id as string} place="right">
                     {challenge.description}
                   </Tooltip>
                   <Link
-                    href={`/overviews/${(challenge.id as mongoose.Types.ObjectId).toString()}`}
+                    href={`/overviews/${(
+                      challenge.id as mongoose.Types.ObjectId
+                    ).toString()}`}
                     passHref
                     className={colorFromFeedbackLevel(
                       FeedbackLevel.Invisible,
                       true
                     )}
-                    data-tooltip-id={(challenge.id as mongoose.Types.ObjectId).toString()}
+                    data-tooltip-id={(
+                      challenge.id as mongoose.Types.ObjectId
+                    ).toString()}
                   >
                     {challenge.name}
                   </Link>
@@ -226,9 +250,6 @@ const UserPage: NextPage = () => {
     },
   });
 
-  const [prompt, setPrompt] = useState("");
-  const [testIndex, setTestIndex] = useState(0);
-
   return (
     <>
       <Head>
@@ -239,9 +260,18 @@ const UserPage: NextPage = () => {
       <main>
         {!!user ? (
           user.email ? (
-            <MeUser name={user.name} email={user.email} image={user.image} />
+            <MeUser
+              name={user.name}
+              email={user.email}
+              image={user.image}
+              joined={user.joined}
+            />
           ) : (
-            <OtherUser name={user.name} image={user.image} />
+            <OtherUser
+              name={user.name}
+              image={user.image}
+              joined={user.joined}
+            />
           )
         ) : (
           <Spinner />

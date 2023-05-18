@@ -21,7 +21,7 @@ const Liked: React.FC<LikedProps> = ({ liked, onClick }) => {
         <PopIn shown={liked}>
           <FontAwesomeIcon
             icon={faHeartSolid}
-            className="h-8 w-8 text-pink-500"
+            className="h-8 w-8 text-pink-500 transition-all duration-200 ease-in-out hover:text-pink-600 dark:hover:text-pink-400"
           />
         </PopIn>
       </div>

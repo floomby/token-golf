@@ -11,6 +11,7 @@ import { useSession } from "next-auth/react";
 import { useNotificationQueue } from "~/providers/notifications";
 import { api } from "~/utils/api";
 import Liked from "./Liked";
+import longAgo from "~/utils/longAgo";
 
 type ChallengeHeaderProps = {
   id: string;
@@ -62,7 +63,8 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
 
   const { mutate: like } = api.challenge.setLike.useMutation({
     onSuccess: (liked) => {
-      // setLiked(liked);
+      // Obviously this is not what we want, but what do we want actually?
+      setLiked(liked);
     },
     onError: (error) => {
       const id = Math.random().toString(36).substring(7);
@@ -160,6 +162,39 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
           </button>
         )}
       </div>
+      {showSubmissions && !!stats && (
+        <div className="ml-8 flex flex-row items-center gap-12">
+          <span>Completed by: {stats.completionCount}</span>
+          <span>Attempted by: {stats.attemptCount}</span>
+        </div>
+      )}
+      {status === "authenticated" && showSubmissions && !!stats && (
+        <div className="ml-8 flex flex-row items-center gap-12">
+          {!!stats.lastAttempted ? (
+            <span>Your last attempt: {longAgo(stats.lastAttempted)}</span>
+          ) : (
+            <span>Not attempted</span>
+          )}
+          {!!stats.lastAttempted &&
+            (!!stats.bestScore ? (
+              <span
+                className={
+                  "cursor-pointer select-none whitespace-nowrap hover:scale-105" +
+                  colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
+                }
+                onClick={() =>
+                  void router.push(
+                    `/challenges/${id}/${stats.bestScore!._id.toString()}`
+                  )
+                }
+              >
+                Best score: {stats.bestScore.tokenCount}
+              </span>
+            ) : (
+              <span>Unsolved</span>
+            ))}
+        </div>
+      )}
       <p>{challenge.description}</p>
     </div>
   );

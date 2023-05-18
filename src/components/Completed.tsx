@@ -32,7 +32,7 @@ const Completed: React.FC<CompletedProps> = ({ userId }) => {
     <div className="m-4 flex h-full w-full flex-col items-start justify-start rounded-lg bg-zinc-200 p-4 dark:bg-gray-800">
       <h1 className="text-2xl font-semibold">Completed Challenges</h1>
       {!!runs ? (
-        <table className="w-full">
+        <table className="w-full table-auto">
           <thead className="text-left">
             <tr>
               <th className="px-2 py-1">Challenge</th>
@@ -55,7 +55,7 @@ const Completed: React.FC<CompletedProps> = ({ userId }) => {
                   <td className="pl-1">
                     <ClampText
                       text={`${run.challenge.name} - ${run.challenge.description}`}
-                      maxLength={20}
+                      maxLength={45}
                     />
                   </td>
                   <td className="pl-1">{run.tokenCount}</td>

@@ -51,7 +51,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ challengeId }) => {
       </div>
       {!!runs ? (
         <>
-          <table className="w-full">
+          <table className="w-full table-auto">
             <thead className="text-left">
               <tr>
                 <th className="px-2 py-1">Tokens</th>

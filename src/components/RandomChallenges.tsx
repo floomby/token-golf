@@ -1,19 +1,27 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-
 import { useRouter } from "next/router";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 import { useNotificationQueue } from "~/providers/notifications";
 import { api } from "~/utils/api";
 import Spinner from "./Spinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRefresh } from "@fortawesome/free-solid-svg-icons";
+import {
+  faC,
+  faCheck,
+  faH,
+  faHeart,
+  faRefresh,
+} from "@fortawesome/free-solid-svg-icons";
 import ClampText from "./ClampText";
+import { Tooltip } from "react-tooltip";
+import longAgo from "~/utils/longAgo";
+import { useSession } from "next-auth/react";
 
 const RandomChallenges: React.FC = () => {
   const router = useRouter();
 
   const notifications = useNotificationQueue();
+
+  const { status } = useSession();
 
   const { data: challenges, refetch } = api.challenge.randomChallenges.useQuery(
     undefined,
@@ -51,10 +59,13 @@ const RandomChallenges: React.FC = () => {
       <div className="flex w-full flex-col items-end px-2">
         {!!challenges ? (
           <>
-            <table className="w-full">
+            <table className="w-full table-auto">
               <thead className="text-left">
                 <tr>
                   <th className="px-2 py-1">Title</th>
+                  <th className="px-2 py-1">Completions/Attempts</th>
+                  <th className="px-2 py-1"></th>{" "}
+                  {/* like, completed with tooltip */}
                   <th className="px-2 py-1">Creator</th>
                   <th className="px-2 py-1">Creation Date</th>
                 </tr>
@@ -72,8 +83,49 @@ const RandomChallenges: React.FC = () => {
                       <td className="pl-1">
                         <ClampText
                           text={`${challenge.name} - ${challenge.description}`}
-                          maxLength={20}
+                          maxLength={60}
                         />
+                      </td>
+                      <td className="pl-3">
+                        {challenge.completionCount}/{challenge.attemptCount}
+                      </td>
+                      <td className="pl-1">
+                        {status === "authenticated" && (
+                          <>
+                            <span
+                              data-tooltip-id={`stats-${i}`}
+                              className="flex flex-row gap-2"
+                            >
+                              {!!challenge.liked ? (
+                                <FontAwesomeIcon
+                                  icon={faHeart}
+                                  className="h-4 w-4 text-pink-500"
+                                />
+                              ) : (
+                                <span className="h-4 w-4"></span>
+                              )}
+                              {!!challenge.bestScore && (
+                                <FontAwesomeIcon
+                                  icon={faCheck}
+                                  className="h-4 w-4 text-green-500"
+                                />
+                              )}
+                            </span>
+                            <Tooltip id={`stats-${i}`}>
+                              {`${
+                                !!challenge.lastAttempted
+                                  ? "Last attempted " +
+                                    longAgo(challenge.lastAttempted)
+                                  : "Not attempted "
+                              } - ${
+                                !!challenge.bestScore
+                                  ? "Best score: " +
+                                    challenge.bestScore.tokenCount.toString()
+                                  : "Unsolved"
+                              }`}
+                            </Tooltip>
+                          </>
+                        )}
                       </td>
                       <td className="pl-1">
                         <span
@@ -87,9 +139,7 @@ const RandomChallenges: React.FC = () => {
                         </span>
                       </td>
                       <td className="pl-1">
-                        {new Date(
-                          challenge.createdAt as string
-                        ).toLocaleString()}
+                        {new Date(challenge.createdAt).toLocaleString()}
                       </td>
                     </tr>
                   );

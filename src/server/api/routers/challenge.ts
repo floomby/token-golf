@@ -2,7 +2,7 @@
 // FIXME: This is really terrible to be disabling in a trpc router
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 
-import { TypeOf, z } from "zod";
+import { z } from "zod";
 import mongoose from "mongoose";
 import {
   createTRPCRouter,
@@ -16,7 +16,6 @@ import { ChallengeUploadSchema } from "~/utils/schemas";
 import { runTest } from "~/utils/runner";
 import { countTokens, getSegments } from "~/utils/tokenize";
 import { inspect } from "util";
-import Liked from "~/components/Liked";
 
 export const challengeRouter = createTRPCRouter({
   create: protectedProcedure
@@ -524,7 +523,11 @@ export const challengeRouter = createTRPCRouter({
       return runs;
     }),
 
-  randomChallenges: publicProcedure.query(async () => {
+  randomChallenges: eitherProcedure.query(async ({ ctx }) => {
+    const profileId = ctx.session?.user?.profileId
+      ? new mongoose.Types.ObjectId(ctx.session.user.profileId)
+      : null;
+
     await db();
 
     const challenges = await Challenge.aggregate([
@@ -545,7 +548,198 @@ export const challengeRouter = createTRPCRouter({
         $unwind: "$creator",
       },
       {
+        $lookup: {
+          from: "runs",
+          let: {
+            challengeId: "$_id",
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$challenge", "$$challengeId"] },
+                    { $eq: ["$profile", profileId] },
+                    { $eq: ["$success", true] },
+                  ],
+                },
+              },
+            },
+            {
+              $sort: {
+                tokenCount: 1,
+              },
+            },
+            {
+              $limit: 1,
+            },
+            {
+              $project: {
+                tokenCount: 1,
+                at: 1,
+                runId: "$_id",
+              },
+            },
+          ],
+          as: "bestScore",
+        },
+      },
+      {
+        $lookup: {
+          from: "runs",
+          let: {
+            challengeId: "$_id",
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$challenge", "$$challengeId"] },
+                    { $eq: ["$profile", profileId] },
+                  ],
+                },
+              },
+            },
+            {
+              $sort: {
+                at: -1,
+              },
+            },
+            {
+              $limit: 1,
+            },
+            {
+              $project: {
+                at: 1,
+              },
+            },
+          ],
+          as: "lastAttempted",
+        },
+      },
+      {
+        $lookup: {
+          from: "testruns",
+          let: {
+            challengeId: "$_id",
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$challenge", "$$challengeId"] },
+                    { $eq: ["$profile", profileId] },
+                  ],
+                },
+              },
+            },
+            {
+              $sort: {
+                at: -1,
+              },
+            },
+            {
+              $limit: 1,
+            },
+            {
+              $project: {
+                at: 1,
+              },
+            },
+          ],
+          as: "lastTested",
+        },
+      },
+      // Completion stats count
+      {
+        $lookup: {
+          from: "runs",
+          let: {
+            challengeId: "$_id",
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$challenge", "$$challengeId"],
+                },
+              },
+            },
+            {
+              $group: {
+                _id: "$profile",
+              },
+            },
+          ],
+          as: "attempts",
+        },
+      },
+      {
+        $lookup: {
+          from: "runs",
+          let: {
+            challengeId: "$_id",
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$challenge", "$$challengeId"] },
+                    { $eq: ["$success", true] },
+                    { $ne: ["$profile", null] },
+                  ],
+                },
+              },
+            },
+            {
+              $group: {
+                _id: "$profile",
+              },
+            },
+          ],
+          as: "completions",
+        },
+      },
+      {
+        $lookup: {
+          from: "testruns",
+          let: {
+            challengeId: "$_id",
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$challenge", "$$challengeId"],
+                },
+              },
+            },
+            {
+              $group: {
+                _id: "$profile",
+              },
+            },
+          ],
+          as: "testAttempts",
+        },
+      },
+      {
         $project: {
+          bestScore: {
+            $first: "$bestScore",
+          },
+          // last attempted should be the most recent of either a test run or a real run (or null if neither)
+          lastAttempted: {
+            $first: {
+              $max: ["$lastAttempted.at", "$lastTested.at"],
+            },
+          },
+          liked: {
+            $in: [profileId, "$likes.profile"],
+          },
           name: 1,
           description: 1,
           id: "$_id",
@@ -555,11 +749,43 @@ export const challengeRouter = createTRPCRouter({
             // image: "$creator.image",
           },
           createdAt: 1,
+          completionCount: {
+            $size: "$completions",
+          },
+          attemptCount: {
+            // size of the set union of attempts and test attempts
+            $size: {
+              $setUnion: ["$attempts", "$testAttempts"],
+            },
+          },
         },
       },
     ]);
 
-    return challenges;
+    // console.log(inspect(challenges, false, 10, true));
+
+    return challenges as {
+      bestScore:
+        | {
+            tokenCount: number;
+            at: Date;
+            runId: string;
+          }
+        | undefined;
+      lastAttempted: Date | undefined;
+      liked: boolean;
+      name: string;
+      description: string;
+      id: string;
+      creator: {
+        id: string;
+        name: string;
+        // image: string;
+      };
+      createdAt: Date;
+      completionCount: number;
+      attemptCount: number;
+    }[];
   }),
 
   getChallengeStats: protectedProcedure
@@ -588,28 +814,18 @@ export const challengeRouter = createTRPCRouter({
             pipeline: [
               {
                 $match: {
-                  challenge: new mongoose.Types.ObjectId(input),
-                  profile: profileId,
-                  success: true,
+                  $expr: {
+                    $and: [
+                      { $eq: ["$challenge", "$$challengeId"] },
+                      { $eq: ["$profile", profileId] },
+                      { $eq: ["$success", true] },
+                    ],
+                  },
                 },
               },
               {
                 $sort: {
                   tokenCount: 1,
-                },
-              },
-              {
-                $group: {
-                  _id: "$profile",
-                  tokenCount: {
-                    $first: "$tokenCount",
-                  },
-                  runId: {
-                    $first: "$_id",
-                  },
-                  at: {
-                    $first: "$at",
-                  },
                 },
               },
               {
@@ -619,7 +835,7 @@ export const challengeRouter = createTRPCRouter({
                 $project: {
                   tokenCount: 1,
                   at: 1,
-                  runId: 1,
+                  // runId: "$_id",
                 },
               },
             ],
@@ -635,9 +851,12 @@ export const challengeRouter = createTRPCRouter({
             pipeline: [
               {
                 $match: {
-                  challenge: new mongoose.Types.ObjectId(input),
-                  // must exist and be equal to the current user's profile id
-                  profile: profileId,
+                  $expr: {
+                    $and: [
+                      { $eq: ["$challenge", "$$challengeId"] },
+                      { $eq: ["$profile", profileId] },
+                    ],
+                  },
                 },
               },
               {
@@ -666,9 +885,12 @@ export const challengeRouter = createTRPCRouter({
             pipeline: [
               {
                 $match: {
-                  challenge: new mongoose.Types.ObjectId(input),
-                  // must exist and be equal to the current user's profile id
-                  profile: profileId,
+                  $expr: {
+                    $and: [
+                      { $eq: ["$challenge", "$$challengeId"] },
+                      { $eq: ["$profile", profileId] },
+                    ],
+                  },
                 },
               },
               {
@@ -688,6 +910,80 @@ export const challengeRouter = createTRPCRouter({
             as: "lastTested",
           },
         },
+        // Completion stats count
+        {
+          $lookup: {
+            from: "runs",
+            let: {
+              challengeId: "$_id",
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: ["$challenge", "$$challengeId"],
+                  },
+                },
+              },
+              {
+                $group: {
+                  _id: "$profile",
+                },
+              },
+            ],
+            as: "attempts",
+          },
+        },
+        {
+          $lookup: {
+            from: "runs",
+            let: {
+              challengeId: "$_id",
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ["$challenge", "$$challengeId"] },
+                      { $eq: ["$success", true] },
+                      { $ne: ["$profile", null] },
+                    ],
+                  },
+                },
+              },
+              {
+                $group: {
+                  _id: "$profile",
+                },
+              },
+            ],
+            as: "completions",
+          },
+        },
+        {
+          $lookup: {
+            from: "testruns",
+            let: {
+              challengeId: "$_id",
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: ["$challenge", "$$challengeId"],
+                  },
+                },
+              },
+              {
+                $group: {
+                  _id: "$profile",
+                },
+              },
+            ],
+            as: "testAttempts",
+          },
+        },
         {
           $project: {
             bestScore: {
@@ -695,24 +991,43 @@ export const challengeRouter = createTRPCRouter({
             },
             // last attempted should be the most recent of either a test run or a real run
             lastAttempted: {
-              $max: ["$lastAttempted.at", "$lastTested.at"],
+              $first: {
+                $max: ["$lastAttempted.at", "$lastTested.at"],
+              },
             },
             liked: {
               $in: [profileId, "$likes.profile"],
             },
+            completionCount: {
+              $size: "$completions",
+            },
+            attemptCount: {
+              // size of the set union of attempts and test attempts
+              $size: {
+                $setUnion: ["$attempts", "$testAttempts"],
+              },
+            },
+            attempts: 1,
+            completions: 1,
           },
         },
       ]);
 
+      // console.log(inspect(stats, false, 10, true));
+
       return (stats[0] ?? undefined) as
         | {
-            bestScore: {
-              tokenCount: number;
-              at: Date;
-              runId: string;
-            };
-            lastAttempted: [Date] | [];
+            bestScore:
+              | {
+                  tokenCount: number;
+                  at: Date;
+                  _id: mongoose.Types.ObjectId;
+                }
+              | undefined;
+            lastAttempted: Date | undefined;
             liked: boolean;
+            completionCount: number;
+            attemptCount: number;
           }
         | undefined;
     }),

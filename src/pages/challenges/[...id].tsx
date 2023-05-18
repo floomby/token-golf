@@ -91,21 +91,24 @@ const ChallengePage: NextPage = () => {
       </Head>
       <main className="flex flex-col items-center justify-center p-4">
         {!!challenge ? (
-          <ChallengeHeader
-            id={flattenId(id) || ""}
-            challenge={challenge}
-            author={author}
-            onClick={() =>
-              void router.push(`/overviews/${flattenId(id) || ""}`)
-            }
-            showSubmissions={false}
-            showPlayButton={false}
-          />
+          <>
+            <ChallengeHeader
+              id={flattenId(id) || ""}
+              challenge={challenge}
+              author={author}
+              onClick={() =>
+                void router.push(`/overviews/${flattenId(id) || ""}`)
+              }
+              showSubmissions={false}
+              showPlayButton={false}
+            />
+            <TestCarousel challenge={challenge} />
+          </>
         ) : (
           <Spinner />
         )}
         <PromptInput challengeId={flattenId(id) || ""} />
-        <TestRuns challengeId={flattenId(id) || ""} />
+        <TestRuns challengeId={flattenId(id) || ""} tests={challenge?.tests ?? []} />
       </main>
     </>
   );

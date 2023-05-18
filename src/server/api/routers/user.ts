@@ -21,10 +21,12 @@ export const userRouter = createTRPCRouter({
       name: profile.name,
       image: profile.image,
       email: profile.email,
+      joined: profile.joined,
     } as {
       name: string;
       image: string;
       email: string | null;
+      joined: Date;
     };
 
     if (profile.email !== ctx.session?.user.email) {
