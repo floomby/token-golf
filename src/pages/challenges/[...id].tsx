@@ -15,6 +15,7 @@ import Image from "next/image";
 import { flattenId, getSecond } from "~/utils/flatten";
 import { SubmissionModalContext } from "~/providers/submissionModal";
 import { EditorContext } from "~/providers/editor";
+import ChallengeHeader from "~/components/ChallengeHeader";
 
 const ChallengePage: NextPage = () => {
   const router = useRouter();
@@ -90,54 +91,16 @@ const ChallengePage: NextPage = () => {
       </Head>
       <main className="flex flex-col items-center justify-center p-4">
         {!!challenge ? (
-          <>
-            <div className="text-semibold mb-4 flex min-w-[50%] flex-col gap-1">
-              <div className="flex flex-row items-center">
-                <h1
-                  className={
-                    "cursor-pointer text-4xl" +
-                    colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
-                  }
-                  onClick={() =>
-                    void router.push(`/overviews/${flattenId(id) || ""}`)
-                  }
-                >
-                  {challenge.name}
-                </h1>
-                {!!author ? (
-                  <>
-                    <span className="ml-4 mr-2 text-gray-500 dark:text-gray-400">
-                      by
-                    </span>
-                    <Link
-                      href={`/users/${challenge.createdBy.toString()}`}
-                      className={
-                        "flex flex-row items-center gap-2 hover:scale-105" +
-                        colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
-                      }
-                    >
-                      <div className="relative h-8 w-8 shrink-0 p-0">
-                        <div className="absolute left-0 top-0 h-full w-full rounded-full shadow-inner shadow-gray-600 dark:shadow-gray-800"></div>
-                        <Image
-                          referrerPolicy="no-referrer"
-                          className="h-full w-full rounded-full"
-                          src={author.image}
-                          alt="Profile picture"
-                          width={32}
-                          height={32}
-                        />
-                      </div>
-                      <span className="text-lg font-semibold text-black dark:text-white">
-                        {author.name}
-                      </span>
-                    </Link>
-                  </>
-                ) : null}
-              </div>
-              <p>{challenge.description}</p>
-            </div>
-            <TestCarousel challenge={challenge} />
-          </>
+          <ChallengeHeader
+            id={flattenId(id) || ""}
+            challenge={challenge}
+            author={author}
+            onClick={() =>
+              void router.push(`/overviews/${flattenId(id) || ""}`)
+            }
+            showSubmissions={false}
+            showPlayButton={false}
+          />
         ) : (
           <Spinner />
         )}

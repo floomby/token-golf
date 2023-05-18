@@ -11,6 +11,7 @@
   "dependencies": {
     "@dqbd/tiktoken": "^1.0.7",
     "@fortawesome/free-brands-svg-icons": "^6.4.0",
+    "@fortawesome/free-regular-svg-icons": "^6.4.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@next-auth/mongodb-adapter": "^1.1.3",

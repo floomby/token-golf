@@ -23,6 +23,7 @@ const Notification: React.FC<NotificationProps> = ({
 }) => {
   const notifications = useNotificationQueue();
 
+  // I think this might be buggy
   useEffect(() => {
     const timeout = setTimeout(() => {
       notifications.remove(id);

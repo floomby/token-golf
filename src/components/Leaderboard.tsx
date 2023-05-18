@@ -50,51 +50,53 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ challengeId }) => {
         )}
       </div>
       {!!runs ? (
-        <table className="w-full">
-          <thead className="text-left">
-            <tr>
-              <th className="px-2 py-1">Tokens</th>
-              <th className="px-2 py-1">User</th>
-              <th className="px-2 py-1">Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {runs?.map((run, i) => {
-              return (
-                <tr
-                  key={i}
-                  className="cursor-pointer bg-stone-300 bg-opacity-30 transition-all duration-200 ease-in-out hover:bg-stone-300 dark:hover:bg-stone-700"
-                  onClick={() => {
-                    void router.push(`/challenges/${challengeId}/${run.runId}`);
-                  }}
-                  data-tooltip-id={`view-${i}`}
-                >
-                  <td className="pl-1">{run.tokenCount}</td>
-                  <td className="pl-1">
-                    <span
-                      className="transition-all duration-200 ease-in-out hover:text-blue-500"
-                      onClick={(e) => {
-                        void router.push(`/users/${run.profile._id}`);
-                        e.stopPropagation();
-                      }}
-                    >
-                      {run.profile.name}
-                    </span>
-                    <Tooltip id={`view-${i}`}>View this submission</Tooltip>
-                  </td>
-                  <td className="pl-1">
-                    {run.at.toLocaleString()}
-                  </td>
-                </tr>
-              );
-            })}
-            {runs?.length === 0 && (
-              <p className="pl-2 text-lg font-semibold text-gray-800 dark:text-gray-200">
-                No submissions yet! (Be the first)
-              </p>
-            )}
-          </tbody>
-        </table>
+        <>
+          <table className="w-full">
+            <thead className="text-left">
+              <tr>
+                <th className="px-2 py-1">Tokens</th>
+                <th className="px-2 py-1">User</th>
+                <th className="px-2 py-1">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {runs?.map((run, i) => {
+                return (
+                  <tr
+                    key={i}
+                    className="cursor-pointer bg-stone-300 bg-opacity-30 transition-all duration-200 ease-in-out hover:bg-stone-300 dark:hover:bg-stone-700"
+                    onClick={() => {
+                      void router.push(
+                        `/challenges/${challengeId}/${run.runId}`
+                      );
+                    }}
+                    data-tooltip-id={`view-${i}`}
+                  >
+                    <td className="pl-1">{run.tokenCount}</td>
+                    <td className="pl-1">
+                      <span
+                        className="transition-all duration-200 ease-in-out hover:text-blue-500"
+                        onClick={(e) => {
+                          void router.push(`/users/${run.profile._id}`);
+                          e.stopPropagation();
+                        }}
+                      >
+                        {run.profile.name}
+                      </span>
+                      <Tooltip id={`view-${i}`}>View this submission</Tooltip>
+                    </td>
+                    <td className="pl-1">{run.at.toLocaleString()}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          {runs?.length === 0 && (
+            <p className="pl-2 text-lg font-semibold text-gray-800 dark:text-gray-200">
+              No submissions yet! (Be the first)
+            </p>
+          )}
+        </>
       ) : (
         <Spinner />
       )}

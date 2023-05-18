@@ -16,6 +16,7 @@ import { ChallengeUploadSchema } from "~/utils/schemas";
 import { runTest } from "~/utils/runner";
 import { countTokens, getSegments } from "~/utils/tokenize";
 import { inspect } from "util";
+import Liked from "~/components/Liked";
 
 export const challengeRouter = createTRPCRouter({
   create: protectedProcedure
@@ -697,23 +698,66 @@ export const challengeRouter = createTRPCRouter({
               $max: ["$lastAttempted.at", "$lastTested.at"],
             },
             liked: {
-              $in: [profileId, "$likes"],
+              $in: [profileId, "$likes.profile"],
             },
           },
         },
       ]);
 
-      console.log(inspect(stats, false, 10));
+      return (stats[0] ?? undefined) as
+        | {
+            bestScore: {
+              tokenCount: number;
+              at: Date;
+              runId: string;
+            };
+            lastAttempted: [Date] | [];
+            liked: boolean;
+          }
+        | undefined;
+    }),
 
-      return stats as {
-        bestScore: {
-          tokenCount: number;
-          at: Date;
-          runId: string;
-        }
-        lastAttempted: [Date] | [];
-        liked: boolean;
-      }[];
+  setLike: protectedProcedure
+    .input(z.object({ challengeId: z.string(), liked: z.boolean() }))
+    .mutation(async ({ input, ctx }) => {
+      if (input.challengeId === "") {
+        throw new Error("Invalid challenge id");
+      }
 
+      await db();
+
+      const profileId = new mongoose.Types.ObjectId(ctx.session.user.profileId);
+
+      if (input.liked) {
+        await Challenge.updateMany(
+          {
+            _id: input.challengeId,
+            likes: {
+              $not: {
+                $elemMatch: {
+                  profile: profileId,
+                },
+              },
+            },
+          },
+          {
+            $push: {
+              likes: {
+                profile: profileId,
+              },
+            },
+          }
+        );
+      } else {
+        await Challenge.findByIdAndUpdate(input.challengeId, {
+          $pull: {
+            likes: {
+              profile: profileId,
+            },
+          },
+        });
+      }
+
+      return input.liked;
     }),
 });
