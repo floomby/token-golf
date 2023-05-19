@@ -89,9 +89,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     uploadStream.end();
 
     // The only images we can currently upload are profile images
-    await Profile.updateOne(
+    await Profile.findOneAndUpdate(
       { email: serverSession.user.email },
-      { image: `/api/images/${uploadStream.id.toString()}` }
+      { image: `/api/images/${uploadStream.id.toString()}` },
+      { upsert: false }
     );
 
     res.status(200);

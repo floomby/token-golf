@@ -86,7 +86,7 @@ const ChallengeSubmissionsModal: React.FC = () => {
               <>
                 <h1 className="text-2xl font-bold">Past Submissions</h1>
                 <div className="max-h-[80vh] w-full overflow-y-auto">
-                  <table className="w-full">
+                  <table className="w-full table-auto">
                     <thead className="text-left">
                       <tr>
                         <th className="px-2 py-1">Tokens</th>

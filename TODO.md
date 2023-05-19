@@ -1,5 +1,6 @@
 ## Roadmap Items (in no particular order)
 
+- Think about best way to handle square image issue (should I crop before putting in db?)
 - Bring completed challenges and leaderboard to par with the feed component
 - Share to twitter button
 - Type the trpc endpoints that are returning anys
