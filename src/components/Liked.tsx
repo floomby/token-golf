@@ -3,21 +3,26 @@ import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PopIn from "./PopIn";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
+import { Tooltip } from "react-tooltip";
 
 type LikedProps = {
   liked: boolean;
+  likes: number;
   onClick: () => void;
 };
-const Liked: React.FC<LikedProps> = ({ liked, onClick }) => {
+const Liked: React.FC<LikedProps> = ({ liked, likes, onClick }) => {
   return (
     <div
-      className={
-        "ml-6 inline-block h-8 w-8 font-semibold hover:scale-105" +
-        colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
-      }
+      className="ml-6 inline-block h-8 w-8 font-semibold"
       onClick={onClick}
+      data-tooltip-id="liked-count"
     >
-      <div className="absolute">
+      <div
+        className={
+          "absolute hover:scale-105" +
+          colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
+        }
+      >
         <PopIn shown={liked}>
           <FontAwesomeIcon
             icon={faHeartSolid}
@@ -25,11 +30,19 @@ const Liked: React.FC<LikedProps> = ({ liked, onClick }) => {
           />
         </PopIn>
       </div>
-      <div className="absolute">
+      <div
+        className={
+          "absolute hover:scale-105" +
+          colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
+        }
+      >
         <PopIn shown={!liked}>
           <FontAwesomeIcon icon={faHeartRegular} className="h-8 w-8" />
         </PopIn>
       </div>
+      <Tooltip id="liked-count" place="bottom">
+        {likes} {likes === 1 ? "like" : "likes"}
+      </Tooltip>
     </div>
   );
 };

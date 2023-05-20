@@ -740,6 +740,9 @@ export const challengeRouter = createTRPCRouter({
           liked: {
             $in: [profileId, "$likes.profile"],
           },
+          likes: {
+            $size: "$likes",
+          },
           name: 1,
           description: 1,
           id: "$_id",
@@ -774,6 +777,7 @@ export const challengeRouter = createTRPCRouter({
         | undefined;
       lastAttempted: Date | undefined;
       liked: boolean;
+      likes: number;
       name: string;
       description: string;
       id: string;
@@ -998,6 +1002,9 @@ export const challengeRouter = createTRPCRouter({
             liked: {
               $in: [profileId, "$likes.profile"],
             },
+            likes: {
+              $size: "$likes",
+            },
             completionCount: {
               $size: "$completions",
             },
@@ -1026,6 +1033,7 @@ export const challengeRouter = createTRPCRouter({
               | undefined;
             lastAttempted: Date | undefined;
             liked: boolean;
+            likes: number;
             completionCount: number;
             attemptCount: number;
           }

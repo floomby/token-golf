@@ -44,27 +44,31 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
 
   const notifications = useNotificationQueue();
 
-  const { data: stats } = api.challenge.getChallengeStats.useQuery(id, {
-    enabled: status === "authenticated",
-    onError: (error) => {
-      const id = Math.random().toString(36).substring(7);
-      notifications.add(id, {
-        message: error.message,
-        level: FeedbackLevel.Error,
-        duration: 5000,
-      });
-    },
-    onSuccess: (data) => {
-      if (data) {
-        setLiked(data.liked);
-      }
-    },
-  });
+  const { data: stats, refetch } = api.challenge.getChallengeStats.useQuery(
+    id,
+    {
+      enabled: status === "authenticated",
+      onError: (error) => {
+        const id = Math.random().toString(36).substring(7);
+        notifications.add(id, {
+          message: error.message,
+          level: FeedbackLevel.Error,
+          duration: 5000,
+        });
+      },
+      onSuccess: (data) => {
+        if (data) {
+          setLiked(data.liked);
+        }
+      },
+    }
+  );
 
   const { mutate: like } = api.challenge.setLike.useMutation({
     onSuccess: (liked) => {
       // Obviously this is not what we want, but what do we want actually?
       setLiked(liked);
+      void refetch();
     },
     onError: (error) => {
       const id = Math.random().toString(36).substring(7);
@@ -79,8 +83,8 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
   const [liked, setLiked] = useState(false);
 
   return (
-    <div className="text-semibold mb-4 flex min-w-[50%] flex-col gap-1">
-      <div className="flex flex-row items-center">
+    <div className="text-semibold mb-4 flex min-w-[50%] flex-col gap-1 items-start">
+      <div className="flex flex-row items-center justify-center">
         {onClick ? (
           <h1
             className={
@@ -123,15 +127,23 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
             </Link>
           </>
         ) : null}
-        {status === "authenticated" && (
-          <Liked
-            liked={liked}
-            onClick={() => {
+        <Liked
+          liked={liked}
+          likes={stats?.likes ?? 0}
+          onClick={() => {
+            if (status === "authenticated") {
               void like({ challengeId: id, liked: !liked });
               setLiked(!liked);
-            }}
-          />
-        )}
+            } else {
+              const id = Math.random().toString(36).substring(7);
+              notifications.add(id, {
+                message: "You need to be logged in to like challenges",
+                level: FeedbackLevel.Warning,
+                duration: 3000,
+              });
+            }
+          }}
+        />
         {status === "authenticated" && showSubmissions && (
           <button
             className={

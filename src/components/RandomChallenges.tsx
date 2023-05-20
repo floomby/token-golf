@@ -64,6 +64,7 @@ const RandomChallenges: React.FC = () => {
                 <tr>
                   <th className="px-2 py-1">Title</th>
                   <th className="px-2 py-1">Completions/Attempts</th>
+                  <th className="px-2 py-1">Likes</th>
                   <th className="px-2 py-1"></th>{" "}
                   {/* like, completed with tooltip */}
                   <th className="px-2 py-1">Creator</th>
@@ -89,6 +90,7 @@ const RandomChallenges: React.FC = () => {
                       <td className="pl-3">
                         {challenge.completionCount}/{challenge.attemptCount}
                       </td>
+                      <td className="pl-3">{challenge.likes ?? 0}</td>
                       <td className="pl-1">
                         {status === "authenticated" && (
                           <>
