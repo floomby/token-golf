@@ -7,7 +7,7 @@ import Toggle from "./Toggle";
 import { countTokens, encoder, getSegments } from "~/utils/tokenize";
 import { Tooltip } from "react-tooltip";
 import { useSession } from "next-auth/react";
-import { SubmissionModalContext } from "~/providers/submissionModal";
+import { ModalContext } from "~/providers/modal";
 import { EditorContext } from "~/providers/editor";
 
 // const compiledConvert = compile({ wordwrap: false, preserveNewlines: true });
@@ -78,8 +78,8 @@ type PromptInputProps = {
   challengeId: string;
 };
 const PromptInput: React.FC<PromptInputProps> = ({ challengeId }) => {
-  const { setShown: setSubmissionModalShown, setDetailsId } = useContext(
-    SubmissionModalContext
+  const { setSubmissionShown, setDetailsId } = useContext(
+    ModalContext
   );
 
   const notifications = useNotificationQueue();
@@ -159,7 +159,7 @@ const PromptInput: React.FC<PromptInputProps> = ({ challengeId }) => {
           ? undefined
           : () => {
               setDetailsId(data._id.toString());
-              setSubmissionModalShown(true);
+              setSubmissionShown(true);
             },
       });
     },
@@ -277,7 +277,7 @@ const PromptInput: React.FC<PromptInputProps> = ({ challengeId }) => {
               }
               onClick={() => {
                 if (status === "authenticated") {
-                  setSubmissionModalShown(true);
+                  setSubmissionShown(true);
                 }
               }}
               disabled={status !== "authenticated"}

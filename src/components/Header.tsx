@@ -1,17 +1,15 @@
 import Link from "next/link";
 import UserDisplay from "./UserDisplay";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
-import { useState } from "react";
+import { useContext } from "react";
 import CreateChallengeModal from "./CreateChallengeModal";
 import HowToModal from "./HowToModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import { ModalContext } from "~/providers/modal";
 
 const Header: React.FC = () => {
-  const [createChallengeModalOpen, setCreateChallengeModalOpen] =
-    useState(false);
-
-  const [howToModalOpen, setHowToModalOpen] = useState(false);
+  const { setHowToShown, setCreateShown } = useContext(ModalContext);
 
   return (
     <header className="z-10 h-20 bg-teal-100 shadow-md dark:bg-teal-200">
@@ -34,7 +32,7 @@ const Header: React.FC = () => {
                 colorFromFeedbackLevel(FeedbackLevel.Invisible, true, "light")
               }
               onClick={() => {
-                setCreateChallengeModalOpen(true);
+                setCreateShown(true);
               }}
             >
               Create Challenge
@@ -45,19 +43,13 @@ const Header: React.FC = () => {
                 colorFromFeedbackLevel(FeedbackLevel.Invisible, true, "light")
               }
               onClick={() => {
-                setHowToModalOpen(true);
+                setHowToShown(true);
               }}
             >
               How To
             </button>
-            <CreateChallengeModal
-              shown={createChallengeModalOpen}
-              setModalShown={setCreateChallengeModalOpen}
-            />
-            <HowToModal
-              shown={howToModalOpen}
-              setModalShown={setHowToModalOpen}
-            />
+            <CreateChallengeModal />
+            <HowToModal />
           </div>
           <div className="flex items-center">
             <div className="ml-4 flex items-center gap-4">

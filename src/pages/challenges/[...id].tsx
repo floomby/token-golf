@@ -11,9 +11,8 @@ import { useRouter } from "next/router";
 import TestCarousel from "~/components/TestCarousel";
 import Spinner from "~/components/Spinner";
 import TestRuns from "~/components/TestRuns";
-import Image from "next/image";
 import { flattenId, getSecond } from "~/utils/flatten";
-import { SubmissionModalContext } from "~/providers/submissionModal";
+import { ModalContext } from "~/providers/modal";
 import { EditorContext } from "~/providers/editor";
 import ChallengeHeader from "~/components/ChallengeHeader";
 
@@ -74,11 +73,17 @@ const ChallengePage: NextPage = () => {
     }
   );
 
-  const { setChallengeId } = useContext(SubmissionModalContext);
+  const { setChallengeId } = useContext(ModalContext);
 
   useEffect(() => {
     setChallengeId(flattenId(id) || null);
   }, [id, setChallengeId]);
+
+  useEffect(() => {
+    setPrompt("");
+    setTrim(true);
+    setCaseSensitive(false);
+  }, [setPrompt, setTrim, setCaseSensitive]);
 
   return (
     <>
@@ -89,7 +94,7 @@ const ChallengePage: NextPage = () => {
         <meta name="description" content="Completing a token golf challenge" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex flex-col max-w-[calc(100vw-10px)] items-center justify-center p-4 w-full">
+      <main className="flex w-full max-w-[calc(100vw-10px)] flex-col items-center justify-center p-4">
         {!!challenge ? (
           <>
             <ChallengeHeader
@@ -108,7 +113,10 @@ const ChallengePage: NextPage = () => {
           <Spinner />
         )}
         <PromptInput challengeId={flattenId(id) || ""} />
-        <TestRuns challengeId={flattenId(id) || ""} tests={challenge?.tests ?? []} />
+        <TestRuns
+          challengeId={flattenId(id) || ""}
+          tests={challenge?.tests ?? []}
+        />
       </main>
     </>
   );

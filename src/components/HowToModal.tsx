@@ -4,15 +4,24 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
+import { ModalContext } from "~/providers/modal";
 
 type HowToModalProps = {
-  shown: boolean;
-  setModalShown: (show: boolean) => void;
+  // shown: boolean;
+  // setModalShown: (show: boolean) => void;
 };
-const HowToModal: React.FC<HowToModalProps> = ({ shown, setModalShown }) => {
-  const [index, setIndex] = useState<number>(0);
+const HowToModal: React.FC = () => {
+  // const [index, setIndex] = useState<number>(0);
+
+  const {
+    howToIndex: index,
+    setHowToIndex: setIndex,
+    howToShown: shown,
+    setHowToShown: setShown,
+    setCreateShown,
+  } = useContext(ModalContext);
 
   const handleLeftClick = () => {
     setIndex((index - 1 + howTo.length) % howTo.length);
@@ -82,6 +91,18 @@ const HowToModal: React.FC<HowToModalProps> = ({ shown, setModalShown }) => {
 }`}
         </code>
       </div>
+      <button
+        className={
+          "mt-4 rounded-full px-4 py-2 font-semibold" +
+          colorFromFeedbackLevel(FeedbackLevel.Secondary, true)
+        }
+        onClick={() => {
+          setShown(false);
+          setCreateShown(true);
+        }}
+      >
+        Create one now!
+      </button>
     </div>,
   ];
 
@@ -117,7 +138,7 @@ const HowToModal: React.FC<HowToModalProps> = ({ shown, setModalShown }) => {
               </button>
             </div>
             <button
-              onClick={() => setModalShown(false)}
+              onClick={() => setShown(false)}
               className={
                 "mt-4 rounded-full px-4 py-2 font-semibold" +
                 colorFromFeedbackLevel(FeedbackLevel.Secondary, true)

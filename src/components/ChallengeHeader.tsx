@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { IChallenge } from "~/utils/odm";
 import Link from "next/link";
 import Image from "next/image";
-import { SubmissionModalContext } from "~/providers/submissionModal";
+import { ModalContext } from "~/providers/modal";
 import { useContext, useState } from "react";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 import { useSession } from "next-auth/react";
@@ -36,8 +36,8 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
 }) => {
   const router = useRouter();
 
-  const { setShown: setSubmissionModalShown } = useContext(
-    SubmissionModalContext
+  const { setSubmissionShown } = useContext(
+    ModalContext
   );
 
   const { status } = useSession();
@@ -150,7 +150,7 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
               "px-4 py-2 font-semibold hover:scale-105" +
               colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
             }
-            onClick={() => setSubmissionModalShown(true)}
+            onClick={() => setSubmissionShown(true)}
           >
             <FontAwesomeIcon
               icon={faList}

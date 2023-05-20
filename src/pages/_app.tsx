@@ -12,7 +12,7 @@ import { NotificationProvider } from "~/providers/notifications";
 import NotificationList from "~/components/NotificationList";
 import Header from "~/components/Header";
 import { NextSeo } from "next-seo";
-import SubmissionModalProvider from "~/providers/submissionModal";
+import ModalProvider from "~/providers/modal";
 import EditorProvider from "~/providers/editor";
 import ChallengeSubmissionsModal from "~/components/ChallengeSubmissionsModal";
 
@@ -24,7 +24,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
     <SessionProvider session={session}>
       <NotificationProvider>
         <EditorProvider>
-          <SubmissionModalProvider>
+          <ModalProvider>
             {/* <WidthProvider> */}
             <NextSeo
               title="Token Golf"
@@ -59,7 +59,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
               </div>
             </div>
             {/* </WidthProvider> */}
-          </SubmissionModalProvider>
+          </ModalProvider>
         </EditorProvider>
       </NotificationProvider>
     </SessionProvider>

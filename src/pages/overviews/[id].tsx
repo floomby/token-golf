@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 import Spinner from "~/components/Spinner";
 import { flattenId } from "~/utils/flatten";
 import Leaderboard from "~/components/Leaderboard";
-import { SubmissionModalContext } from "~/providers/submissionModal";
+import { ModalContext } from "~/providers/modal";
 import ChallengeHeader from "~/components/ChallengeHeader";
 
 const OverviewPage: NextPage = () => {
@@ -45,7 +45,7 @@ const OverviewPage: NextPage = () => {
     }
   );
 
-  const { setChallengeId } = useContext(SubmissionModalContext);
+  const { setChallengeId } = useContext(ModalContext);
 
   useEffect(() => {
     setChallengeId(flattenId(id) || null);

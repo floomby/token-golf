@@ -7,7 +7,7 @@ import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 import { useNotificationQueue } from "~/providers/notifications";
 import { api } from "~/utils/api";
 import Test from "./Test";
-import { SubmissionModalContext } from "~/providers/submissionModal";
+import { ModalContext } from "~/providers/modal";
 import { EditorContext } from "~/providers/editor";
 
 const ChallengeSubmissionsModal: React.FC = () => {
@@ -15,9 +15,13 @@ const ChallengeSubmissionsModal: React.FC = () => {
 
   const notifications = useNotificationQueue();
 
-  const { shown, setShown, challengeId, detailsId, setDetailsId } = useContext(
-    SubmissionModalContext
-  );
+  const {
+    submissionShown: shown,
+    setSubmissionShown: setShown,
+    challengeId,
+    detailsId,
+    setDetailsId,
+  } = useContext(ModalContext);
 
   const { setPrompt, setTrim, setCaseSensitive, setTestIndex } =
     useContext(EditorContext);

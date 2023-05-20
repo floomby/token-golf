@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { colorFromFeedbackLevel, FeedbackLevel } from "../lib/feedback";
 import { Debouncer } from "~/lib/debouncers";
 import { type ChallengeUpload, ChallengeUploadSchema } from "~/utils/schemas";
@@ -7,15 +7,9 @@ import { api } from "~/utils/api";
 import { useNotificationQueue } from "~/providers/notifications";
 import { useSession } from "next-auth/react";
 import { Tooltip } from "react-tooltip";
+import { ModalContext } from "~/providers/modal";
 
-type CreateChallengeModalProps = {
-  shown: boolean;
-  setModalShown: (shown: boolean) => void;
-};
-const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
-  shown,
-  setModalShown,
-}) => {
+const CreateChallengeModal: React.FC = () => {
   const [challenge, setChallenge] = useState<string>("");
   const [valid, setValid] = useState<boolean>(false);
   const [parsed, setParsed] = useState<ChallengeUpload | null>(null);
@@ -54,7 +48,14 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
     });
   }, [challenge, setValid, setParsed, debouncer]);
 
-  const { status } = useSession();
+  const { status, data: session } = useSession();
+
+  const {
+    createShown: shown,
+    setCreateShown: setShown,
+    setHowToShown,
+    setHowToIndex,
+  } = useContext(ModalContext);
 
   return (
     <AnimatePresence>
@@ -72,10 +73,27 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
             }
           >
             <div className="flex w-full flex-col items-center justify-center gap-2 px-4">
-              <h2 className="text-md font-bold">Upload a challenge</h2>
+              <h2 className="text-md text-2xl font-bold">Create a Challenge</h2>
+              {status === "authenticated" && session?.user?.newUser && (
+                <div className="w-full">
+                  <button
+                    className={
+                      "p-1 font-semibold text-lg hover:scale-105" +
+                      colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
+                    }
+                    onClick={() => {
+                      setShown(false);
+                      setHowToShown(true);
+                      setHowToIndex(1);
+                    }}
+                  >
+                    <i>Learn about creating challenges</i>
+                  </button>
+                </div>
+              )}
               <textarea
                 className={
-                  "bg-grey-200 h-32 max-h-[80vh] w-full rounded-md p-2 font-mono text-black outline-none" +
+                  "bg-grey-200 max-h-[75vh] w-full rounded-md p-2 font-mono text-black outline-none" +
                   (valid
                     ? " border-2 border-green-800 focus:border-green-500"
                     : " border-2 border-red-800 focus:border-red-500")
@@ -86,6 +104,7 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
                   setChallenge(e.target.value);
                   setValid(true);
                 }}
+                rows={10}
               ></textarea>
               <div className="m-2 flex flex-row items-center justify-center gap-2">
                 <button
@@ -94,7 +113,7 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
                     colorFromFeedbackLevel(FeedbackLevel.Secondary, true)
                   }
                   onClick={() => {
-                    setModalShown(false);
+                    setShown(false);
                   }}
                 >
                   Cancel
@@ -108,7 +127,7 @@ const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
                   onClick={() => {
                     if (valid && parsed) {
                       create(parsed);
-                      setModalShown(false);
+                      setShown(false);
                     }
                   }}
                 >
