@@ -22,6 +22,8 @@ export const env = createEnv({
     // Add `.min(1) on ID and SECRET if you want to make sure they're not empty
     GITHUB_CLIENT_ID: z.string(),
     GITHUB_CLIENT_SECRET: z.string(),
+    GOOGLE_CLIENT_ID: z.string(),
+    GOOGLE_CLIENT_SECRET: z.string(),
     MONGODB_URI: z.string().url(),
     OPENAI_API_KEY: z.string().min(1),
     MOCK_LLMAPI: z.string().min(1).optional(),
@@ -48,6 +50,8 @@ export const env = createEnv({
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
     GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     MONGODB_URI: process.env.MONGODB_URI,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     MOCK_LLMAPI: process.env.MOCK_LLMAPI,

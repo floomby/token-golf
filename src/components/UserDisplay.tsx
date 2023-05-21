@@ -59,7 +59,7 @@ const UserDisplay: React.FC = () => {
                   ? " animate-subtle-bounce"
                   : "")
               }
-              onClick={() => void signIn("github")}
+              onClick={() => void signIn()}
             >
               Sign In
             </button>
