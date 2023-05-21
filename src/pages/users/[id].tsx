@@ -11,20 +11,60 @@ import { useRouter } from "next/router";
 import Spinner from "~/components/Spinner";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCamera, faPencilAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCamera,
+  faPencilAlt,
+  faTrophy,
+} from "@fortawesome/free-solid-svg-icons";
 import UploadFileModal from "~/components/UploadFileModal";
 import { Tooltip } from "react-tooltip";
 import { flattenId } from "~/utils/flatten";
 import Completed from "~/components/Completed";
 import mongoose from "mongoose";
 
+type ScoreBadgeProps = {
+  profileId: string;
+};
+const ScoreBadge: React.FC<ScoreBadgeProps> = ({ profileId }) => {
+  const notifications = useNotificationQueue();
+
+  const { data } = api.user.getScore.useQuery(profileId, {
+    enabled: !!profileId,
+    onError: (error) => {
+      const id = Math.random().toString(36).substring(7);
+      notifications.add(id, {
+        message: error.message,
+        level: FeedbackLevel.Error,
+        duration: 5000,
+      });
+    },
+  });
+
+  return !!data ? (
+    <span className="ml-2 flex flex-row text-green-500">
+      <FontAwesomeIcon
+        icon={faTrophy}
+        className="mr-1 h-4 w-4 translate-y-[4.5px] text-yellow-600 dark:text-yellow-500"
+      />
+      {data.toString()}
+    </span>
+  ) : null;
+};
+
 type MeUserProps = {
   name: string;
   email: string;
   image: string;
   joined: Date;
+  profileId: string;
 };
-const MeUser: React.FC<MeUserProps> = ({ name, email, image, joined }) => {
+const MeUser: React.FC<MeUserProps> = ({
+  name,
+  email,
+  image,
+  joined,
+  profileId,
+}) => {
   const [showAvatarUploader, setShowAvatarUploader] = useState(false);
 
   const [editingName, setEditingName] = useState(false);
@@ -74,8 +114,8 @@ const MeUser: React.FC<MeUserProps> = ({ name, email, image, joined }) => {
             className="h-full w-full rounded-full"
             src={image}
             alt="Profile picture"
-            width={32}
-            height={32}
+            width={80}
+            height={80}
           />
         </div>
         <button
@@ -114,14 +154,17 @@ const MeUser: React.FC<MeUserProps> = ({ name, email, image, joined }) => {
           }}
         />
       </div>
-      <p className="ml-4 text-sm text-gray-800 dark:text-gray-400">
-        Joined:{" "}
-        {joined.toLocaleString(undefined, {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        })}
-      </p>
+      <div className="flex flex-row items-center justify-start gap-2">
+        <p className="ml-4 mt-1 text-sm text-gray-800 dark:text-gray-400">
+          Joined:{" "}
+          {joined.toLocaleString(undefined, {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })}
+        </p>
+        <ScoreBadge profileId={profileId} />
+      </div>
       <p className="text-lg">{email}</p>
       <div className="h-0 w-0 overflow-hidden">
         <UploadFileModal
@@ -150,8 +193,14 @@ type OtherUserProps = {
   name: string;
   image: string;
   joined: Date;
+  profileId: string;
 };
-const OtherUser: React.FC<OtherUserProps> = ({ name, image, joined }) => {
+const OtherUser: React.FC<OtherUserProps> = ({
+  name,
+  image,
+  joined,
+  profileId,
+}) => {
   return (
     <div className="flex min-w-[50%] flex-col items-start justify-start gap-2 p-4">
       <div className="flex flex-row items-center justify-start gap-2">
@@ -162,11 +211,12 @@ const OtherUser: React.FC<OtherUserProps> = ({ name, image, joined }) => {
             className="h-full w-full rounded-full"
             src={image}
             alt="Profile picture"
-            width={32}
-            height={32}
+            width={80}
+            height={80}
           />
         </div>
         <h2 className="text-2xl font-semibold">{name}</h2>
+        <ScoreBadge profileId={profileId} />
       </div>
       <p className="ml-4 text-sm text-gray-800 dark:text-gray-400">
         Joined:{" "}
@@ -265,12 +315,14 @@ const UserPage: NextPage = () => {
               email={user.email}
               image={user.image}
               joined={user.joined}
+              profileId={flattenId(id) || ""}
             />
           ) : (
             <OtherUser
               name={user.name}
               image={user.image}
               joined={user.joined}
+              profileId={flattenId(id) || ""}
             />
           )
         ) : (

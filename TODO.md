@@ -1,11 +1,12 @@
 ## Roadmap Items (in no particular order)
 
-- Figure out how viewing other submissions should work (lower scores etc...)
-- User total score
+- Replace table onclicks with links (it is bad ux right now)
+- Add overall user leaderboard
+
+- Bring leaderboard to par with the feed component
 - Think about best way to handle square image issue (should I crop before putting in db?)
-- Bring completed challenges and leaderboard to par with the feed component
 - Share to twitter button
-- Type the trpc endpoints that are returning anys
+- Type the trpc endpoints that are returning anys (one left I think)
 - Fix firefox scrollbar not looking like chrome (the width needs to be the same because it is used in a css calc and leads to something being off center (by a couple pixels) in firefox)
 
 - Fix suspense layout problems (which pages even need this?)

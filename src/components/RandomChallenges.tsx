@@ -4,13 +4,7 @@ import { useNotificationQueue } from "~/providers/notifications";
 import { api } from "~/utils/api";
 import Spinner from "./Spinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faC,
-  faCheck,
-  faH,
-  faHeart,
-  faRefresh,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faHeart, faRefresh } from "@fortawesome/free-solid-svg-icons";
 import ClampText from "./ClampText";
 import { Tooltip } from "react-tooltip";
 import longAgo from "~/utils/longAgo";
@@ -65,7 +59,7 @@ const RandomChallenges: React.FC = () => {
                   <th className="px-2 py-1">Title</th>
                   <th className="px-2 py-1">Completions/Attempts</th>
                   <th className="px-2 py-1">Likes</th>
-                  <th className="px-2 py-1"></th>{" "}
+                  <th className="px-2 py-1"></th>
                   {/* like, completed with tooltip */}
                   <th className="px-2 py-1">Creator</th>
                   <th className="px-2 py-1">Creation Date</th>

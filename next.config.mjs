@@ -4,6 +4,12 @@
  */
 await import("./src/env.mjs");
 
+const bundleAnalyzer = await import("@next/bundle-analyzer");
+
+const withBundleAnalyzer = bundleAnalyzer.default({
+  enabled: process.env.BUNDLE_ANALYZE === "true",
+});
+
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: true,
@@ -28,4 +34,4 @@ const config = {
     return config;
   },
 };
-export default config;
+export default withBundleAnalyzer(config);

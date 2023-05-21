@@ -7,7 +7,7 @@ import ClampText from "./ClampText";
 import { useSession } from "next-auth/react";
 import { EditorContext } from "~/providers/editor";
 import { useContext } from "react";
-import { ITest } from "~/utils/odm";
+import { type ITest } from "~/utils/odm";
 
 type TestRunsProps = {
   challengeId: string;

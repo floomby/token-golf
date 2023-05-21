@@ -4,17 +4,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AnimatePresence, motion } from "framer-motion";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 import { ModalContext } from "~/providers/modal";
 
-type HowToModalProps = {
-  // shown: boolean;
-  // setModalShown: (show: boolean) => void;
-};
 const HowToModal: React.FC = () => {
-  // const [index, setIndex] = useState<number>(0);
-
   const {
     howToIndex: index,
     setHowToIndex: setIndex,

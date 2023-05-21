@@ -16,6 +16,7 @@ import { ChallengeUploadSchema } from "~/utils/schemas";
 import { runTest } from "~/utils/runner";
 import { countTokens, getSegments } from "~/utils/tokenize";
 import { inspect } from "util";
+import { updateChallengeScoreIndex } from "~/utils/scoring";
 
 export const challengeRouter = createTRPCRouter({
   create: protectedProcedure
@@ -245,10 +246,13 @@ export const challengeRouter = createTRPCRouter({
               success: result.every((r) => r.success),
             },
           ],
-          { session }
+          { session, writeConcern: { w: "majority" } }
         );
 
         await session.commitTransaction();
+
+        // update the index
+        await updateChallengeScoreIndex(challenge._id);
 
         return runs[0]!;
       } catch (err) {
@@ -321,7 +325,7 @@ export const challengeRouter = createTRPCRouter({
       }
     }),
 
-  getResult: publicProcedure.input(z.string()).query(async ({ input }) => {
+  getRun: publicProcedure.input(z.string()).query(async ({ input, ctx }) => {
     await db();
     const run = await Run.findById(input);
 
@@ -329,7 +333,52 @@ export const challengeRouter = createTRPCRouter({
       throw new Error("Run not found");
     }
 
-    return run;
+    const ret = {
+      ...run.toObject(),
+      message: "",
+    };
+
+    const profileId = ctx.session?.user?.profileId;
+
+    if (!profileId) {
+      ret.prompt = "";
+      ret.message = "You must be logged in to view a submission's prompt";
+      return ret;
+    }
+
+    const profileBestScore: { tokenCount: number }[] = await Run.aggregate([
+      {
+        $match: {
+          challenge: run.challenge,
+          profile: new mongoose.Types.ObjectId(profileId),
+          success: true,
+        },
+      },
+      {
+        $sort: {
+          tokenCount: 1,
+        },
+      },
+      {
+        $limit: 1,
+      },
+      {
+        $project: {
+          tokenCount: 1,
+        },
+      },
+    ]);
+
+    if (
+      profileBestScore.length === 0 ||
+      profileBestScore[0]!.tokenCount > ret.tokenCount
+    ) {
+      ret.prompt = "";
+      ret.message =
+        "You must have a equal or lower score to view a submission's prompt";
+    }
+
+    return ret;
   }),
 
   getMyResults: protectedProcedure
@@ -391,7 +440,13 @@ export const challengeRouter = createTRPCRouter({
       await db();
 
       // get the lowest token counts for each profile returning the run id, the profile, and the token count
-      const runs = await Run.aggregate([
+      const runs: {
+        tokenCount: number;
+        at: Date;
+        runId: string;
+        profile: { _id: string; name: string };
+        score?: number;
+      }[] = await Run.aggregate([
         {
           $match: {
             challenge: new mongoose.Types.ObjectId(input.challengeId),
@@ -400,42 +455,97 @@ export const challengeRouter = createTRPCRouter({
           },
         },
         {
-          $sort: {
-            tokenCount: 1,
-          },
-        },
-        {
           $group: {
             _id: "$profile",
-            tokenCount: {
-              $first: "$tokenCount",
-            },
-            runId: {
-              $first: "$_id",
-            },
-            at: {
-              $first: "$at",
+            runs: {
+              $push: {
+                tokenCount: "$tokenCount",
+                at: "$at",
+                runId: "$_id",
+              },
             },
           },
         },
+        // sort each group by token count
         {
-          $limit: input.limit,
+          $project: {
+            runs: {
+              $sortArray: {
+                input: "$runs",
+                sortBy: {
+                  tokenCount: 1,
+                },
+              },
+            },
+            profile: "$_id",
+          },
+        },
+        // we only want the lowest token count for each profile
+        {
+          $project: {
+            run: {
+              $first: "$runs",
+            },
+            profile: 1,
+          },
+        },
+        // we now have the lowest token counts in order, but we need to impose additional ordering by date
+        {
+          $group: {
+            _id: "$run.tokenCount",
+            runs: {
+              $push: {
+                tokenCount: "$run.tokenCount",
+                at: "$run.at",
+                runId: "$run.runId",
+                profile: "$profile",
+              },
+            },
+          },
+        },
+        // sort each group by date
+        {
+          $project: {
+            run: {
+              $sortArray: {
+                input: "$runs",
+                sortBy: {
+                  at: 1,
+                },
+              },
+            },
+          },
         },
         {
           $sort: {
-            tokenCount: 1,
+            _id: 1,
           },
         },
+        {
+          $unwind: "$run",
+        },
+        // left join to get the profile name
         {
           $lookup: {
             from: "profiles",
-            localField: "_id",
+            localField: "run.profile",
             foreignField: "_id",
             as: "profile",
           },
         },
         {
-          $unwind: "$profile",
+          $project: {
+            tokenCount: "$run.tokenCount",
+            at: "$run.at",
+            runId: "$run.runId",
+            // profile is an array, but we want just the _id and the name from the first element
+            "profile._id": {
+              $arrayElemAt: ["$profile._id", 0],
+            },
+            "profile.name": {
+              $arrayElemAt: ["$profile.name", 0],
+            },
+          },
         },
         {
           $project: {
@@ -443,20 +553,33 @@ export const challengeRouter = createTRPCRouter({
             at: 1,
             runId: 1,
             profile: {
-              _id: 1,
-              name: 1,
-              // image: 1,
+              $first: "$profile",
             },
           },
         },
       ]);
 
-      return runs as {
-        tokenCount: number;
-        at: Date;
-        runId: string;
-        profile: { _id: string; name: string };
-      }[];
+      // I may want to do this join in the query (idk) It seemed bad there in my head for some reason
+      // (doing this findById once seems preferable than a late stage lookup with a match even with the javascript loop)
+      const scoringRuns = await Challenge.findById(input.challengeId, {
+        scores: "$scores",
+        id: "$_id",
+      });
+
+      if (!!scoringRuns?.scores) {
+        for (const run of scoringRuns.scores) {
+          for (const r of runs) {
+            if (r.runId.toString() === run.run.toString()) {
+              r.score = run.score;
+              break;
+            }
+          }
+        }
+      }
+
+      // console.log(inspect(runs, false, 10, true));
+
+      return runs;
     }),
 
   getUserCompleted: publicProcedure
@@ -516,11 +639,43 @@ export const challengeRouter = createTRPCRouter({
               name: 1,
               description: 1,
             },
+            score: {
+              $filter: {
+                input: "$challenge.scores",
+                as: "score",
+                cond: {
+                  $eq: ["$$score.run", "$runId"],
+                },
+              },
+            },
+          },
+        },
+        {
+          $project: {
+            tokenCount: 1,
+            at: 1,
+            runId: 1,
+            challenge: 1,
+            score: {
+              $first: "$score.score",
+            },
           },
         },
       ]);
 
-      return runs;
+      // console.log(inspect(runs, false, 10, true));
+
+      return runs as {
+        tokenCount: number;
+        runId: string;
+        at: Date;
+        challenge: {
+          id: mongoose.Types.ObjectId;
+          name: string;
+          description: string;
+        };
+        score: number;
+      }[];
     }),
 
   randomChallenges: eitherProcedure.query(async ({ ctx }) => {

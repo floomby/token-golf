@@ -25,6 +25,8 @@ export const env = createEnv({
     MONGODB_URI: z.string().url(),
     OPENAI_API_KEY: z.string().min(1),
     MOCK_LLMAPI: z.string().min(1).optional(),
+    BUNDLE_ANALYZE: z.string().min(1).optional(),
+    ADMIN_AUTH_TOKEN: z.string().min(1).optional(),
   },
 
   /**
@@ -49,6 +51,8 @@ export const env = createEnv({
     MONGODB_URI: process.env.MONGODB_URI,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     MOCK_LLMAPI: process.env.MOCK_LLMAPI,
+    BUNDLE_ANALYZE: process.env.BUNDLE_ANALYZE,
+    ADMIN_AUTH_TOKEN: process.env.ADMIN_AUTH_TOKEN,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
 });

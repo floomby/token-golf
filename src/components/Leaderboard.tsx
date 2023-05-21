@@ -4,7 +4,7 @@ import { useNotificationQueue } from "~/providers/notifications";
 import { api } from "~/utils/api";
 import Spinner from "./Spinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRefresh } from "@fortawesome/free-solid-svg-icons";
+import { faRefresh, faTrophy } from "@fortawesome/free-solid-svg-icons";
 import { Tooltip } from "react-tooltip";
 
 type LeaderboardProps = {
@@ -55,6 +55,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ challengeId }) => {
             <thead className="text-left">
               <tr>
                 <th className="px-2 py-1">Tokens</th>
+                <th className="px-2 py-1">Points</th>
                 <th className="px-2 py-1">User</th>
                 <th className="px-2 py-1">Date</th>
               </tr>
@@ -73,6 +74,17 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ challengeId }) => {
                     data-tooltip-id={`view-${i}`}
                   >
                     <td className="pl-1">{run.tokenCount}</td>
+                    <td className="pl-2">
+                      {!!run.score ? (
+                        <span className="flex flex-row text-green-500">
+                          <FontAwesomeIcon
+                            icon={faTrophy}
+                            className="mr-1 h-4 w-4 translate-y-[4.5px] text-yellow-600 dark:text-yellow-500"
+                          />
+                          {run.score.toString()}
+                        </span>
+                      ) : null}
+                    </td>
                     <td className="pl-1">
                       <span
                         className="transition-all duration-200 ease-in-out hover:text-blue-500"

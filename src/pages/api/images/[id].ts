@@ -1,10 +1,9 @@
 import { contentType } from "mime-types";
-import { NextApiRequest, NextApiResponse } from "next";
+import { type NextApiRequest, type NextApiResponse } from "next";
 import db from "~/utils/db";
 import mongoose from "mongoose";
-import fs from "fs";
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const image = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
   if (method !== "GET") {
     res.status(405);
@@ -59,3 +58,5 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     res.end();
   }
 };
+
+export default image;

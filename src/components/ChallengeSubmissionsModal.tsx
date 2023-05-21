@@ -47,7 +47,7 @@ const ChallengeSubmissionsModal: React.FC = () => {
     }
   }, [shown, challengeId, refetch]);
 
-  const { data: result } = api.challenge.getResult.useQuery(detailsId ?? "", {
+  const { data: result } = api.challenge.getRun.useQuery(detailsId ?? "", {
     enabled: shown && !!challengeId && !!detailsId,
     onError: (error) => {
       const id = Math.random().toString(36).substring(7);

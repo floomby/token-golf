@@ -3,7 +3,7 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IChallenge } from "~/utils/odm";
+import { type IChallenge } from "~/utils/odm";
 import Test from "./Test";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 import { useContext } from "react";

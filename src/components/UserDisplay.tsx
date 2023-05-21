@@ -3,7 +3,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { colorFromFeedbackLevel, FeedbackLevel } from "../lib/feedback";
 import Image from "next/image";
-import { useContext } from "react";
 
 // Not named the best, this is the component that displays the users name and the sign in/out button (it goes on the right side of the header)
 const UserDisplay: React.FC = () => {

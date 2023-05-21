@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { ObjectId } from "mongodb";
+import { type ObjectId } from "mongodb";
 
 export interface IResult {
   result: string;
@@ -105,6 +105,25 @@ const LikeSchema = new mongoose.Schema<ILike>({
   at: { type: Date, required: true, default: Date.now },
 });
 
+export interface IScore {
+  score: number;
+  run: ObjectId;
+}
+
+const ScoreSchema = new mongoose.Schema<IScore>({
+  score: { type: Number, required: true },
+  run: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Run",
+    required: true,
+  },
+  profile: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Profile",
+    required: true,
+  },
+});
+
 export interface IChallenge {
   name: string;
   description: string;
@@ -112,6 +131,7 @@ export interface IChallenge {
   createdAt: Date;
   createdBy: ObjectId;
   likes?: ILike[];
+  scores?: IScore[];
 }
 
 const ChallengeSchema = new mongoose.Schema<IChallenge>({
@@ -133,6 +153,7 @@ const ChallengeSchema = new mongoose.Schema<IChallenge>({
     required: true,
   },
   likes: { type: [LikeSchema], default: [] },
+  scores: { type: [ScoreSchema], default: [] },
 });
 
 const Challenge =
@@ -161,4 +182,16 @@ const Profile =
   (mongoose.models.Profile as mongoose.Model<IProfile>) ||
   mongoose.model<IProfile>("Profile", ProfileSchema);
 
-export { Profile, Challenge, Run, TestRun };
+type IScoring = {
+  scores: number[];
+};
+
+const ScoringSchema = new mongoose.Schema<IScoring>({
+  scores: { type: [Number], required: true },
+});
+
+const Scoring =
+  (mongoose.models.Scoring as mongoose.Model<IScoring>) ||
+  mongoose.model<IScoring>("Scoring", ScoringSchema);
+
+export { Profile, Challenge, Run, TestRun, Scoring };

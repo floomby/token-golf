@@ -7,6 +7,7 @@ import {
 } from "~/server/api/trpc";
 import db from "~/utils/db";
 import { Challenge, Profile } from "~/utils/odm";
+import { inspect } from "util";
 
 export const userRouter = createTRPCRouter({
   read: publicProcedure.input(z.string()).query(async ({ input, ctx }) => {
@@ -71,4 +72,37 @@ export const userRouter = createTRPCRouter({
         }
       );
     }),
+
+  getScore: publicProcedure.input(z.string()).query(async ({ input, ctx }) => {
+    await db();
+
+    const score: { score: number }[] = await Challenge.aggregate([
+      {
+        $unwind: "$scores",
+      },
+      {
+        $match: {
+          "scores.profile": new mongoose.Types.ObjectId(input),
+        },
+      },
+      {
+        $project: {
+          score: "$scores.score",
+        },
+      },
+      {
+        // sum all scores
+        $group: {
+          _id: null,
+          score: {
+            $sum: "$score",
+          },
+        },
+      },
+    ]);
+
+    // console.log("scores", inspect(score, false, 10, true));
+
+    return (score[0]?.score ?? 0);
+  }),
 });

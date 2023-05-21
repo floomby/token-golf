@@ -1,4 +1,4 @@
-import { IResult } from "~/utils/odm";
+import { type IResult } from "~/utils/odm";
 
 type TestProps = {
   test: string;
