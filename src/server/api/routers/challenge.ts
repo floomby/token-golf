@@ -429,7 +429,7 @@ export const challengeRouter = createTRPCRouter({
         >)[];
     }),
 
-  getLeaderboard: publicProcedure
+  getChallengeLeaderboard: publicProcedure
     .input(
       z.object({
         challengeId: z.string(),

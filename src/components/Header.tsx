@@ -7,9 +7,12 @@ import HowToModal from "./HowToModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { ModalContext } from "~/providers/modal";
+import { useRouter } from "next/router";
 
 const Header: React.FC = () => {
   const { setHowToShown, setCreateShown } = useContext(ModalContext);
+
+  const router = useRouter();
 
   return (
     <header className="z-10 h-20 bg-teal-100 shadow-md dark:bg-teal-200">
@@ -25,6 +28,20 @@ const Header: React.FC = () => {
               >
                 Prompt Golf
               </h1>
+            </Link>
+            <Link
+              href="/leaderboard"
+              className={
+                "rounded px-4 py-2 font-semibold" +
+                colorFromFeedbackLevel(
+                  FeedbackLevel.Invisible,
+                  router.pathname !== "/leaderboard",
+                  "light"
+                ) +
+                (router.pathname === "/leaderboard" ? " opacity-50" : "")
+              }
+            >
+              Leaderboard
             </Link>
             <button
               className={

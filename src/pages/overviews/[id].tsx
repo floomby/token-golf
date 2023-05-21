@@ -7,7 +7,7 @@ import { useContext, useEffect } from "react";
 import { useRouter } from "next/router";
 import Spinner from "~/components/Spinner";
 import { flattenId } from "~/utils/flatten";
-import Leaderboard from "~/components/Leaderboard";
+import ChallengeLeaderboard from "~/components/ChallengeLeaderboard";
 import { ModalContext } from "~/providers/modal";
 import ChallengeHeader from "~/components/ChallengeHeader";
 
@@ -68,7 +68,7 @@ const OverviewPage: NextPage = () => {
         ) : (
           <Spinner className="mt-24" />
         )}
-        <Leaderboard challengeId={flattenId(id) || ""} />
+        <ChallengeLeaderboard challengeId={flattenId(id) || ""} />
       </main>
     </>
   );

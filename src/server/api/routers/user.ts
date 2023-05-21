@@ -103,6 +103,88 @@ export const userRouter = createTRPCRouter({
 
     // console.log("scores", inspect(score, false, 10, true));
 
-    return (score[0]?.score ?? 0);
+    return score[0]?.score ?? 0;
   }),
+
+  getLeaderboard: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().min(0).default(10),
+        offset: z.number().min(0).default(0),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      await db();
+
+      const leaders = await Profile.aggregate([
+        {
+          $lookup: {
+            from: "challenges",
+            let: { profile: "$_id" },
+            pipeline: [
+              {
+                $unwind: "$scores",
+              },
+              {
+                $match: {
+                  $expr: {
+                    $eq: ["$scores.profile", "$$profile"],
+                  },
+                },
+              },
+              {
+                $project: {
+                  score: "$scores.score",
+                },
+              },
+              {
+                // sum all scores
+                $group: {
+                  _id: null,
+                  score: {
+                    $sum: "$score",
+                  },
+                },
+              },
+            ],
+            as: "scored",
+          },
+        },
+        {
+          $project: {
+            name: 1,
+            // image: 1,
+            score: {
+              $arrayElemAt: ["$scored.score", 0],
+            },
+          },
+        },
+        // filter out null scores
+        {
+          $match: {
+            score: {
+              $ne: null,
+            },
+          },
+        },
+        {
+          $sort: {
+            score: -1,
+          },
+        },
+        {
+          $skip: input.offset,
+        },
+        {
+          $limit: input.limit,
+        },
+      ]);
+
+      return leaders as {
+        _id: mongoose.Types.ObjectId;
+        name: string;
+        // image: string;
+        score: number;
+      }[];
+    }),
 });
