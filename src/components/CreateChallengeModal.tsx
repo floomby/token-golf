@@ -138,7 +138,7 @@ const CreateChallengeModal: React.FC = () => {
                   </span>
                 </button>
                 {status !== "authenticated" && (
-                  <Tooltip id="login" place="top">
+                  <Tooltip className="tooltip-overrides" id="login" place="top">
                     You must be logged in to upload a challenge.
                   </Tooltip>
                 )}

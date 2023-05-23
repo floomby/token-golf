@@ -251,7 +251,7 @@ const UserChallenges: React.FC<UserChallengesProps> = ({ id }) => {
                 <span
                   key={(challenge.id as mongoose.Types.ObjectId).toString()}
                 >
-                  <Tooltip id={challenge.id as string} place="right">
+                  <Tooltip className="tooltip-overrides" id={challenge.id as string} place="right">
                     {challenge.description}
                   </Tooltip>
                   <Link

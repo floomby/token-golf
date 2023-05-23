@@ -114,7 +114,7 @@ const ChallengeLeaderboard: React.FC<ChallengeLeaderboardProps> = ({
                         >
                           {run.profile.name}
                         </Link>
-                        <Tooltip id={`view-${i}`}>View this submission</Tooltip>
+                        <Tooltip className="tooltip-overrides" id={`view-${i}`}>View this submission</Tooltip>
                       </td>
                       <td>
                         <Link

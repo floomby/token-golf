@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Tooltip } from "react-tooltip";
 
 type ToggleProps = {
@@ -12,13 +13,12 @@ const Toggle: React.FC<ToggleProps> = ({
   setChecked,
   tooltip,
 }) => {
-  // take at most the first 5 non-whitespace characters of the label
-  const nonWhitespaceLabel = label.replace(/\s/g, "").substring(0, 5);
+  const uid = useMemo(() => Math.random().toString(36).substring(2, 15), []);
 
   return (
     <label
       className="relative inline-flex cursor-pointer items-center text-black dark:text-white"
-      data-tooltip-id={tooltip ? `${nonWhitespaceLabel}-toggle-tooltip` : undefined}
+      data-tooltip-id={tooltip ? `toggle-${uid}` : undefined}
     >
       <input
         type="checkbox"
@@ -41,7 +41,7 @@ const Toggle: React.FC<ToggleProps> = ({
       <span className="text-md text-primary ml-2 whitespace-nowrap font-medium">
         {label}
       </span>
-      {tooltip && <Tooltip id={`${nonWhitespaceLabel}-toggle-tooltip`}>{tooltip}</Tooltip>}
+      {tooltip && <Tooltip className="tooltip-overrides" id={`toggle-${uid}`}>{tooltip}</Tooltip>}
     </label>
   );
 };

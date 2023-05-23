@@ -336,7 +336,7 @@ const PromptInput: React.FC<PromptInputProps> = ({ challengeId }) => {
               Submit
             </button>
             {status === "authenticated" ? null : (
-              <Tooltip id="run-tooltip">Log In to Save Results</Tooltip>
+              <Tooltip className="tooltip-overrides" id="run-tooltip">Log In to Save Results</Tooltip>
             )}
           </div>
         </div>

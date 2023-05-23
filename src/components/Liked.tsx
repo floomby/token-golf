@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PopIn from "./PopIn";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 import { Tooltip } from "react-tooltip";
+import { useMemo } from "react";
 
 type LikedProps = {
   liked: boolean;
@@ -11,11 +12,13 @@ type LikedProps = {
   onClick: () => void;
 };
 const Liked: React.FC<LikedProps> = ({ liked, likes, onClick }) => {
+  const uid = useMemo(() => Math.random().toString(36).substring(2, 15), []);
+
   return (
     <div
       className="ml-6 inline-block h-8 w-8 font-semibold"
       onClick={onClick}
-      data-tooltip-id="liked-count"
+      data-tooltip-id={`liked-${uid}`}
     >
       <div
         className={
@@ -40,7 +43,7 @@ const Liked: React.FC<LikedProps> = ({ liked, likes, onClick }) => {
           <FontAwesomeIcon icon={faHeartRegular} className="h-8 w-8" />
         </PopIn>
       </div>
-      <Tooltip id="liked-count" place="bottom" className="select-none">
+      <Tooltip className="tooltip-overrides select-none" id={`liked-${uid}`} place="bottom">
         {likes} {likes === 1 ? "like" : "likes"}
       </Tooltip>
     </div>

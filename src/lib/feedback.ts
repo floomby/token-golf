@@ -44,7 +44,7 @@ const colorFromFeedbackLevel = (
   switch (level) {
     case FeedbackLevel.Success:
       return themeOverrider(
-        " bg-green-700 text-white dark:bg-green-400 dark:text-black disabled:bg-green-400 dark:disabled:bg-green-100 disabled:text-gray-300 dark:disabled:text-gray-700 " +
+        " bg-green-700 text-white dark:bg-green-400 dark:text-black disabled:bg-green-400 dark:disabled:bg-green-100 disabled:text-gray-300 dark:disabled:text-gray-300 " +
           (hoverable
             ? " hover:bg-green-600 dark:hover:bg-green-300 ease-in-out transition-all duration-200"
             : ""),

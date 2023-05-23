@@ -14,13 +14,9 @@ const ClampText: React.FC<ClampTextProps> = ({
   const uid = useMemo(() => Math.random().toString(36).substring(2, 15), []);
 
   return text.length > maxLength ? (
-    <span
-      className="truncate"
-      data-tooltip-html={text.replace(/ /g, "\u00a0").replace(/\n/g, "<br />")}
-      id={`tooltip-${uid}`}
-    >
+    <span className="truncate" data-tooltip-id={`tooltip-${uid}`}>
       {text.length > maxLength ? text.substring(0, maxLength) + "..." : text}
-      <Tooltip anchorId={`tooltip-${uid}`} />
+      <Tooltip className="tooltip-overrides" id={`tooltip-${uid}`}>{text}</Tooltip>
     </span>
   ) : (
     <span>{text}</span>

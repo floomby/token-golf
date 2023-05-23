@@ -98,7 +98,7 @@ const RandomChallenges: React.FC = () => {
                         {challenge.completionCount}/{challenge.attemptCount}
                       </Link>
                     </td>
-                    <td className="pl-3">
+                    <td>
                       <Link
                         href={`/overviews/${challenge.id}`}
                         className="flex whitespace-nowrap pl-3 pr-1"
@@ -129,7 +129,7 @@ const RandomChallenges: React.FC = () => {
                               />
                             )}
                           </Link>
-                          <Tooltip id={`stats-${i}`}>
+                          <Tooltip className="tooltip-overrides" id={`stats-${i}`}>
                             {`${
                               !!challenge.lastAttempted
                                 ? "Last attempted " +
@@ -147,7 +147,7 @@ const RandomChallenges: React.FC = () => {
                     </td>
                     <td>
                       <Link
-                        className="flex px-1 transition-all duration-200 ease-in-out hover:text-blue-500"
+                        className="flex px-1 transition-all duration-200 ease-in-out hover:text-blue-500 whitespace-nowrap"
                         href={`/users/${challenge.creator.id}`}
                       >
                         {challenge.creator.name}

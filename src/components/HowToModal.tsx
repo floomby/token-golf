@@ -110,7 +110,7 @@ const HowToModal: React.FC = () => {
           className="fixed left-0 top-0 z-50 flex h-full w-full flex-col items-center justify-center bg-black bg-opacity-50 px-4"
         >
           <div className="flex flex-col items-center justify-between rounded-lg bg-slate-200 py-4 shadow-lg dark:bg-slate-900">
-            <div className="flex max-h-[80vh] w-full flex-row items-center justify-between gap-4 overflow-y-auto px-4">
+            <div className="flex max-h-[74vh] w-full flex-row items-center justify-between gap-4 overflow-y-auto px-4">
               <button
                 onClick={handleLeftClick}
                 className={

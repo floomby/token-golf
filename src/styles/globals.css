@@ -24,3 +24,8 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #78716c;
 }
+
+.tooltip-overrides {
+  white-space: pre-wrap;
+  max-width: 90vw;
+}
