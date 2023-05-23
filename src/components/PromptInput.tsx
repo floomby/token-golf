@@ -162,7 +162,6 @@ const PromptInput: React.FC<PromptInputProps> = ({ challengeId }) => {
   const { mutate: runAllTests } = api.challenge.submit.useMutation({
     onSuccess: (data) => {
       const id = Math.random().toString();
-      console.log("HERE");
       notifications.add(id, {
         message: data.success ? "Success!" : undefined,
         html: data.success
