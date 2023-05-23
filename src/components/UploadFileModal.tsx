@@ -46,7 +46,7 @@ const UploadFileModal: React.FC<UploadFileModalProps> = ({
               <input
                 type="file"
                 id="uploadFileInput"
-                className="m-2 rounded bg-stone-200 p-0 px-4 py-2 dark:bg-stone-700"
+                className="m-2 rounded bg-stone-200 p-0 px-4 py-2 dark:bg-stone-700 max-w-[80vw]"
                 onChange={(e) => {
                   const name = (e.target.files?.[0]?.name ?? "").toString();
                   setFilename(name);
