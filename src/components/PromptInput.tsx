@@ -12,6 +12,22 @@ import { EditorContext } from "~/providers/editor";
 
 // const compiledConvert = compile({ wordwrap: false, preserveNewlines: true });
 
+// prettier-ignore
+const instructions = 
+`Instructions to the language model on how to the problem.
+The test text is substituted into {test}
+The output must match the expected value.
+
+The following is an example.
+
+=====================
+
+Classify the following into as either an "Animal" or a "Vehicle"
+
+{test}
+
+classification: `;
+
 const colorFromIndex = (index: number) => {
   switch (index % 3) {
     case 0:
@@ -78,11 +94,11 @@ type PromptInputProps = {
   challengeId: string;
 };
 const PromptInput: React.FC<PromptInputProps> = ({ challengeId }) => {
-  const { setSubmissionShown, setDetailsId } = useContext(
-    ModalContext
-  );
+  const { setSubmissionShown, setDetailsId } = useContext(ModalContext);
 
   const notifications = useNotificationQueue();
+
+  const [edited, setEdited] = useState(false);
 
   const {
     prompt,
@@ -93,6 +109,12 @@ const PromptInput: React.FC<PromptInputProps> = ({ challengeId }) => {
     caseSensitive,
     setCaseSensitive,
   } = useContext(EditorContext);
+
+  useEffect(() => {
+    if (prompt.length > 0) {
+      setEdited(true);
+    }
+  }, [prompt, setEdited]);
 
   const { mutate: runSingleTest } = api.challenge.runSingleTest.useMutation({
     onSuccess: (data) => {
@@ -142,9 +164,7 @@ const PromptInput: React.FC<PromptInputProps> = ({ challengeId }) => {
       const id = Math.random().toString();
       console.log("HERE");
       notifications.add(id, {
-        message: data.success
-          ? "Success!"
-          : undefined,
+        message: data.success ? "Success!" : undefined,
         html: data.success
           ? undefined
           : `Failed test(s): ${data.results
@@ -213,7 +233,7 @@ const PromptInput: React.FC<PromptInputProps> = ({ challengeId }) => {
     <div className="flex w-full items-start justify-center gap-4 sm:flex-col md:flex-col lg:flex-col xl:flex-row 2xl:flex-row">
       <div className="flex flex-col items-start justify-center gap-2 sm:w-full md:w-full lg:w-full xl:basis-1/2 2xl:basis-1/2">
         <textarea
-          className="min-h-[128px] w-full rounded-md border-2 border-gray-300 bg-gray-200 text-black"
+          className="min-h-[128px] w-full rounded-md border-2 border-gray-300 bg-gray-200 text-black placeholder:text-gray-800"
           value={prompt}
           onChange={(e) => {
             setPrompt(e.currentTarget.value);
@@ -222,17 +242,24 @@ const PromptInput: React.FC<PromptInputProps> = ({ challengeId }) => {
             wordBreak: "normal",
           }}
           rows={10}
+          placeholder={edited ? "" : instructions}
         />
         <div className="flex w-full justify-between gap-4 sm:flex-col md:flex-row lg:flex-row xl:flex-col 2xl:flex-row">
           <div className="flex flex-row items-center justify-start gap-8">
             <div className="mt-2">
-              <Toggle label="Trim" checked={trim} setChecked={setTrim} />
+              <Toggle
+                label="Trim"
+                checked={trim}
+                setChecked={setTrim}
+                tooltip="Enable/disable whitespace trimming of llm output"
+              />
             </div>
             <div className="mt-2">
               <Toggle
                 label="Case Sensitive"
                 checked={caseSensitive}
                 setChecked={setCaseSensitive}
+                tooltip="Enable/disable case sensitivity for llm output"
               />
             </div>
           </div>
@@ -310,7 +337,7 @@ const PromptInput: React.FC<PromptInputProps> = ({ challengeId }) => {
               Submit
             </button>
             {status === "authenticated" ? null : (
-              <Tooltip id={"run-tooltip"}>Log In to Save Results</Tooltip>
+              <Tooltip id="run-tooltip">Log In to Save Results</Tooltip>
             )}
           </div>
         </div>

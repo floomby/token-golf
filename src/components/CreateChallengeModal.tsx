@@ -74,24 +74,21 @@ const CreateChallengeModal: React.FC = () => {
           >
             <div className="flex w-full flex-col items-center justify-center gap-2 px-4">
               <h2 className="text-md text-2xl font-bold">Create a Challenge</h2>
-              {((status === "authenticated" && session?.user?.newUser) ||
-                status !== "authenticated") && (
-                <div className="w-full">
-                  <button
-                    className={
-                      "p-1 text-lg font-semibold hover:scale-105" +
-                      colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
-                    }
-                    onClick={() => {
-                      setShown(false);
-                      setHowToShown(true);
-                      setHowToIndex(1);
-                    }}
-                  >
-                    <i>Learn about creating challenges</i>
-                  </button>
-                </div>
-              )}
+              <div className="w-full">
+                <button
+                  className={
+                    "p-1 text-lg font-semibold hover:scale-105" +
+                    colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
+                  }
+                  onClick={() => {
+                    setShown(false);
+                    setHowToShown(true);
+                    setHowToIndex(1);
+                  }}
+                >
+                  <i>Learn about creating challenges</i>
+                </button>
+              </div>
               <textarea
                 className={
                   "bg-grey-200 max-h-[75vh] w-full rounded-md p-2 font-mono text-black outline-none" +

@@ -40,7 +40,7 @@ const Liked: React.FC<LikedProps> = ({ liked, likes, onClick }) => {
           <FontAwesomeIcon icon={faHeartRegular} className="h-8 w-8" />
         </PopIn>
       </div>
-      <Tooltip id="liked-count" place="bottom">
+      <Tooltip id="liked-count" place="bottom" className="select-none">
         {likes} {likes === 1 ? "like" : "likes"}
       </Tooltip>
     </div>

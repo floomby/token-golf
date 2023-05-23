@@ -1,7 +1,6 @@
 ## Roadmap Items (in no particular order)
 
 - Replace table onclicks with links (it is bad ux right now)
-- Add overall user leaderboard
 
 - Bring leaderboard to par with the feed component
 - Think about best way to handle square image issue (should I crop before putting in db?)
