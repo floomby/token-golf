@@ -57,6 +57,9 @@ export const userRouter = createTRPCRouter({
         throw new Error("Display name cannot be empty");
       }
 
+      // rip out newlines
+      input = input.replace(/[\r\n]+/g, " ");
+
       if (input.length > 50) {
         throw new Error("Display name cannot be longer than 30 characters");
       }

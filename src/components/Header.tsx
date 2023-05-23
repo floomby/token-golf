@@ -8,21 +8,24 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { ModalContext } from "~/providers/modal";
 import { useRouter } from "next/router";
+import { faList } from "@fortawesome/free-solid-svg-icons";
+import NavModal from "./NavModal";
 
 const Header: React.FC = () => {
-  const { setHowToShown, setCreateShown } = useContext(ModalContext);
+  const { setHowToShown, setCreateShown, setNavShown } =
+    useContext(ModalContext);
 
   const router = useRouter();
 
   return (
-    <header className="z-10 h-20 bg-teal-100 shadow-md dark:bg-teal-200">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+    <header className="z-10 h-fit w-full overflow-x-auto bg-teal-100 shadow-md dark:bg-teal-200">
+      <div className="mx-0 w-full px-2 py-4 sm:px-4">
+        <div className="mx-0 flex w-full items-center justify-between">
+          <div className="flex w-full grow items-center gap-2 sm:gap-4">
             <Link href="/">
               <h1
                 className={
-                  "ml-2 pr-2 text-2xl font-semibold" +
+                  "text-lg font-semibold sm:text-xl md:ml-2 md:pr-2 md:text-2xl" +
                   colorFromFeedbackLevel(FeedbackLevel.Invisible, true, "light")
                 }
               >
@@ -32,7 +35,7 @@ const Header: React.FC = () => {
             <Link
               href="/leaderboard"
               className={
-                "rounded px-4 py-2 font-semibold" +
+                "hidden rounded py-2 font-semibold md:flex md:px-4" +
                 colorFromFeedbackLevel(
                   FeedbackLevel.Invisible,
                   router.pathname !== "/leaderboard",
@@ -45,7 +48,7 @@ const Header: React.FC = () => {
             </Link>
             <button
               className={
-                "rounded px-4 py-2 font-semibold" +
+                "hidden rounded py-2 font-semibold md:flex md:px-4" +
                 colorFromFeedbackLevel(FeedbackLevel.Invisible, true, "light")
               }
               onClick={() => {
@@ -56,7 +59,7 @@ const Header: React.FC = () => {
             </button>
             <button
               className={
-                "rounded px-4 py-2 font-semibold" +
+                "hidden rounded py-2 font-semibold md:flex md:px-4" +
                 colorFromFeedbackLevel(FeedbackLevel.Invisible, true, "light")
               }
               onClick={() => {
@@ -65,6 +68,18 @@ const Header: React.FC = () => {
             >
               How To
             </button>
+            <button
+              className={
+                "flex rounded py-2 pl-4 font-semibold md:hidden md:px-4" +
+                colorFromFeedbackLevel(FeedbackLevel.Invisible, true, "light")
+              }
+              onClick={() => {
+                setNavShown(true);
+              }}
+            >
+              <FontAwesomeIcon icon={faList} className="h-fit w-6" />
+            </button>
+            <NavModal />
             <CreateChallengeModal />
             <HowToModal />
           </div>

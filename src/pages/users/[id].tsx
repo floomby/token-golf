@@ -95,11 +95,11 @@ const MeUser: React.FC<MeUserProps> = ({
 
   return (
     <div className="flex min-w-[50%] flex-col items-start justify-start gap-2 p-4">
-      <div className="flex flex-row items-center justify-start gap-2">
+      <div className="flex max-w-full items-start justify-start gap-2 sm:flex-row flex-col sm:items-center gap-x-4">
         <div className="relative h-20 w-20 shrink-0 p-0">
           <button
             className={
-              "absolute bottom-0 left-0 z-10 w-6 rounded-full p-1 opacity-80 hover:scale-110 hover:opacity-100" +
+              "absolute bottom-0 left-0 z-10 w-6 rounded-full p-1 opacity-80 hover:scale-110 hover:opacity-100 -translate-x-1" +
               colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
             }
             onClick={() => {
@@ -118,41 +118,43 @@ const MeUser: React.FC<MeUserProps> = ({
             height={80}
           />
         </div>
-        <button
-          className={
-            "w-6 translate-x-[100%] translate-y-1/2 rounded-full opacity-80 hover:scale-110 hover:opacity-100" +
-            colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
-          }
-          onClick={() => {
-            setEditingName(true);
-            inputRef.current?.focus();
-          }}
-        >
-          <FontAwesomeIcon icon={faPencilAlt} className="p-1" />
-        </button>
-        <input
-          className={
-            "z-10 rounded-lg border-0 px-2 text-2xl font-semibold duration-200 ease-in-out" +
-            (editingName
-              ? " bg-white text-black shadow-md"
-              : " pointer-events-none bg-transparent text-black dark:text-white")
-          }
-          value={nameValue}
-          onChange={(e) => setNameValue(e.target.value)}
-          disabled={!editingName}
-          ref={inputRef}
-          onBlur={() => {
-            setEditingName(false);
-            void setDisplayName(nameValue);
-          }}
-          placeholder="Display Name"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
+        <div className="flex shrink-0 flex-row items-start justify-start gap-1">
+          <button
+            className={
+              "-translate-x-1 translate-y-1/2 rounded-full opacity-80 hover:scale-110 hover:opacity-100 w-0" +
+              colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
+            }
+            onClick={() => {
+              setEditingName(true);
+              inputRef.current?.focus();
+            }}
+          >
+            <FontAwesomeIcon icon={faPencilAlt} className="p-1 w-6" />
+          </button>
+          <input
+            className={
+              "z-10 rounded-lg border-0 px-2 text-2xl font-semibold duration-200 ease-in-out" +
+              (editingName
+                ? " bg-white text-black shadow-md"
+                : " pointer-events-none bg-transparent text-black dark:text-white")
+            }
+            value={nameValue}
+            onChange={(e) => setNameValue(e.target.value)}
+            disabled={!editingName}
+            ref={inputRef}
+            onBlur={() => {
               setEditingName(false);
               void setDisplayName(nameValue);
-            }
-          }}
-        />
+            }}
+            placeholder="Display Name"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                setEditingName(false);
+                void setDisplayName(nameValue);
+              }
+            }}
+          />
+        </div>
       </div>
       <div className="flex flex-row items-center justify-start gap-2">
         <p className="ml-4 mt-1 text-sm text-gray-800 dark:text-gray-400">
@@ -239,10 +241,10 @@ const UserChallenges: React.FC<UserChallengesProps> = ({ id }) => {
   });
 
   return (
-    <div className="flex flex-col items-start justify-start gap-2 p-4">
+    <div className="flex flex-col items-start justify-start gap-2 grow">
       <h2 className="text-2xl">Challenges</h2>
       <div className="flex w-full flex-row items-start justify-start gap-4">
-        <div className="flex basis-1/4 flex-col items-start justify-start gap-2 border-l-2 pl-2">
+        <div className="flex flex-col items-start justify-start gap-2 border-l-2 pl-2">
           {!!challenges ? (
             challenges.length > 0 ? (
               challenges.map((challenge) => (
@@ -307,7 +309,7 @@ const UserPage: NextPage = () => {
         <meta name="description" content="Token golf user profile page" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
+      <main className="w-full">
         {!!user ? (
           user.email ? (
             <MeUser
@@ -328,7 +330,7 @@ const UserPage: NextPage = () => {
         ) : (
           <Spinner />
         )}
-        <div className="flex flex-row items-start justify-start gap-4">
+        <div className="flex flex-col items-start justify-start gap-4 p-2 md:p-4 lg:flex-row">
           <UserChallenges id={flattenId(id) || ""} />
           {id && <Completed userId={flattenId(id) || ""} />}
         </div>

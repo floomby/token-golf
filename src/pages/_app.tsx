@@ -50,7 +50,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
                 cardType: "summary_large_image",
               }}
             />
-            <div className="absolute inset-0 min-h-screen min-w-max text-black dark:text-white">
+            <div className="text-black dark:text-white">
               <Header />
               <Component {...pageProps} />
               <NotificationList />

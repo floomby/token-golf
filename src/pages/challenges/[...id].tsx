@@ -14,6 +14,7 @@ import { flattenId, getSecond } from "~/utils/flatten";
 import { ModalContext } from "~/providers/modal";
 import { EditorContext } from "~/providers/editor";
 import ChallengeHeader from "~/components/ChallengeHeader";
+import TWIndicator from "~/components/TWIndicator";
 
 const ChallengePage: NextPage = () => {
   const router = useRouter();
@@ -49,7 +50,7 @@ const ChallengePage: NextPage = () => {
     },
     onSuccess: (data) => {
       console.log(data);
-      if (data.message) {        
+      if (data.message) {
         const id = Math.random().toString(36).substring(7);
         notifications.add(id, {
           message: data.message,

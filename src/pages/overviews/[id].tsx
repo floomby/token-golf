@@ -58,7 +58,7 @@ const OverviewPage: NextPage = () => {
         <meta name="description" content="Overview of a token golf challenge" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex flex-col items-center justify-start p-4">
+      <main className="flex flex-col items-center justify-start p-2 sm:p-4">
         {!!challenge ? (
           <ChallengeHeader
             id={flattenId(id) || ""}

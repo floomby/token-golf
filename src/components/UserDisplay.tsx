@@ -15,7 +15,7 @@ const UserDisplay: React.FC = () => {
         <div className="flex flex-row items-center gap-4">
           <Link
             href={`/users/${session.user.profileId}`}
-            className="font-md font-semibold shadow-black transition-all duration-200 ease-in-out hover:text-blue-800 hover:text-shadow-lg hover:scale-105"
+            className="font-md font-semibold shadow-black transition-all duration-200 ease-in-out hover:scale-105 hover:text-blue-800 hover:text-shadow-lg"
           >
             <div className="flex flex-row items-center gap-4 font-bold text-black">
               <div className="relative h-8 w-8 shrink-0 p-0">
@@ -33,13 +33,13 @@ const UserDisplay: React.FC = () => {
                   </>
                 )}
               </div>
-              {session.user.name}
+              <span className="hidden sm:flex">{session.user.name}</span>
             </div>
           </Link>
           <div className="dark">
             <button
               className={
-                "whitespace-nowrap rounded-full px-4 py-2 font-bold" +
+                "sm:text-md whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold hover:scale-105" +
                 colorFromFeedbackLevel(FeedbackLevel.Error, true)
               }
               onClick={() => void signOut()}
@@ -53,7 +53,7 @@ const UserDisplay: React.FC = () => {
           <div className="dark">
             <button
               className={
-                "whitespace-nowrap rounded-full px-4 py-2 font-bold " +
+                "sm:text-md whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold hover:scale-105" +
                 colorFromFeedbackLevel(FeedbackLevel.Success, true) +
                 (router.pathname.includes("/challenges/")
                   ? " animate-subtle-bounce"

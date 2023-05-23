@@ -114,7 +114,7 @@ const HowToModal: React.FC = () => {
               <button
                 onClick={handleLeftClick}
                 className={
-                  "text-2xl hover:scale-105" +
+                  "hidden text-2xl hover:scale-105 md:flex" +
                   colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
                 }
               >
@@ -124,22 +124,43 @@ const HowToModal: React.FC = () => {
               <button
                 onClick={handleRightClick}
                 className={
-                  "text-2xl hover:scale-105" +
+                  "hidden text-2xl hover:scale-105 md:flex" +
                   colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
                 }
               >
                 <FontAwesomeIcon className="h-20 w-12" icon={faChevronRight} />
               </button>
             </div>
-            <button
-              onClick={() => setShown(false)}
-              className={
-                "mt-4 rounded-full px-4 py-2 font-semibold" +
-                colorFromFeedbackLevel(FeedbackLevel.Secondary, true)
-              }
-            >
-              Close
-            </button>
+            <div className="flex w-full flex-row items-center justify-between px-2 pt-4 md:justify-center md:pt-0">
+              <button
+                onClick={handleLeftClick}
+                className={
+                  "flex text-2xl hover:scale-105 md:hidden" +
+                  colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
+                }
+              >
+                <FontAwesomeIcon className="h-10 w-12 mt-2" icon={faChevronLeft} />
+              </button>
+              <button
+                onClick={() => setShown(false)}
+                className={
+                  "mt-4 rounded-full px-4 py-2 font-semibold" +
+                  colorFromFeedbackLevel(FeedbackLevel.Secondary, true)
+                }
+              >
+                Close
+              </button>
+
+              <button
+                onClick={handleRightClick}
+                className={
+                  "flex text-2xl hover:scale-105 md:hidden" +
+                  colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
+                }
+              >
+                <FontAwesomeIcon className="h-10 w-12 mt-2" icon={faChevronRight} />
+              </button>
+            </div>
           </div>
         </motion.div>
       )}

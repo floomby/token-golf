@@ -28,17 +28,17 @@ const TestRuns: React.FC<TestRunsProps> = ({ challengeId, tests }) => {
     <div className="flex w-full flex-col items-center justify-center gap-4 rounded-md py-4 align-middle">
       <h2 className="text-2xl">Test Runs</h2>
       {status === "authenticated" ? (
-        <div className="flex w-full flex-col items-start justify-start divide-y-2 divide-gray-400 rounded-md border-2 text-black">
+        <div className="flex w-full flex-col items-start justify-start divide-y-2 divide-gray-400 rounded-md border-2 text-black overflow-x-auto">
           {!!testRuns ? (
             <table className="w-full table-auto">
               <thead>
                 <tr className="bg-gray-200 text-left">
-                  <th>Tokens</th>
-                  <th>Prompt</th>
-                  <th>Trim</th>
-                  <th>Case Sensitive</th>
-                  <th>Test</th>
-                  <th>Result</th>
+                  <th className="pr-1">Tokens</th>
+                  <th className="pr-1">Prompt</th>
+                  <th className="pr-1">Trim</th>
+                  <th className="pr-1">Case Sensitive</th>
+                  <th className="pr-1 hidden md:table-cell">Test</th>
+                  <th className="pr-1">Result</th>
                 </tr>
               </thead>
               <tbody>
@@ -59,24 +59,24 @@ const TestRuns: React.FC<TestRunsProps> = ({ challengeId, tests }) => {
                         setCaseSensitive(testRun.caseSensitive as boolean);
                       }}
                     >
-                      <td className="pl-1">{testRun.tokenCount}</td>
-                      <td className="pl-1">
+                      <td className="px-1">{testRun.tokenCount}</td>
+                      <td className="px-1">
                         <ClampText
                           maxLength={30}
                           text={testRun.prompt as string}
                         />
                       </td>
-                      <td className="pl-1">{testRun.trim ? "Yes" : "No"}</td>
-                      <td className="pl-1">
+                      <td className="px-1">{testRun.trim ? "Yes" : "No"}</td>
+                      <td className="px-1">
                         {testRun.caseSensitive ? "Yes" : "No"}
                       </td>
-                      <td className="pl-1">
+                      <td className="px-1 hidden md:table-cell">
                         <ClampText
                           maxLength={50}
                           text={`${testRun.testIndex} - ${tests[testRun.testIndex as number]?.test ?? ""}`}
                         />
                       </td>
-                      <td className="pl-1">
+                      <td className="px-1">
                         {testRun.success ? "Success" : "Failure"}
                       </td>
                     </tr>

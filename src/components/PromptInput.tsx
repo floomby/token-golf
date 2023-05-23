@@ -230,8 +230,8 @@ const PromptInput: React.FC<PromptInputProps> = ({ challengeId }) => {
   }, [prompt]);
 
   return (
-    <div className="flex w-full items-start justify-center gap-4 sm:flex-col md:flex-col lg:flex-col xl:flex-row 2xl:flex-row">
-      <div className="flex flex-col items-start justify-center gap-2 sm:w-full md:w-full lg:w-full xl:basis-1/2 2xl:basis-1/2">
+    <div className="flex w-full flex-col items-start justify-center gap-4 sm:flex-col md:flex-col lg:flex-col xl:flex-row 2xl:flex-row">
+      <div className="flex w-full flex-col items-start justify-center gap-2 sm:w-full md:w-full lg:w-full xl:basis-1/2 2xl:basis-1/2">
         <textarea
           className="min-h-[128px] w-full rounded-md border-2 border-gray-300 bg-gray-200 text-black placeholder:text-gray-800"
           value={prompt}
@@ -244,7 +244,7 @@ const PromptInput: React.FC<PromptInputProps> = ({ challengeId }) => {
           rows={10}
           placeholder={edited ? "" : instructions}
         />
-        <div className="flex w-full justify-between gap-4 sm:flex-col md:flex-row lg:flex-row xl:flex-col 2xl:flex-row">
+        <div className="flex w-full flex-col-reverse justify-between gap-4 md:flex-row lg:flex-row xl:flex-col 2xl:flex-row">
           <div className="flex flex-row items-center justify-start gap-8">
             <div className="mt-2">
               <Toggle
@@ -264,7 +264,7 @@ const PromptInput: React.FC<PromptInputProps> = ({ challengeId }) => {
             </div>
           </div>
           <div
-            className="flex flex-row items-center gap-2 sm:justify-start md:justify-end lg:justify-end xl:justify-start 2xl:justify-end"
+            className="flex flex-col md:flex-row items-start md:flex-center justify-start gap-2 md:justify-end lg:justify-end xl:justify-start 2xl:justify-end"
             data-tooltip-id={
               status === "authenticated" ? undefined : "run-tooltip"
             }
@@ -293,7 +293,6 @@ const PromptInput: React.FC<PromptInputProps> = ({ challengeId }) => {
                   });
                 }
               }}
-              // disabled={status !== "authenticated"}
             >
               Run Single Test
             </button>
@@ -342,7 +341,7 @@ const PromptInput: React.FC<PromptInputProps> = ({ challengeId }) => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col items-start justify-center gap-2 sm:w-full md:w-full lg:w-full xl:basis-1/2 2xl:basis-1/2">
+      <div className="flex w-full flex-col items-start justify-center gap-2 sm:w-full md:w-full lg:w-full xl:basis-1/2 2xl:basis-1/2">
         <div
           className="min-h-[128px] w-full rounded-md border-2 bg-gray-300 text-black"
           style={{

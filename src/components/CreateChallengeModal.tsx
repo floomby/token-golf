@@ -72,8 +72,8 @@ const CreateChallengeModal: React.FC = () => {
               "overflow-y-auto border-2 border-teal-500 bg-stone-300 dark:bg-stone-800"
             }
           >
-            <div className="flex w-full flex-col items-center justify-center gap-2 px-4">
-              <h2 className="text-md text-2xl font-bold">Create a Challenge</h2>
+            <div className="flex w-full flex-col items-center justify-center gap-2 px-4 max-h-[95vh]">
+              <p className="text-lg sm:text-xl md:text-2xl lg:text-4xl font-bold">Create a Challenge</p>
               <div className="w-full">
                 <button
                   className={
@@ -134,7 +134,7 @@ const CreateChallengeModal: React.FC = () => {
                       status !== "authenticated" ? "login" : undefined
                     }
                   >
-                    Upload
+                    Create
                   </span>
                 </button>
                 {status !== "authenticated" && (

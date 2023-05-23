@@ -3,11 +3,18 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import db from "~/utils/db";
 import { Scoring } from "~/utils/odm";
+import { env } from "~/env.mjs";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
   if (method !== "GET") {
     res.status(405);
+    res.end();
+    return;
+  }
+
+  if (!env.ADMIN_AUTH_TOKEN) {
+    res.status(500);
     res.end();
     return;
   }

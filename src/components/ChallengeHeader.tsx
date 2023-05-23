@@ -36,9 +36,7 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
 }) => {
   const router = useRouter();
 
-  const { setSubmissionShown } = useContext(
-    ModalContext
-  );
+  const { setSubmissionShown } = useContext(ModalContext);
 
   const { status } = useSession();
 
@@ -83,7 +81,7 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
   const [liked, setLiked] = useState(false);
 
   return (
-    <div className="text-semibold mb-4 flex min-w-[50%] flex-col gap-1 items-start">
+    <div className="text-semibold mb-4 flex min-w-[50%] flex-col items-start gap-1">
       <div className="flex flex-row items-center justify-center">
         {onClick ? (
           <h1
@@ -96,11 +94,11 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
             {challenge.name}
           </h1>
         ) : (
-          <h1 className="text-4xl">{challenge.name}</h1>
+          <h1 className="text-xl sm:text-2xl md:text-4xl">{challenge.name}</h1>
         )}
         {!!author ? (
           <>
-            <span className="ml-4 mr-2 text-gray-500 dark:text-gray-400">
+            <span className="ml-2 mr-2 text-gray-500 dark:text-gray-400 sm:ml-4 text-xs md:text-sm">
               by
             </span>
             <Link
@@ -121,43 +119,45 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
                   height={32}
                 />
               </div>
-              <span className="text-lg font-semibold text-black dark:text-white">
+              <span className="hidden text-md sm:text-lg font-semibold text-black dark:text-white md:flex">
                 {author.name}
               </span>
             </Link>
           </>
         ) : null}
-        <Liked
-          liked={liked}
-          likes={stats?.likes ?? 0}
-          onClick={() => {
-            if (status === "authenticated") {
-              void like({ challengeId: id, liked: !liked });
-              setLiked(!liked);
-            } else {
-              const id = Math.random().toString(36).substring(7);
-              notifications.add(id, {
-                message: "You need to be logged in to like challenges",
-                level: FeedbackLevel.Warning,
-                duration: 3000,
-              });
-            }
-          }}
-        />
-        {status === "authenticated" && showSubmissions && (
-          <button
-            className={
-              "px-4 py-2 font-semibold hover:scale-105" +
-              colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
-            }
-            onClick={() => setSubmissionShown(true)}
-          >
-            <FontAwesomeIcon
-              icon={faList}
-              className="mr-2 h-8 w-6 translate-x-2"
-            />
-          </button>
-        )}
+        <div className="flex flex-col items-center md:flex-row">
+          <Liked
+            liked={liked}
+            likes={stats?.likes ?? 0}
+            onClick={() => {
+              if (status === "authenticated") {
+                void like({ challengeId: id, liked: !liked });
+                setLiked(!liked);
+              } else {
+                const id = Math.random().toString(36).substring(7);
+                notifications.add(id, {
+                  message: "You need to be logged in to like challenges",
+                  level: FeedbackLevel.Warning,
+                  duration: 3000,
+                });
+              }
+            }}
+          />
+          {status === "authenticated" && showSubmissions && (
+            <button
+              className={
+                "px-4 py-2 font-semibold hover:scale-105" +
+                colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
+              }
+              onClick={() => setSubmissionShown(true)}
+            >
+              <FontAwesomeIcon
+                icon={faList}
+                className="h-8 w-8 translate-x-3"
+              />
+            </button>
+          )}
+        </div>
         {showPlayButton && (
           <button
             className={
@@ -174,40 +174,42 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
           </button>
         )}
       </div>
-      {showSubmissions && !!stats && (
-        <div className="ml-8 flex flex-row items-center gap-12">
-          <span>Completed by: {stats.completionCount}</span>
-          <span>Attempted by: {stats.attemptCount}</span>
-        </div>
-      )}
-      {status === "authenticated" && showSubmissions && !!stats && (
-        <div className="ml-8 flex flex-row items-center gap-12">
-          {!!stats.lastAttempted ? (
-            <span>Your last attempt: {longAgo(stats.lastAttempted)}</span>
-          ) : (
-            <span>Not attempted</span>
-          )}
-          {!!stats.lastAttempted &&
-            (!!stats.bestScore ? (
-              <span
-                className={
-                  "cursor-pointer select-none whitespace-nowrap hover:scale-105" +
-                  colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
-                }
-                onClick={() =>
-                  void router.push(
-                    `/challenges/${id}/${stats.bestScore!._id.toString()}`
-                  )
-                }
-              >
-                Best score: {stats.bestScore.tokenCount}
-              </span>
-            ) : (
-              <span>Unsolved</span>
-            ))}
-        </div>
-      )}
       <p>{challenge.description}</p>
+      <div className="sm:text-sm md:text-md ml-8 grid grid-cols-1 items-center gap-x-4 text-xs md:grid-cols-2">
+        {showSubmissions && !!stats && (
+          <>
+            <span>Completed by: {stats.completionCount}</span>
+            <span>Attempted by: {stats.attemptCount}</span>
+          </>
+        )}
+        {status === "authenticated" && showSubmissions && !!stats && (
+          <>
+            {!!stats.lastAttempted ? (
+              <span>Your last attempt: {longAgo(stats.lastAttempted)}</span>
+            ) : (
+              <span>Not attempted</span>
+            )}
+            {!!stats.lastAttempted &&
+              (!!stats.bestScore ? (
+                <span
+                  className={
+                    "cursor-pointer select-none whitespace-nowrap hover:scale-105" +
+                    colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
+                  }
+                  onClick={() =>
+                    void router.push(
+                      `/challenges/${id}/${stats.bestScore!._id.toString()}`
+                    )
+                  }
+                >
+                  Best score: {stats.bestScore.tokenCount}
+                </span>
+              ) : (
+                <span>Unsolved</span>
+              ))}
+          </>
+        )}
+      </div>
     </div>
   );
 };

@@ -26,7 +26,7 @@ const TestCarousel: React.FC<TestCarouselProps> = ({ challenge }) => {
   };
 
   return (
-    <div className="flex w-1/2 flex-col gap-2">
+    <div className="flex min-w-[50%] flex-col gap-2">
       <div className="flex w-full justify-between">
         <button
           className={
@@ -37,7 +37,7 @@ const TestCarousel: React.FC<TestCarouselProps> = ({ challenge }) => {
         >
           <FontAwesomeIcon className="h-12 w-12" icon={faChevronLeft} />
         </button>
-        <div className="flex flex-row items-center justify-center text-2xl font-semibold">
+        <div className="flex flex-row items-center justify-center text-2xl font-semibold whitespace-nowrap">
           {testIndex + 1} / {tests.length}
         </div>
         <button
