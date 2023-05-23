@@ -11,7 +11,7 @@ import {
   eitherProcedure,
 } from "~/server/api/trpc";
 import db from "~/utils/db";
-import { Challenge, IRun, Profile, Run, TestRun } from "~/utils/odm";
+import { Challenge, type IRun, Profile, Run, TestRun } from "~/utils/odm";
 import { ChallengeUploadSchema } from "~/utils/schemas";
 import { runTest } from "~/utils/runner";
 import { countTokens, getSegments } from "~/utils/tokenize";

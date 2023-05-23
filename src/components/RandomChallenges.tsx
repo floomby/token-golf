@@ -12,8 +12,6 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 const RandomChallenges: React.FC = () => {
-  const router = useRouter();
-
   const notifications = useNotificationQueue();
 
   const { status } = useSession();

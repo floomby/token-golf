@@ -1,8 +1,8 @@
 // Stream the uploaded file into mongodb (GridFS)
 
-import { NextApiRequest, NextApiResponse } from "next";
+import { type NextApiRequest, type NextApiResponse } from "next";
 import { getServerAuthSession } from "../../../server/auth";
-import { IncomingForm, Fields, Files } from "formidable";
+import { IncomingForm, type Fields, type Files } from "formidable";
 import { lookup } from "mime-types";
 import db from "~/utils/db";
 import mongoose from "mongoose";
@@ -16,7 +16,7 @@ export const config = {
 
 // Fragile form upload (only takes the file adding other fields will break it)
 // Also I am violating rest principles by having parameters in a POST request
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const image = async (req: NextApiRequest, res: NextApiResponse) => {
   // t3 gives us this helper function to get the session
   const serverSession = await getServerAuthSession({ req, res });
   if (!serverSession?.user) {
@@ -103,3 +103,5 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     res.end();
   }
 };
+
+export default image;

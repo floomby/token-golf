@@ -5,7 +5,7 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 import { env } from "~/env.mjs";
 import { updateChallengeScores } from "~/utils/scoring";
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const reindex = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
   if (method !== "GET") {
     res.status(405);
@@ -41,3 +41,5 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   res.status(200);
   res.end();
 };
+
+export default reindex;

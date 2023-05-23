@@ -32,12 +32,4 @@ const base64Decode = (value: string) => {
   return buff.toString("ascii");
 };
 
-// look at the last bit of the last character of the string
-const stringParity = (value: string) => {
-  const lastChar = value[value.length - 1];
-  const lastCharCode = lastChar!.charCodeAt(0);
-  const lastBit = lastCharCode & 1;
-  return lastBit;
-};
-
-export { base64Encode, base64Decode, isBrowser, stringParity };
+export { base64Encode, base64Decode, isBrowser };

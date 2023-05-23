@@ -1,7 +1,6 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { signIn, signOut, useSession } from "next-auth/react";
 
 import { api } from "~/utils/api";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
@@ -95,11 +94,11 @@ const MeUser: React.FC<MeUserProps> = ({
 
   return (
     <div className="flex min-w-[50%] flex-col items-start justify-start gap-2 p-4">
-      <div className="flex max-w-full items-start justify-start gap-2 sm:flex-row flex-col sm:items-center gap-x-4">
+      <div className="flex max-w-full flex-col items-start justify-start gap-2 gap-x-4 sm:flex-row sm:items-center">
         <div className="relative h-20 w-20 shrink-0 p-0">
           <button
             className={
-              "absolute bottom-0 left-0 z-10 w-6 rounded-full p-1 opacity-80 hover:scale-110 hover:opacity-100 -translate-x-1" +
+              "absolute bottom-0 left-0 z-10 w-6 -translate-x-1 rounded-full p-1 opacity-80 hover:scale-110 hover:opacity-100" +
               colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
             }
             onClick={() => {
@@ -121,7 +120,7 @@ const MeUser: React.FC<MeUserProps> = ({
         <div className="flex shrink-0 flex-row items-start justify-start gap-1">
           <button
             className={
-              "-translate-x-1 translate-y-1/2 rounded-full opacity-80 hover:scale-110 hover:opacity-100 w-0" +
+              "w-0 -translate-x-1 translate-y-1/2 rounded-full opacity-80 hover:scale-110 hover:opacity-100" +
               colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
             }
             onClick={() => {
@@ -129,11 +128,11 @@ const MeUser: React.FC<MeUserProps> = ({
               inputRef.current?.focus();
             }}
           >
-            <FontAwesomeIcon icon={faPencilAlt} className="p-1 w-6" />
+            <FontAwesomeIcon icon={faPencilAlt} className="w-6 p-1" />
           </button>
           <input
             className={
-              "z-10 rounded-lg border-0 px-2 text-2xl font-semibold duration-200 ease-in-out mr-2" +
+              "z-10 mr-2 rounded-lg border-0 px-2 text-2xl font-semibold duration-200 ease-in-out" +
               (editingName
                 ? " bg-white text-black shadow-md"
                 : " pointer-events-none bg-transparent text-black dark:text-white")
@@ -241,7 +240,7 @@ const UserChallenges: React.FC<UserChallengesProps> = ({ id }) => {
   });
 
   return (
-    <div className="flex flex-col items-start justify-start gap-2 grow">
+    <div className="flex grow flex-col items-start justify-start gap-2">
       <h2 className="text-2xl">Challenges</h2>
       <div className="flex w-full flex-row items-start justify-start gap-4">
         <div className="flex flex-col items-start justify-start gap-2 border-l-2 pl-2">
@@ -251,7 +250,11 @@ const UserChallenges: React.FC<UserChallengesProps> = ({ id }) => {
                 <span
                   key={(challenge.id as mongoose.Types.ObjectId).toString()}
                 >
-                  <Tooltip className="tooltip-overrides" id={challenge.id as string} place="right">
+                  <Tooltip
+                    className="tooltip-overrides"
+                    id={challenge.id as string}
+                    place="right"
+                  >
                     {challenge.description}
                   </Tooltip>
                   <Link

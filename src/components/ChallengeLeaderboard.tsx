@@ -14,8 +14,6 @@ type ChallengeLeaderboardProps = {
 const ChallengeLeaderboard: React.FC<ChallengeLeaderboardProps> = ({
   challengeId,
 }) => {
-  const router = useRouter();
-
   const notifications = useNotificationQueue();
 
   const { data: runs, refetch } =

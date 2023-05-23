@@ -14,7 +14,6 @@ import { flattenId, getSecond } from "~/utils/flatten";
 import { ModalContext } from "~/providers/modal";
 import { EditorContext } from "~/providers/editor";
 import ChallengeHeader from "~/components/ChallengeHeader";
-import TWIndicator from "~/components/TWIndicator";
 
 const ChallengePage: NextPage = () => {
   const router = useRouter();

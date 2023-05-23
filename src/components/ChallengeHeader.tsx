@@ -1,7 +1,7 @@
 import { faList, faPlay } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/router";
-import { IChallenge } from "~/utils/odm";
+import { type IChallenge } from "~/utils/odm";
 import Link from "next/link";
 import Image from "next/image";
 import { ModalContext } from "~/providers/modal";
@@ -98,7 +98,7 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
         )}
         {!!author ? (
           <>
-            <span className="ml-2 mr-2 text-gray-500 dark:text-gray-400 sm:ml-4 text-xs md:text-sm">
+            <span className="ml-2 mr-2 text-xs text-gray-500 dark:text-gray-400 sm:ml-4 md:text-sm">
               by
             </span>
             <Link
@@ -119,7 +119,7 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
                   height={32}
                 />
               </div>
-              <span className="hidden text-md sm:text-lg font-semibold text-black dark:text-white md:flex">
+              <span className="text-md hidden font-semibold text-black dark:text-white sm:text-lg md:flex">
                 {author.name}
               </span>
             </Link>
@@ -175,7 +175,7 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
         )}
       </div>
       <p>{challenge.description}</p>
-      <div className="sm:text-sm md:text-md ml-8 grid grid-cols-1 items-center gap-x-4 text-xs md:grid-cols-2">
+      <div className="md:text-md ml-8 grid grid-cols-1 items-center gap-x-4 text-xs sm:text-sm md:grid-cols-2">
         {showSubmissions && !!stats && (
           <>
             <span>Completed by: {stats.completionCount}</span>
@@ -198,7 +198,9 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
                   }
                   onClick={() =>
                     void router.push(
-                      `/challenges/${id}/${stats.bestScore!._id.toString()}`
+                      `/challenges/${id}/${
+                        stats.bestScore?._id.toString() ?? ""
+                      }`
                     )
                   }
                 >

@@ -5,7 +5,7 @@ import db from "~/utils/db";
 import { Scoring } from "~/utils/odm";
 import { env } from "~/env.mjs";
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const createScoring = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req;
   if (method !== "GET") {
     res.status(405);
@@ -31,10 +31,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   await db();
 
-  await Scoring.create([{
-    scores,
-  }]);
+  await Scoring.create([
+    {
+      scores,
+    },
+  ]);
 
   res.status(200);
   res.end();
 };
+
+export default createScoring;

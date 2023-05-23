@@ -48,7 +48,7 @@ const CreateChallengeModal: React.FC = () => {
     });
   }, [challenge, setValid, setParsed, debouncer]);
 
-  const { status, data: session } = useSession();
+  const { status } = useSession();
 
   const {
     createShown: shown,
@@ -72,8 +72,10 @@ const CreateChallengeModal: React.FC = () => {
               "overflow-y-auto border-2 border-teal-500 bg-stone-300 dark:bg-stone-800"
             }
           >
-            <div className="flex w-full flex-col items-center justify-center gap-2 px-4 max-h-[95vh]">
-              <p className="text-lg sm:text-xl md:text-2xl lg:text-4xl font-bold">Create a Challenge</p>
+            <div className="flex max-h-[95vh] w-full flex-col items-center justify-center gap-2 px-4">
+              <p className="text-lg font-bold sm:text-xl md:text-2xl lg:text-4xl">
+                Create a Challenge
+              </p>
               <div className="w-full">
                 <button
                   className={

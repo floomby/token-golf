@@ -5,13 +5,10 @@ import { api } from "~/utils/api";
 import Spinner from "./Spinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRefresh, faTrophy } from "@fortawesome/free-solid-svg-icons";
-import { Tooltip } from "react-tooltip";
 import Link from "next/link";
 
 const Leaderboard: React.FC = () => {
   const notifications = useNotificationQueue();
-
-  const router = useRouter();
 
   const { data: leaders, refetch } = api.user.getLeaderboard.useQuery(
     { limit: 45, offset: 0 },
