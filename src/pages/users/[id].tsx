@@ -133,7 +133,7 @@ const MeUser: React.FC<MeUserProps> = ({
           </button>
           <input
             className={
-              "z-10 rounded-lg border-0 px-2 text-2xl font-semibold duration-200 ease-in-out" +
+              "z-10 rounded-lg border-0 px-2 text-2xl font-semibold duration-200 ease-in-out mr-2" +
               (editingName
                 ? " bg-white text-black shadow-md"
                 : " pointer-events-none bg-transparent text-black dark:text-white")
