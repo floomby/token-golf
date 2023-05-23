@@ -26,7 +26,7 @@ const config = {
   },
 
   images: {
-    domains: ["avatars.githubusercontent.com"],
+    domains: ["lh3.googleusercontent.com", "avatars.githubusercontent.com"],
   },
 
   webpack: function (config, options) {
