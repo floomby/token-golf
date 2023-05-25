@@ -45,11 +45,13 @@ const runTest = async (
     console.log("pushing intermediate", resultText);
     intermediates.push(resultText);
 
-    const [next, ...rest2] = rest;
+    let [next, ...rest2] = rest;
+
+    next = next!.replace("{input}", resultText);
 
     const output = await openai.createCompletion({
       model: "text-davinci-003",
-      prompt: next!,
+      prompt: next,
       temperature: 0,
       max_tokens: maxTokens,
     });
