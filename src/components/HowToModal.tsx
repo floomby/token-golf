@@ -34,8 +34,8 @@ const HowToModal: React.FC = () => {
         expected output for every test in the challenge.
       </p>
       <p className="text-lg">
-        The test content is interpolated using the <code>{"{test}"}</code>{" "}
-        variable in the exact same way a{" "}
+        The test content is interpolated using the <code>{"{input}"}</code>{" "}
+        variable similar to how a{" "}
         <a
           href="https://js.langchain.com/docs/modules/prompts/prompt_templates/"
           className="text-blue-600 hover:underline dark:text-blue-400"
