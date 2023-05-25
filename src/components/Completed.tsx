@@ -65,6 +65,7 @@ const Completed: React.FC<CompletedProps> = ({ userId }) => {
                         <ClampText
                           text={`${run.challenge.name} - ${run.challenge.description}`}
                           maxLength={45}
+                          uid={run.challenge.id.toString() + "-tt"}
                         />
                       </Link>
                     </td>

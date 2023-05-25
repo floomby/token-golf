@@ -6,15 +6,15 @@ type ToggleProps = {
   checked: boolean;
   setChecked: (checked: boolean) => void;
   tooltip?: string;
+  uid: string;
 };
 const Toggle: React.FC<ToggleProps> = ({
   label,
   checked,
   setChecked,
   tooltip,
+  uid,
 }) => {
-  const uid = useMemo(() => Math.random().toString(36).substring(2, 15), []);
-
   return (
     <label
       className="relative inline-flex cursor-pointer items-center text-black dark:text-white"
@@ -41,7 +41,11 @@ const Toggle: React.FC<ToggleProps> = ({
       <span className="text-md text-primary ml-2 whitespace-nowrap font-medium">
         {label}
       </span>
-      {tooltip && <Tooltip className="tooltip-overrides" id={`toggle-${uid}`}>{tooltip}</Tooltip>}
+      {tooltip && (
+        <Tooltip className="tooltip-overrides" id={`toggle-${uid}`}>
+          {tooltip}
+        </Tooltip>
+      )}
     </label>
   );
 };

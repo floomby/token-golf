@@ -142,6 +142,7 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
                 });
               }
             }}
+            uid="challenge-header-liked"
           />
           {status === "authenticated" && showSubmissions && (
             <button

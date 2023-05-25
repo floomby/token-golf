@@ -1,5 +1,9 @@
 ## TODO
 
+### Priority Stuff
+
+- Itermediate results
+
 ### Polish
 
 - Think about best way to handle square image issue (should I crop before putting in db?)
@@ -14,9 +18,8 @@
 
 - Commenting on challenges?
 - Deleting challenges (think about deleting in general (should this delete scores?, etc...))
-- COME UP WITH A MORE INTERESTING HOOK FOR THIS SITE!
-- Improve feed
 - Options for trim and case sensitivity in problem creation?
+- Improve feed
 
 ### Backend Chores
 

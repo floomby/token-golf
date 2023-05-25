@@ -1,30 +1,43 @@
 import { useRouter } from "next/router";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useCallback, useEffect, useState } from "react";
 
 export type EditorContextType = {
-  prompt: string;
-  setPrompt: (prompt: string) => void;
+  prompts: string[];
+  setPrompts: (prompts: string[]) => void;
+  setPrompt: (prompt: string, index: number) => void;
   testIndex: number;
   setTestIndex: (testIndex: number) => void;
   trim: boolean;
   setTrim: (trim: boolean) => void;
   caseSensitive: boolean;
   setCaseSensitive: (caseSensitive: boolean) => void;
+  counts: number[];
+  setCounts: (counts: number[]) => void;
+  setCount: (count: number, index: number) => void;
+  totalCount: number;
 };
 
 const EditorContext = createContext<EditorContextType>({
-  prompt: "",
+  prompts: [""],
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  setPrompt: () => {},
+  setPrompts: () => { },
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  setPrompt: () => { },
   testIndex: 0,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  setTestIndex: () => {},
+  setTestIndex: () => { },
   trim: true,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  setTrim: () => {},
+  setTrim: () => { },
   caseSensitive: false,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  setCaseSensitive: () => {},
+  setCaseSensitive: () => { },
+  counts: [0],
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  setCounts: () => { },
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  setCount: () => { },
+  totalCount: 0,
 });
 
 export { EditorContext };
@@ -33,10 +46,33 @@ type EditorProviderProps = {
   children: React.ReactNode;
 };
 const EditorProvider: React.FC<EditorProviderProps> = ({ children }) => {
-  const [prompt, setPrompt] = useState("");
+  const [prompts, setPrompts] = useState<string[]>([""]);
   const [testIndex, setTestIndex] = useState(0);
   const [trim, setTrim] = useState(true);
   const [caseSensitive, setCaseSensitive] = useState(false);
+  const [counts, setCounts_] = useState<number[]>([0]);
+  const [totalCount, setTotalCount] = useState(0);
+
+  const setPrompt = useCallback(
+    (prompt: string, index: number) => {
+      const newPrompts = [...prompts];
+      newPrompts[index] = prompt;
+      setPrompts(newPrompts);
+    }, [prompts, setPrompts]);
+
+  const setCount = useCallback(
+    (count: number, index: number) => {
+      const newCounts = [...counts];
+      newCounts[index] = count;
+      setCounts_(newCounts);
+      setTotalCount(newCounts.reduce((a, b) => a + b, 0));
+    }, [counts, setCounts_, setTotalCount]);
+
+  const setCounts = useCallback(
+    (counts: number[]) => {
+      setCounts_(counts);
+      setTotalCount(counts.reduce((a, b) => a + b, 0));
+    }, [setCounts_, setTotalCount]);
 
   const router = useRouter();
 
@@ -49,7 +85,8 @@ const EditorProvider: React.FC<EditorProviderProps> = ({ children }) => {
   return (
     <EditorContext.Provider
       value={{
-        prompt,
+        prompts,
+        setPrompts,
         setPrompt,
         testIndex,
         setTestIndex,
@@ -57,6 +94,10 @@ const EditorProvider: React.FC<EditorProviderProps> = ({ children }) => {
         setTrim,
         caseSensitive,
         setCaseSensitive,
+        counts,
+        setCounts,
+        setCount,
+        totalCount,
       }}
     >
       {children}

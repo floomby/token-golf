@@ -7,7 +7,7 @@ export interface IResult {
 }
 
 export interface IRun {
-  prompt: string;
+  prompts: string[];
   trim: boolean;
   caseSensitive: boolean;
   tokenCount: number;
@@ -19,7 +19,7 @@ export interface IRun {
 }
 
 const RunSchema = new mongoose.Schema<IRun>({
-  prompt: { type: String, required: true },
+  prompts: { type: [String], required: true },
   trim: { type: Boolean, required: true },
   caseSensitive: { type: Boolean, required: true },
   tokenCount: { type: Number, required: true },
@@ -43,7 +43,7 @@ const Run =
   mongoose.model<IRun>("Run", RunSchema);
 
 export interface ITestRun {
-  prompt: string;
+  prompts: string[];
   trim: boolean;
   caseSensitive: boolean;
   tokenCount: number;
@@ -56,7 +56,7 @@ export interface ITestRun {
 }
 
 const TestRunSchema = new mongoose.Schema<ITestRun>({
-  prompt: { type: String, required: true },
+  prompts: { type: [String], required: true },
   trim: { type: Boolean, required: true },
   caseSensitive: { type: Boolean, required: true },
   tokenCount: { type: Number, required: true },

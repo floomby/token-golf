@@ -23,7 +23,7 @@ const ChallengeSubmissionsModal: React.FC = () => {
     setDetailsId,
   } = useContext(ModalContext);
 
-  const { setPrompt, setTrim, setCaseSensitive, setTestIndex } =
+  const { setPrompts, setTrim, setCaseSensitive, setTestIndex } =
     useContext(EditorContext);
 
   const { data: runs, refetch } = api.challenge.getMyResults.useQuery(
@@ -127,7 +127,7 @@ const ChallengeSubmissionsModal: React.FC = () => {
                               }
 
                               setTestIndex(0);
-                              setPrompt(run.prompt);
+                              setPrompts(run.prompts);
                               setTrim(run.trim);
                               setCaseSensitive(run.caseSensitive);
                               setShown(false);

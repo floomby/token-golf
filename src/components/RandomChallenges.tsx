@@ -73,9 +73,6 @@ const RandomChallenges: React.FC = () => {
                   <tr
                     key={i}
                     className="cursor-pointer bg-stone-300 bg-opacity-30 transition-all duration-200 ease-in-out hover:bg-stone-300 dark:hover:bg-stone-700"
-                    // onClick={() => {
-                    //   void router.push(`/overviews/${challenge.id}`);
-                    // }}
                   >
                     <td>
                       <Link
@@ -85,6 +82,7 @@ const RandomChallenges: React.FC = () => {
                         <ClampText
                           text={`${challenge.name} - ${challenge.description}`}
                           maxLength={60}
+                          uid={`challenge-${i}`}
                         />
                       </Link>
                     </td>
@@ -128,17 +126,15 @@ const RandomChallenges: React.FC = () => {
                             )}
                           </Link>
                           <Tooltip className="tooltip-overrides" id={`stats-${i}`}>
-                            {`${
-                              !!challenge.lastAttempted
-                                ? "Last attempted " +
-                                  longAgo(challenge.lastAttempted)
-                                : "Not attempted "
-                            } - ${
-                              !!challenge.bestScore
+                            {`${!!challenge.lastAttempted
+                              ? "Last attempted " +
+                              longAgo(challenge.lastAttempted)
+                              : "Not attempted "
+                              } - ${!!challenge.bestScore
                                 ? "Best score: " +
-                                  challenge.bestScore.tokenCount.toString()
+                                challenge.bestScore.tokenCount.toString()
                                 : "Unsolved"
-                            }`}
+                              }`}
                           </Tooltip>
                         </>
                       )}

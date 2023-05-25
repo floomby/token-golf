@@ -10,10 +10,9 @@ type LikedProps = {
   liked: boolean;
   likes: number;
   onClick: () => void;
+  uid: string;
 };
-const Liked: React.FC<LikedProps> = ({ liked, likes, onClick }) => {
-  const uid = useMemo(() => Math.random().toString(36).substring(2, 15), []);
-
+const Liked: React.FC<LikedProps> = ({ liked, likes, onClick, uid }) => {
   return (
     <div
       className="ml-6 inline-block h-8 w-8 font-semibold"
@@ -43,7 +42,11 @@ const Liked: React.FC<LikedProps> = ({ liked, likes, onClick }) => {
           <FontAwesomeIcon icon={faHeartRegular} className="h-8 w-8" />
         </PopIn>
       </div>
-      <Tooltip className="tooltip-overrides select-none" id={`liked-${uid}`} place="bottom">
+      <Tooltip
+        className="tooltip-overrides select-none"
+        id={`liked-${uid}`}
+        place="bottom"
+      >
         {likes} {likes === 1 ? "like" : "likes"}
       </Tooltip>
     </div>

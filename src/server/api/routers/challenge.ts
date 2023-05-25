@@ -42,13 +42,18 @@ export const challengeRouter = createTRPCRouter({
       z.object({
         challengeId: z.string(),
         testIndex: z.number(),
-        prompt: z.string(),
+        prompts: z.array(z.string()),
         trim: z.boolean(),
         caseSensitive: z.boolean(),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      if (input.prompt === "") {
+      if (input.prompts.length === 0) {
+        throw new Error("Must have a prompt");
+      }
+
+      // check that all the prompts have at least one character
+      if (input.prompts.some((prompt) => prompt.length === 0)) {
         throw new Error("Prompt cannot be empty");
       }
 
@@ -77,11 +82,14 @@ export const challengeRouter = createTRPCRouter({
           throw new Error("Test not found");
         }
 
-        const tokenCount = countTokens(getSegments(input.prompt));
+        // const tokenCount = countTokens(getSegments(input.prompt));
+        const tokenCount = input.prompts
+          .map((prompt) => countTokens(getSegments(prompt)))
+          .reduce((a, b) => a + b, 0);
 
         const result = await runTest(
           test,
-          input.prompt,
+          input.prompts,
           input.trim,
           input.caseSensitive
         );
@@ -89,7 +97,7 @@ export const challengeRouter = createTRPCRouter({
         const testRun = await TestRun.create(
           [
             {
-              prompt: input.prompt,
+              prompts: input.prompts,
               trim: input.trim,
               caseSensitive: input.caseSensitive,
               tokenCount,
@@ -117,13 +125,18 @@ export const challengeRouter = createTRPCRouter({
       z.object({
         challengeId: z.string(),
         testIndex: z.number(),
-        prompt: z.string(),
+        prompts: z.array(z.string()),
         trim: z.boolean(),
         caseSensitive: z.boolean(),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      if (input.prompt === "") {
+      if (input.prompts.length === 0) {
+        throw new Error("Must have a prompt");
+      }
+
+      // check that all the prompts have at least one character
+      if (input.prompts.some((prompt) => prompt.length === 0)) {
         throw new Error("Prompt cannot be empty");
       }
 
@@ -143,7 +156,7 @@ export const challengeRouter = createTRPCRouter({
 
       const result = await runTest(
         test,
-        input.prompt,
+        input.prompts,
         input.trim,
         input.caseSensitive
       );
@@ -161,7 +174,16 @@ export const challengeRouter = createTRPCRouter({
       await db();
 
       // aggregation to get the most recent runs with a limit of 25
-      const runs = await TestRun.aggregate([
+      const runs: {
+        prompts: string[];
+        trim: boolean;
+        caseSensitive: boolean;
+        tokenCount: number;
+        at: Date;
+        testIndex: number;
+        result: string;
+        success: boolean;
+      }[] = await TestRun.aggregate([
         {
           $match: {
             challenge: new mongoose.Types.ObjectId(input),
@@ -178,7 +200,7 @@ export const challengeRouter = createTRPCRouter({
         },
         {
           $project: {
-            prompt: 1,
+            prompts: 1,
             trim: 1,
             caseSensitive: 1,
             tokenCount: 1,
@@ -197,13 +219,18 @@ export const challengeRouter = createTRPCRouter({
     .input(
       z.object({
         challengeId: z.string(),
-        prompt: z.string(),
+        prompts: z.array(z.string()),
         trim: z.boolean(),
         caseSensitive: z.boolean(),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      if (input.prompt === "") {
+      if (input.prompts.length === 0) {
+        throw new Error("Must have a prompt");
+      }
+
+      // check that all the prompts have at least one character
+      if (input.prompts.some((prompt) => prompt.length === 0)) {
         throw new Error("Prompt cannot be empty");
       }
 
@@ -225,18 +252,20 @@ export const challengeRouter = createTRPCRouter({
           throw new Error("Challenge not found");
         }
 
-        const tokenCount = countTokens(getSegments(input.prompt));
+        const tokenCount = input.prompts
+          .map((prompt) => countTokens(getSegments(prompt)))
+          .reduce((a, b) => a + b, 0);
 
         const result = await Promise.all(
           challenge.tests.map(async (test, index) =>
-            runTest(test, input.prompt, input.trim, input.caseSensitive)
+            runTest(test, input.prompts, input.trim, input.caseSensitive)
           )
         );
 
         const runs = await Run.create(
           [
             {
-              prompt: input.prompt,
+              prompts: input.prompts,
               trim: input.trim,
               caseSensitive: input.caseSensitive,
               tokenCount,
@@ -265,13 +294,18 @@ export const challengeRouter = createTRPCRouter({
     .input(
       z.object({
         challengeId: z.string(),
-        prompt: z.string(),
+        prompts: z.array(z.string()),
         trim: z.boolean(),
         caseSensitive: z.boolean(),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      if (input.prompt === "") {
+      if (input.prompts.length === 0) {
+        throw new Error("Must have a prompt");
+      }
+
+      // check that all the prompts have at least one character
+      if (input.prompts.some((prompt) => prompt.length === 0)) {
         throw new Error("Prompt cannot be empty");
       }
 
@@ -293,18 +327,20 @@ export const challengeRouter = createTRPCRouter({
           throw new Error("Challenge not found");
         }
 
-        const tokenCount = countTokens(getSegments(input.prompt));
+        const tokenCount = input.prompts
+          .map((prompt) => countTokens(getSegments(prompt)))
+          .reduce((a, b) => a + b, 0);
 
         const result = await Promise.all(
           challenge.tests.map(async (test, index) =>
-            runTest(test, input.prompt, input.trim, input.caseSensitive)
+            runTest(test, input.prompts, input.trim, input.caseSensitive)
           )
         );
 
         const runs = await Run.create(
           [
             {
-              prompt: input.prompt,
+              prompts: input.prompts,
               trim: input.trim,
               caseSensitive: input.caseSensitive,
               tokenCount,
@@ -341,8 +377,8 @@ export const challengeRouter = createTRPCRouter({
     const profileId = ctx.session?.user?.profileId;
 
     if (!profileId) {
-      ret.prompt = "";
-      ret.message = "You must be logged in to view a submission's prompt";
+      ret.prompts = [""];
+      ret.message = "You must be logged in to view a submission's prompts";
       return ret;
     }
 
@@ -373,7 +409,7 @@ export const challengeRouter = createTRPCRouter({
       profileBestScore.length === 0 ||
       profileBestScore[0]!.tokenCount > ret.tokenCount
     ) {
-      ret.prompt = "";
+      ret.prompts = [""];
       ret.message =
         "You must have a equal or lower score to view a submission's prompt";
     }
@@ -406,7 +442,7 @@ export const challengeRouter = createTRPCRouter({
             at: 1,
             results: 1,
             tokenCount: 1,
-            prompt: 1,
+            prompts: 1,
             trim: 1,
             caseSensitive: 1,
             success: {

@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-
 import { api } from "~/utils/api";
 import Spinner from "./Spinner";
 import ClampText from "./ClampText";
@@ -16,7 +13,7 @@ type TestRunsProps = {
 const TestRuns: React.FC<TestRunsProps> = ({ challengeId, tests }) => {
   const { status } = useSession();
 
-  const { setTestIndex, setPrompt, setTrim, setCaseSensitive } =
+  const { setTestIndex, setPrompts, setTrim, setCaseSensitive } =
     useContext(EditorContext);
 
   const { data: testRuns } = api.challenge.myTestRuns.useQuery(challengeId, {
@@ -28,22 +25,22 @@ const TestRuns: React.FC<TestRunsProps> = ({ challengeId, tests }) => {
     <div className="flex w-full flex-col items-center justify-center gap-4 rounded-md py-4 align-middle">
       <h2 className="text-2xl">Test Runs</h2>
       {status === "authenticated" ? (
-        <div className="flex w-full flex-col items-start justify-start divide-y-2 divide-gray-400 rounded-md border-2 text-black overflow-x-auto">
+        <div className="flex w-full flex-col items-start justify-start divide-y-2 divide-gray-400 overflow-x-auto rounded-md border-2 text-black">
           {!!testRuns ? (
-            <table className="w-full table-auto">
-              <thead>
-                <tr className="bg-gray-200 text-left">
-                  <th className="pr-1">Tokens</th>
-                  <th className="pr-1">Prompt</th>
-                  <th className="pr-1">Trim</th>
-                  <th className="pr-1">Case Sensitive</th>
-                  <th className="pr-1 hidden md:table-cell">Test</th>
-                  <th className="pr-1">Result</th>
-                </tr>
-              </thead>
-              <tbody>
-                {testRuns.length > 0 ? (
-                  testRuns.map((testRun, index) => (
+            testRuns.length > 0 ? (
+              <table className="w-full table-auto">
+                <thead>
+                  <tr className="bg-gray-200 text-left">
+                    <th className="pr-1">Tokens</th>
+                    <th className="pr-1">Prompt</th>
+                    <th className="pr-1">Trim</th>
+                    <th className="pr-1">Case Sensitive</th>
+                    <th className="hidden pr-1 md:table-cell">Test</th>
+                    <th className="pr-1">Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {testRuns.map((testRun, index) => (
                     <tr
                       key={index}
                       className={
@@ -54,7 +51,7 @@ const TestRuns: React.FC<TestRunsProps> = ({ challengeId, tests }) => {
                       }
                       onClick={() => {
                         setTestIndex(testRun.testIndex as number);
-                        setPrompt(testRun.prompt as string);
+                        setPrompts(testRun.prompts);
                         setTrim(testRun.trim as boolean);
                         setCaseSensitive(testRun.caseSensitive as boolean);
                       }}
@@ -63,31 +60,35 @@ const TestRuns: React.FC<TestRunsProps> = ({ challengeId, tests }) => {
                       <td className="px-1">
                         <ClampText
                           maxLength={30}
-                          text={testRun.prompt as string}
+                          text={testRun.prompts.join(" ")}
+                          uid={`test-${index}`}
                         />
                       </td>
                       <td className="px-1">{testRun.trim ? "Yes" : "No"}</td>
                       <td className="px-1">
                         {testRun.caseSensitive ? "Yes" : "No"}
                       </td>
-                      <td className="px-1 hidden md:table-cell">
+                      <td className="hidden px-1 md:table-cell">
                         <ClampText
                           maxLength={50}
-                          text={`${testRun.testIndex} - ${tests[testRun.testIndex as number]?.test ?? ""}`}
+                          text={`${testRun.testIndex} - ${
+                            tests[testRun.testIndex as number]?.test ?? ""
+                          }`}
+                          uid={`test--${index}`}
                         />
                       </td>
                       <td className="px-1">
                         {testRun.success ? "Success" : "Failure"}
                       </td>
                     </tr>
-                  ))
-                ) : (
-                  <p className="ml-2 text-lg font-semibold dark:text-white">
-                    No test runs
-                  </p>
-                )}
-              </tbody>
-            </table>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p className="ml-2 text-lg font-semibold dark:text-white">
+                No test runs
+              </p>
+            )
           ) : (
             <div className="flex w-full items-center justify-center">
               <Spinner />

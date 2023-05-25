@@ -6,13 +6,13 @@ import { Tooltip } from "react-tooltip";
 type ClampTextProps = {
   text: string;
   maxLength: number;
+  uid: string;
 };
 const ClampText: React.FC<ClampTextProps> = ({
   text,
   maxLength,
+  uid,
 }: ClampTextProps) => {
-  const uid = useMemo(() => Math.random().toString(36).substring(2, 15), []);
-
   return text.length > maxLength ? (
     <span className="truncate" data-tooltip-id={`tooltip-${uid}`}>
       {text.length > maxLength ? text.substring(0, maxLength) + "..." : text}

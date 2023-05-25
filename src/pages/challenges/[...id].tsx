@@ -4,7 +4,7 @@ import Head from "next/head";
 import { api } from "~/utils/api";
 import { FeedbackLevel } from "~/lib/feedback";
 import { useNotificationQueue } from "~/providers/notifications";
-import PromptInput from "~/components/PromptInput";
+import PromptInput from "~/components/PromptInputs";
 import { useContext, useEffect } from "react";
 import { useRouter } from "next/router";
 import TestCarousel from "~/components/TestCarousel";
@@ -57,7 +57,7 @@ const ChallengePage: NextPage = () => {
           duration: 5000,
         });
       } else {
-        setPrompt(data.prompt);
+        setPrompts(data.prompts);
         setCaseSensitive(data.caseSensitive);
         setTrim(data.trim);
       }
@@ -65,7 +65,7 @@ const ChallengePage: NextPage = () => {
     refetchOnWindowFocus: false,
   });
 
-  const { setPrompt, setTrim, setCaseSensitive } = useContext(EditorContext);
+  const { setPrompts, setTrim, setCaseSensitive } = useContext(EditorContext);
 
   const { data: author } = api.user.read.useQuery(
     challenge?.createdBy.toString() || "",
@@ -89,10 +89,10 @@ const ChallengePage: NextPage = () => {
   }, [id, setChallengeId]);
 
   useEffect(() => {
-    setPrompt("");
+    setPrompts([""]);
     setTrim(true);
     setCaseSensitive(false);
-  }, [setPrompt, setTrim, setCaseSensitive]);
+  }, [setPrompts, setTrim, setCaseSensitive]);
 
   return (
     <>

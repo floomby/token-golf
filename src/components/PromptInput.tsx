@@ -1,22 +1,14 @@
-import { useContext, useEffect, useState } from "react";
+import { faPlus, faX } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useEffect, useState } from "react";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
-// import { compile } from "html-to-text";
-import { api } from "~/utils/api";
-import { useNotificationQueue } from "~/providers/notifications";
-import Toggle from "./Toggle";
 import { countTokens, encoder, getSegments } from "~/utils/tokenize";
-import { Tooltip } from "react-tooltip";
-import { useSession } from "next-auth/react";
-import { ModalContext } from "~/providers/modal";
-import { EditorContext } from "~/providers/editor";
-
-// const compiledConvert = compile({ wordwrap: false, preserveNewlines: true });
 
 // prettier-ignore
-const instructions = 
+const instructions =
 `Instructions to the language model on how to the problem.
-The test text is substituted into {test}
-The output must match the expected value.
+The test text is substituted into {input}
+The final output must match the expected value.
 
 The following is an example.
 
@@ -24,9 +16,16 @@ The following is an example.
 
 Classify the following into as either an "Animal" or a "Vehicle"
 
-{test}
+{input}
 
 classification: `;
+
+// prettier-ignore
+const chainInstructions =
+`Additional stages process the output of a previous stage.
+This allows processing output from a previous stage in order to solve the problem with multiple steps.
+
+The output from the previous stage is substituted into {input}.`
 
 const colorFromIndex = (index: number) => {
   switch (index % 3) {
@@ -83,7 +82,7 @@ const TokenInfo: React.FC<TokenInfoProps> = ({ token }) => {
   const encoding = encoder.encode(token, "all");
 
   return (
-    <div className="flex w-48 flex-col justify-start gap-2">
+    <div className="ml-1 flex flex-col justify-start">
       <h3 className="text-lg font-bold">&quot;{token}&quot;</h3>
       <h3 className="text-lg font-bold">Encoding: {encoding.join(", ")}</h3>
     </div>
@@ -91,148 +90,70 @@ const TokenInfo: React.FC<TokenInfoProps> = ({ token }) => {
 };
 
 type PromptInputProps = {
-  challengeId: string;
+  prompt: string;
+  setPrompt: (prompt: string) => void;
+  index: number;
+  edited: boolean;
+  removeStage: () => void;
+  insertStage: () => void;
+  tokenCount: number;
+  setTokenCount: (tokenCount: number, index: number) => void;
 };
-const PromptInput: React.FC<PromptInputProps> = ({ challengeId }) => {
-  const { setSubmissionShown, setDetailsId } = useContext(ModalContext);
-
-  const notifications = useNotificationQueue();
-
-  const [edited, setEdited] = useState(false);
-
-  const {
-    prompt,
-    setPrompt,
-    testIndex,
-    trim,
-    setTrim,
-    caseSensitive,
-    setCaseSensitive,
-  } = useContext(EditorContext);
-
-  useEffect(() => {
-    if (prompt.length > 0) {
-      setEdited(true);
-    }
-  }, [prompt, setEdited]);
-
-  const { mutate: runSingleTest } = api.challenge.runSingleTest.useMutation({
-    onSuccess: (data) => {
-      const id = Math.random().toString();
-      notifications.add(id, {
-        html: data.success
-          ? `<b>Success:</b> <code>&quot;${data.result}&quot;</code>`
-          : `<b>Failed:</b> <code>&quot;${data.result}&quot;</code>`,
-        level: data.success ? FeedbackLevel.Success : FeedbackLevel.Warning,
-        duration: 5000,
-      });
-    },
-    onError: (error) => {
-      const id = Math.random().toString();
-      notifications.add(id, {
-        message: error.message,
-        level: FeedbackLevel.Error,
-        duration: 5000,
-      });
-    },
-  });
-
-  const { mutate: runSingleTestAnon } =
-    api.challenge.runSingleTestAnon.useMutation({
-      onSuccess: (data) => {
-        const id = Math.random().toString();
-        notifications.add(id, {
-          html: data.success
-            ? `<b>Success:</b> <code>&quot;${data.result}&quot;</code>`
-            : `<b>Failed:</b> <code>&quot;${data.result}&quot;</code>`,
-          level: data.success ? FeedbackLevel.Success : FeedbackLevel.Warning,
-          duration: 5000,
-        });
-      },
-      onError: (error) => {
-        const id = Math.random().toString();
-        notifications.add(id, {
-          message: error.message,
-          level: FeedbackLevel.Error,
-          duration: 5000,
-        });
-      },
-    });
-
-  const { mutate: runAllTests } = api.challenge.submit.useMutation({
-    onSuccess: (data) => {
-      const id = Math.random().toString();
-      notifications.add(id, {
-        message: data.success ? "Success!" : undefined,
-        html: data.success
-          ? undefined
-          : `Failed test(s): ${data.results
-              .map((r, i) => ({ idx: i + 1, suc: r.success }))
-              .filter((r) => !r.suc)
-              .map((r) => r.idx)
-              .join(", ")}<br />
-              <i>Click to view details</i>`,
-        level: data.success ? FeedbackLevel.Success : FeedbackLevel.Warning,
-        duration: 5000,
-        onClick: data.success
-          ? undefined
-          : () => {
-              setDetailsId(data._id.toString());
-              setSubmissionShown(true);
-            },
-      });
-    },
-    onError: (error) => {
-      const id = Math.random().toString();
-      notifications.add(id, {
-        message: error.message,
-        level: FeedbackLevel.Error,
-        duration: 5000,
-      });
-    },
-  });
-
-  const { mutate: submitAnon } = api.challenge.submitAnon.useMutation({
-    onSuccess: (data) => {
-      const id = Math.random().toString();
-      notifications.add(id, {
-        message: data.success
-          ? "Success!"
-          : `Failed test(s): ${data.results
-              .map((r, i) => ({ idx: i + 1, suc: r.success }))
-              .filter((r) => !r.suc)
-              .map((r) => r.idx)
-              .join(", ")}`,
-        level: data.success ? FeedbackLevel.Success : FeedbackLevel.Warning,
-        duration: 5000,
-      });
-    },
-    onError: (error) => {
-      const id = Math.random().toString();
-      notifications.add(id, {
-        message: error.message,
-        level: FeedbackLevel.Error,
-        duration: 5000,
-      });
-    },
-  });
-
+const PromptInput: React.FC<PromptInputProps> = ({
+  prompt,
+  setPrompt,
+  index,
+  edited,
+  removeStage,
+  insertStage,
+  tokenCount,
+  setTokenCount,
+}) => {
   const [segments, setSegments] = useState<ReturnType<typeof getSegments>>([]);
   const [infoToken, setInfoToken] = useState<string | null>(null);
 
-  const { status } = useSession();
-
   useEffect(() => {
-    const segments = getSegments(prompt);
+    const segments = getSegments(prompt ?? "");
     setSegments(segments);
     setInfoToken(null);
   }, [prompt]);
 
+  useEffect(() => {
+    setTokenCount(segments.length > 0 ? countTokens(segments) : 0, index);
+  }, [segments]);
+
   return (
-    <div className="flex w-full flex-col items-start justify-center gap-4 sm:flex-col md:flex-col lg:flex-col xl:flex-row 2xl:flex-row">
-      <div className="flex w-full flex-col items-start justify-center gap-2 sm:w-full md:w-full lg:w-full xl:basis-1/2 2xl:basis-1/2">
+    <div className="flex w-full flex-col gap-2 rounded-lg p-1 dark:bg-cyan-950">
+      <div className="mt-1 flex w-full flex-row items-center justify-end">
+        <button
+          className={
+            "hover:scale-105" +
+            colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
+          }
+          onClick={() => {
+            removeStage();
+          }}
+        >
+          <FontAwesomeIcon icon={faX} className="h-8 w-8" />
+        </button>
+        <button
+          className={
+            "hover:scale-110" +
+            colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
+          }
+          onClick={() => {
+            insertStage();
+          }}
+        >
+          <FontAwesomeIcon
+            icon={faPlus}
+            className="h-8 w-8 rotate-90 transform"
+          />
+        </button>
+      </div>
+      <div className="flex w-full flex-col items-start justify-center gap-2 xl:flex-row">
         <textarea
-          className="min-h-[128px] w-full rounded-md border-2 border-gray-300 bg-gray-200 text-black placeholder:text-gray-800"
+          className="flex min-h-[128px] w-full rounded-md border-2 border-gray-300 bg-gray-200 text-black placeholder:text-gray-800 xl:w-auto xl:basis-1/2"
           value={prompt}
           onChange={(e) => {
             setPrompt(e.currentTarget.value);
@@ -241,125 +162,29 @@ const PromptInput: React.FC<PromptInputProps> = ({ challengeId }) => {
             wordBreak: "normal",
           }}
           rows={10}
-          placeholder={edited ? "" : instructions}
+          placeholder={
+            edited ? "" : index === 0 ? instructions : chainInstructions
+          }
         />
-        <div className="flex w-full flex-col-reverse justify-between gap-4 md:flex-row lg:flex-row xl:flex-col 2xl:flex-row">
-          <div className="flex flex-row items-center justify-start gap-8">
-            <div className="mt-2">
-              <Toggle
-                label="Trim"
-                checked={trim}
-                setChecked={setTrim}
-                tooltip="Enable/disable whitespace trimming of llm output"
-              />
-            </div>
-            <div className="mt-2">
-              <Toggle
-                label="Case Sensitive"
-                checked={caseSensitive}
-                setChecked={setCaseSensitive}
-                tooltip="Enable/disable case sensitivity for llm output"
-              />
-            </div>
-          </div>
+        <div className="flex w-full flex-col items-start justify-center sm:w-full md:w-full lg:w-full xl:basis-1/2 2xl:basis-1/2">
           <div
-            className="flex flex-col md:flex-row items-start md:flex-center justify-start gap-2 md:justify-end lg:justify-end xl:justify-start 2xl:justify-end"
-            data-tooltip-id={
-              status === "authenticated" ? undefined : "run-tooltip"
-            }
+            className="min-h-[128px] w-full rounded-md border-2 bg-gray-300 text-black"
+            style={{
+              wordBreak: "break-word",
+            }}
           >
-            <button
-              className={
-                "whitespace-nowrap rounded-full px-4 py-2 font-semibold" +
-                colorFromFeedbackLevel(FeedbackLevel.Secondary, true)
-              }
-              onClick={() => {
-                if (status === "authenticated") {
-                  void runSingleTest({
-                    prompt,
-                    testIndex,
-                    challengeId,
-                    trim,
-                    caseSensitive,
-                  });
-                } else {
-                  void runSingleTestAnon({
-                    prompt,
-                    testIndex,
-                    challengeId,
-                    trim,
-                    caseSensitive,
-                  });
-                }
-              }}
-            >
-              Run Single Test
-            </button>
-            <button
-              className={
-                "whitespace-nowrap rounded-full px-4 py-2 font-semibold" +
-                colorFromFeedbackLevel(FeedbackLevel.Secondary, true)
-              }
-              onClick={() => {
-                if (status === "authenticated") {
-                  setSubmissionShown(true);
-                }
-              }}
-              disabled={status !== "authenticated"}
-            >
-              View Submission Details
-            </button>
-            <button
-              className={
-                "whitespace-nowrap rounded-full px-4 py-2 font-semibold" +
-                colorFromFeedbackLevel(FeedbackLevel.Success, true)
-              }
-              onClick={() => {
-                if (status === "authenticated") {
-                  void runAllTests({
-                    prompt,
-                    challengeId,
-                    trim,
-                    caseSensitive,
-                  });
-                } else {
-                  void submitAnon({
-                    prompt,
-                    challengeId,
-                    trim,
-                    caseSensitive,
-                  });
-                }
-              }}
-            >
-              Submit
-            </button>
-            {status === "authenticated" ? null : (
-              <Tooltip className="tooltip-overrides" id="run-tooltip">Log In to Save Results</Tooltip>
-            )}
+            {segments.map((segment, i) => (
+              <HoverableText
+                key={i}
+                index={i}
+                text={segment.text}
+                setInfoToken={setInfoToken}
+              />
+            ))}
           </div>
+          <h2 className="ml-1 text-xl">Token Count: {tokenCount}</h2>
+          <TokenInfo token={infoToken ?? ""} />
         </div>
-      </div>
-      <div className="flex w-full flex-col items-start justify-center gap-2 sm:w-full md:w-full lg:w-full xl:basis-1/2 2xl:basis-1/2">
-        <div
-          className="min-h-[128px] w-full rounded-md border-2 bg-gray-300 text-black"
-          style={{
-            wordBreak: "break-word",
-          }}
-        >
-          {segments.map((segment, i) => (
-            <HoverableText
-              key={i}
-              index={i}
-              text={segment.text}
-              setInfoToken={setInfoToken}
-            />
-          ))}
-        </div>
-        <h2 className="text-xl">
-          Token Count: {segments.length > 0 ? countTokens(segments) : 0}
-        </h2>
-        <TokenInfo token={infoToken ?? ""} />
       </div>
     </div>
   );
