@@ -123,7 +123,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
   }, [segments]);
 
   return (
-    <div className="flex w-full flex-col gap-2 rounded-lg p-1 dark:bg-cyan-950">
+    <div className="flex w-full flex-col gap-2 rounded-lg p-1 dark:bg-cyan-950 bg-slate-300">
       <div className="mt-1 flex w-full flex-row items-center justify-end">
         <button
           className={

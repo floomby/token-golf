@@ -1,7 +1,4 @@
 import { type ITest } from "./odm";
-// import { OpenAI } from "langchain/llms/openai";
-// import { PromptTemplate } from "langchain/prompts";
-// import { LLMChain } from "langchain/chains";
 import { env } from "~/env.mjs";
 import { Configuration, OpenAIApi } from "openai";
 
@@ -25,6 +22,9 @@ const runTest = async (
     console.log("MOCKING LLMAPI");
     const success = Math.random() > 0.5;
     const resultText = success ? test.expected : "not " + test.expected;
+    for (let i = 1; i < promptsToTest.length; i++) {
+      intermediates.push("mocked intermediate " + i);
+    }
     return { success, result: resultText, intermediates };
   }
 
