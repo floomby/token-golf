@@ -37,7 +37,7 @@ const runTest = async (
     prompt: first,
     temperature: 0,
     max_tokens: maxTokens,
-  })
+  });
 
   let resultText = output.data.choices[0]?.text ?? "";
 
@@ -45,13 +45,11 @@ const runTest = async (
     console.log("pushing intermediate", resultText);
     intermediates.push(resultText);
 
-    let [next, ...rest2] = rest;
-
-    next = next!.replace("{input}", resultText);
+    const [next, ...rest2] = rest;
 
     const output = await openai.createCompletion({
       model: "text-davinci-003",
-      prompt: next,
+      prompt: next!.replace("{input}", resultText),
       temperature: 0,
       max_tokens: maxTokens,
     });
