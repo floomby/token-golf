@@ -3,6 +3,7 @@ import { type ObjectId } from "mongodb";
 
 export interface IResult {
   result: string;
+  intermediates: string[];
   success: boolean;
 }
 
@@ -29,7 +30,19 @@ const RunSchema = new mongoose.Schema<IRun>({
     required: true,
   },
   at: { type: Date, required: true, default: Date.now },
-  results: { type: [{ result: String, success: Boolean }], required: true },
+  results: {
+    type: [
+      {
+        result: String,
+        intermediates: {
+          type: [String],
+          default: [],
+        },
+        success: Boolean,
+      },
+    ],
+    required: true,
+  },
   success: { type: Boolean, required: true },
   profile: {
     type: mongoose.Schema.Types.ObjectId,
@@ -51,6 +64,7 @@ export interface ITestRun {
   at: Date;
   testIndex: number;
   result: string;
+  intermediates: string[];
   success: boolean;
   profile: ObjectId;
 }
@@ -68,6 +82,7 @@ const TestRunSchema = new mongoose.Schema<ITestRun>({
   at: { type: Date, required: true, default: Date.now },
   testIndex: { type: Number, required: true },
   result: { type: String, required: true },
+  intermediates: { type: [String], default: [] },
   success: { type: Boolean, required: true },
   profile: {
     type: mongoose.Schema.Types.ObjectId,

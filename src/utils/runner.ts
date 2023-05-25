@@ -17,6 +17,7 @@ const runTest = async (
   caseSensitive: boolean
 ) => {
   let [first, ...rest] = promptsToTest;
+  const intermediates: string[] = [];
 
   console.log("running test", test.test, promptsToTest);
 
@@ -24,7 +25,7 @@ const runTest = async (
     console.log("MOCKING LLMAPI");
     const success = Math.random() > 0.5;
     const resultText = success ? test.expected : "not " + test.expected;
-    return { success, result: resultText };
+    return { success, result: resultText, intermediates };
   }
 
   const maxTokens = parseInt(env.MAX_TOKENS_PER_STEP);
@@ -41,7 +42,8 @@ const runTest = async (
   let resultText = output.data.choices[0]?.text ?? "";
 
   while (rest.length > 0) {
-    console.log("here");
+    console.log("pushing intermediate", resultText);
+    intermediates.push(resultText);
 
     const [next, ...rest2] = rest;
 
@@ -69,7 +71,7 @@ const runTest = async (
     success = resultText === test.expected;
   }
 
-  return { success, result: resultText };
+  return { success, result: resultText, intermediates };
 };
 
 export { runTest };

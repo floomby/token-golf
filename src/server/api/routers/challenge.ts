@@ -105,6 +105,7 @@ export const challengeRouter = createTRPCRouter({
               testIndex: input.testIndex,
               result: result.result,
               success: result.success,
+              intermediates: result.intermediates,
               profile: new mongoose.Types.ObjectId(ctx.session.user.profileId),
             },
           ],
@@ -183,6 +184,7 @@ export const challengeRouter = createTRPCRouter({
         testIndex: number;
         result: string;
         success: boolean;
+        intermediates: string[];
       }[] = await TestRun.aggregate([
         {
           $match: {
@@ -208,6 +210,7 @@ export const challengeRouter = createTRPCRouter({
             testIndex: 1,
             result: 1,
             success: 1,
+            intermediates: 1,
           },
         },
       ]);
@@ -347,6 +350,7 @@ export const challengeRouter = createTRPCRouter({
               challenge: challenge._id,
               results: result,
               success: result.every((r) => r.success),
+              intermediates: result.map((r) => r.intermediates),
             },
           ],
           { session }
@@ -452,6 +456,7 @@ export const challengeRouter = createTRPCRouter({
                 in: { $and: ["$$value", "$$this.success"] },
               },
             },
+            intermediates: 1,
           },
         },
       ]);

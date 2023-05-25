@@ -144,16 +144,6 @@ const PromptInputs: React.FC<PromptInputsProps> = ({ challengeId }) => {
 
   const { status } = useSession();
 
-  // consider moving to a provider
-  // const [tokenCounts, setTokenCounts] = useState<number[]>([0]);
-  // const [totalTokens, setTotalTokens] = useState(0);
-
-  // useEffect(() => {
-  //   const counts = prompts.map((p) => getSegments(p).length);
-  //   setTokenCounts(counts);
-  //   setTotalTokens(counts.reduce((a, b) => a + b, 0));
-  // }, [prompts]);
-
   return (
     <div className="flex w-full flex-col items-start justify-center gap-2">
       {prompts.map((prompt, index) => (
