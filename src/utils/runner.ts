@@ -23,18 +23,18 @@ const runTest = async (
     const success = Math.random() > 0.5;
     const resultText = success ? test.expected : "not " + test.expected;
     for (let i = 1; i < promptsToTest.length; i++) {
-      intermediates.push("mocked intermediate " + i);
+      intermediates.push("mocked intermediate " + i.toString());
     }
     return { success, result: resultText, intermediates };
   }
 
-  const maxTokens = parseInt(env.MAX_TOKENS_PER_STEP);
+  const maxTokens = parseInt(env.MAX_TOKENS_PER_STAGE);
 
   first = first!.replace("{input}", test.test);
 
   const output = await openai.createCompletion({
     model: "text-davinci-003",
-    prompt: first!,
+    prompt: first,
     temperature: 0,
     max_tokens: maxTokens,
   })

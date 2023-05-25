@@ -50,10 +50,10 @@ const TestRuns: React.FC<TestRunsProps> = ({ challengeId, tests }) => {
                           : " bg-red-300 hover:bg-red-400 dark:hover:bg-red-200")
                       }
                       onClick={() => {
-                        setTestIndex(testRun.testIndex as number);
+                        setTestIndex(testRun.testIndex);
                         setPrompts(testRun.prompts);
-                        setTrim(testRun.trim as boolean);
-                        setCaseSensitive(testRun.caseSensitive as boolean);
+                        setTrim(testRun.trim);
+                        setCaseSensitive(testRun.caseSensitive);
                       }}
                     >
                       <td className="px-1">{testRun.tokenCount}</td>
@@ -72,7 +72,7 @@ const TestRuns: React.FC<TestRunsProps> = ({ challengeId, tests }) => {
                         <ClampText
                           maxLength={50}
                           text={`${testRun.testIndex} - ${
-                            tests[testRun.testIndex as number]?.test ?? ""
+                            tests[testRun.testIndex]?.test ?? ""
                           }`}
                           uid={`test--${index}`}
                         />
