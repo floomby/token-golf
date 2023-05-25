@@ -4,6 +4,7 @@ import {
   useNotificationQueue,
 } from "../providers/notifications";
 import { colorFromFeedbackLevel } from "../lib/feedback";
+import DOMPurify from "dompurify";
 
 type NotificationProps = {
   id: string;
@@ -53,7 +54,9 @@ const Notification: React.FC<NotificationProps> = ({
       onClick={clickCallback}
     >
       {message && <p>{message}</p>}
-      {html && <div dangerouslySetInnerHTML={{ __html: html }} />}
+      {html && (
+        <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(html) }} />
+      )}
     </div>
   );
 };

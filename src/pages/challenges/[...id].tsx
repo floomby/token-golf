@@ -14,6 +14,7 @@ import { flattenId, getSecond } from "~/utils/flatten";
 import { ModalContext } from "~/providers/modal";
 import { EditorContext } from "~/providers/editor";
 import ChallengeHeader from "~/components/ChallengeHeader";
+import { useSession } from "next-auth/react";
 
 const ChallengePage: NextPage = () => {
   const router = useRouter();
@@ -82,6 +83,14 @@ const ChallengePage: NextPage = () => {
     }
   );
 
+  const { status } = useSession();
+
+  const { data: testRuns, refetch: refetchTests } =
+    api.challenge.myTestRuns.useQuery(flattenId(id) || "", {
+      enabled: !!flattenId(id) && status === "authenticated",
+      // refetchInterval: 1000,
+    });
+
   const { setChallengeId } = useContext(ModalContext);
 
   useEffect(() => {
@@ -121,10 +130,14 @@ const ChallengePage: NextPage = () => {
         ) : (
           <Spinner />
         )}
-        <PromptInput challengeId={flattenId(id) || ""} />
-        <TestRuns
+        <PromptInput
           challengeId={flattenId(id) || ""}
+          refetchTests={refetchTests}
+        />
+        <TestRuns
+          // challengeId={flattenId(id) || ""}
           tests={challenge?.tests ?? []}
+          testRuns={testRuns}
         />
       </main>
     </>

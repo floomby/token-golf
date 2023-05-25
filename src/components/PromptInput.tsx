@@ -1,8 +1,9 @@
 import { faPlus, faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
-import { countTokens, encoder, getSegments } from "~/utils/tokenize";
+import { EditorContext } from "~/providers/editor";
+import { encoder } from "~/utils/tokenize";
 
 // prettier-ignore
 const instructions =
@@ -96,8 +97,6 @@ type PromptInputProps = {
   edited: boolean;
   removeStage: () => void;
   insertStage: () => void;
-  tokenCount: number;
-  setTokenCount: (tokenCount: number, index: number) => void;
 };
 const PromptInput: React.FC<PromptInputProps> = ({
   prompt,
@@ -106,24 +105,30 @@ const PromptInput: React.FC<PromptInputProps> = ({
   edited,
   removeStage,
   insertStage,
-  tokenCount,
-  setTokenCount,
 }) => {
-  const [segments, setSegments] = useState<ReturnType<typeof getSegments>>([]);
+  // const [segments, setSegments] = useState<ReturnType<typeof getSegments>>([]);
   const [infoToken, setInfoToken] = useState<string | null>(null);
 
-  useEffect(() => {
-    const segments = getSegments(prompt ?? "");
-    setSegments(segments);
-    setInfoToken(null);
-  }, [prompt]);
+  const { counts, segments } = useContext(EditorContext);
 
-  useEffect(() => {
-    setTokenCount(segments.length > 0 ? countTokens(segments) : 0, index);
-  }, [segments]);
+  // useEffect(() => {
+  //   const segments = getSegments(prompt ?? "");
+  //   setSegments(segments);
+  //   setInfoToken(null);
+  // }, [prompt]);
+
+  // useEffect(() => {
+  //   console.log(
+  //     "token count",
+  //     segments.length > 0 ? countTokens(segments) : 0,
+  //     index,
+  //     updateIndex
+  //   );
+  //   setCount(segments.length > 0 ? countTokens(segments) : 0, index);
+  // }, [segments, updateIndex]);
 
   return (
-    <div className="flex w-full flex-col gap-2 rounded-lg p-1 dark:bg-cyan-950 bg-slate-300">
+    <div className="flex w-full flex-col gap-2 rounded-lg bg-slate-300 p-1 dark:bg-cyan-950">
       <div className="mt-1 flex w-full flex-row items-center justify-end">
         <button
           className={
@@ -173,7 +178,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
               wordBreak: "break-word",
             }}
           >
-            {segments.map((segment, i) => (
+            {segments[index]!.map((segment, i) => (
               <HoverableText
                 key={i}
                 index={i}
@@ -182,7 +187,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
               />
             ))}
           </div>
-          <h2 className="ml-1 text-xl">Token Count: {tokenCount}</h2>
+          <h2 className="ml-1 text-xl">Token Count: {counts[index]}</h2>
           <TokenInfo token={infoToken ?? ""} />
         </div>
       </div>

@@ -23,8 +23,12 @@ const ChallengeSubmissionsModal: React.FC = () => {
     setDetailsId,
   } = useContext(ModalContext);
 
-  const { setPrompts, setTrim, setCaseSensitive, setTestIndex } =
-    useContext(EditorContext);
+  const {
+    setPrompts,
+    setTrim,
+    setCaseSensitive,
+    setTestIndex,
+  } = useContext(EditorContext);
 
   const { data: runs, refetch } = api.challenge.getMyResults.useQuery(
     challengeId ?? "",

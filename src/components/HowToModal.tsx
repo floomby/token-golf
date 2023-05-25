@@ -29,7 +29,7 @@ const HowToModal: React.FC = () => {
     <div className="flex flex-col items-start justify-center gap-4" key={0}>
       <h2 className="text-2xl font-semibold">Writing a Prompt</h2>
       <p className="text-lg">
-        A prompt is a template which will be interpolated with the test input.
+        A prompt is a template which will be interpolated with the input.
         The objective is to have the next tokens completed by the LLM match the
         expected output for every test in the challenge.
       </p>

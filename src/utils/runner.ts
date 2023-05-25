@@ -16,8 +16,6 @@ const runTest = async (
   let [first, ...rest] = promptsToTest;
   const intermediates: string[] = [];
 
-  console.log("running test", test.test, promptsToTest);
-
   if (!!env.MOCK_LLMAPI) {
     console.log("MOCKING LLMAPI");
     const success = Math.random() > 0.5;

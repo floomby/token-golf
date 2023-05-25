@@ -3,23 +3,170 @@ import Spinner from "./Spinner";
 import ClampText from "./ClampText";
 import { useSession } from "next-auth/react";
 import { EditorContext } from "~/providers/editor";
-import { useContext } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { type ITest } from "~/utils/odm";
+import { AnimatePresence, motion } from "framer-motion";
+import mongoose from "mongoose";
 
-type TestRunsProps = {
-  challengeId: string;
-  tests: ITest[];
+type ExpanderProps = {
+  expanded: boolean;
+  success: boolean;
 };
-const TestRuns: React.FC<TestRunsProps> = ({ challengeId, tests }) => {
-  const { status } = useSession();
+const Expander: React.FC<ExpanderProps> = ({ expanded, success }) => {
+  return (
+    <tr className="border-0">
+      <td colSpan={6} className="">
+        <AnimatePresence>
+          {expanded && (
+            <motion.div
+              initial={{ height: 0 }}
+              animate={{ height: "auto" }}
+              exit={{ height: 0 }}
+              className={
+                "w-full overflow-y-hidden px-1 text-black dark:text-white" +
+                (success
+                  ? " bg-green-100 dark:bg-green-950"
+                  : " bg-red-100 dark:bg-red-950")
+              }
+            >
+              <p>content content content</p>
+              <p>content content content</p>
+              <p>content content content</p>
+              <p>content content content</p>
+              <p>content content content</p>
+              <p>content content content</p>
+              <p>content content content</p>
+              <p>content content content</p>
+              <p>content content content</p>
+              <p>content content content</p>
+              <p>content content content</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </td>
+    </tr>
+  );
+};
 
+type TestRunProps = {
+  prompts: string[];
+  trim: boolean;
+  caseSensitive: boolean;
+  tokenCount: number;
+  at: Date;
+  testIndex: number;
+  result: string;
+  success: boolean;
+  intermediates: string[];
+  onClick: () => void;
+  index: number;
+  tests: ITest[];
+  expanded: boolean;
+  id: mongoose.Types.ObjectId;
+};
+const TestRun: React.FC<TestRunProps> = ({
+  prompts,
+  trim,
+  caseSensitive,
+  tokenCount,
+  at,
+  testIndex,
+  result,
+  success,
+  intermediates,
+  onClick,
+  index,
+  tests,
+  expanded,
+  id,
+}) => {
   const { setTestIndex, setPrompts, setTrim, setCaseSensitive } =
     useContext(EditorContext);
 
-  const { data: testRuns } = api.challenge.myTestRuns.useQuery(challengeId, {
-    enabled: !!challengeId && status === "authenticated",
-    refetchInterval: 1000,
-  });
+  const trRef = useRef<HTMLTableRowElement>(null);
+
+  const { scrollTestTarget } = useContext(EditorContext);
+
+  useEffect(() => {
+    if (scrollTestTarget === id.toString()) {
+      trRef.current?.scrollIntoView({
+        behavior: "smooth",
+        // block: "center",
+      });
+      if (!expanded) onClick();
+    }
+  }, [scrollTestTarget]);
+
+  return (
+    <>
+      <tr
+        className={
+          "cursor-pointer border-0 bg-opacity-30 align-top transition-all duration-200 ease-in-out" +
+          (success
+            ? " bg-green-300 hover:bg-green-400 dark:hover:bg-green-200"
+            : " bg-red-300 hover:bg-red-400 dark:hover:bg-red-200")
+        }
+        onClick={() => {
+          // setTestIndex(testIndex);
+          // setPrompts(prompts);
+          // setTrim(trim);
+          // setCaseSensitive(caseSensitive);
+          onClick();
+        }}
+        ref={trRef}
+      >
+        <td className="px-1">
+          <p>{tokenCount}</p>
+        </td>
+        <td className="px-1">
+          <ClampText
+            maxLength={30}
+            text={prompts.join(" ")}
+            uid={`test-${index}`}
+          />
+        </td>
+        <td className="px-1">{trim ? "Yes" : "No"}</td>
+        <td className="px-1">{caseSensitive ? "Yes" : "No"}</td>
+        <td className="hidden px-1 md:table-cell">
+          <ClampText
+            maxLength={50}
+            text={`${testIndex} - ${tests[testIndex]?.test ?? ""}`}
+            uid={`test--${index}`}
+          />
+        </td>
+        <td className="px-1">{success ? "Success" : "Failure"}</td>
+      </tr>
+      <Expander expanded={expanded} success={success} />
+    </>
+  );
+};
+
+type TestRunsProps = {
+  // challengeId: string;
+  tests: ITest[];
+  testRuns:
+    | {
+        prompts: string[];
+        trim: boolean;
+        caseSensitive: boolean;
+        tokenCount: number;
+        at: Date;
+        testIndex: number;
+        result: string;
+        success: boolean;
+        intermediates: string[];
+        id: mongoose.Types.ObjectId;
+      }[]
+    | undefined;
+};
+const TestRuns: React.FC<TestRunsProps> = ({
+  // challengeId,
+  tests,
+  testRuns,
+}) => {
+  const { status } = useSession();
+
+  const [expandedId, setExpandedId] = useState("");
 
   return (
     <div className="flex w-full flex-col items-center justify-center gap-4 rounded-md py-4 align-middle">
@@ -28,7 +175,7 @@ const TestRuns: React.FC<TestRunsProps> = ({ challengeId, tests }) => {
         <div className="flex w-full flex-col items-start justify-start divide-y-2 divide-gray-400 overflow-x-auto rounded-md border-2 text-black">
           {!!testRuns ? (
             testRuns.length > 0 ? (
-              <table className="w-full table-auto">
+              <table className="w-full table-auto border-collapse">
                 <thead>
                   <tr className="bg-gray-200 text-left">
                     <th className="pr-1">Tokens</th>
@@ -41,46 +188,20 @@ const TestRuns: React.FC<TestRunsProps> = ({ challengeId, tests }) => {
                 </thead>
                 <tbody>
                   {testRuns.map((testRun, index) => (
-                    <tr
+                    <TestRun
                       key={index}
-                      className={
-                        "cursor-pointer bg-opacity-30 transition-all duration-200 ease-in-out" +
-                        (testRun.success
-                          ? " bg-green-300 hover:bg-green-400 dark:hover:bg-green-200"
-                          : " bg-red-300 hover:bg-red-400 dark:hover:bg-red-200")
-                      }
+                      {...testRun}
+                      index={index}
+                      tests={tests}
                       onClick={() => {
-                        setTestIndex(testRun.testIndex);
-                        setPrompts(testRun.prompts);
-                        setTrim(testRun.trim);
-                        setCaseSensitive(testRun.caseSensitive);
+                        if (expandedId === testRun.id.toString()) {
+                          setExpandedId("");
+                        } else {
+                          setExpandedId(testRun.id.toString());
+                        }
                       }}
-                    >
-                      <td className="px-1">{testRun.tokenCount}</td>
-                      <td className="px-1">
-                        <ClampText
-                          maxLength={30}
-                          text={testRun.prompts.join(" ")}
-                          uid={`test-${index}`}
-                        />
-                      </td>
-                      <td className="px-1">{testRun.trim ? "Yes" : "No"}</td>
-                      <td className="px-1">
-                        {testRun.caseSensitive ? "Yes" : "No"}
-                      </td>
-                      <td className="hidden px-1 md:table-cell">
-                        <ClampText
-                          maxLength={50}
-                          text={`${testRun.testIndex} - ${
-                            tests[testRun.testIndex]?.test ?? ""
-                          }`}
-                          uid={`test--${index}`}
-                        />
-                      </td>
-                      <td className="px-1">
-                        {testRun.success ? "Success" : "Failure"}
-                      </td>
-                    </tr>
+                      expanded={expandedId === testRun.id.toString()}
+                    />
                   ))}
                 </tbody>
               </table>

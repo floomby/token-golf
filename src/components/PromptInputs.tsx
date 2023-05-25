@@ -12,8 +12,12 @@ import PromptInput from "./PromptInput";
 
 type PromptInputsProps = {
   challengeId: string;
+  refetchTests: () => Promise<any>;
 };
-const PromptInputs: React.FC<PromptInputsProps> = ({ challengeId }) => {
+const PromptInputs: React.FC<PromptInputsProps> = ({
+  challengeId,
+  refetchTests,
+}) => {
   const { setSubmissionShown, setDetailsId } = useContext(ModalContext);
 
   const notifications = useNotificationQueue();
@@ -29,10 +33,8 @@ const PromptInputs: React.FC<PromptInputsProps> = ({ challengeId }) => {
     setTrim,
     caseSensitive,
     setCaseSensitive,
-    counts,
-    setCounts,
-    setCount,
     totalCount,
+    setScrollTestTarget,
   } = useContext(EditorContext);
 
   useEffect(() => {
@@ -42,14 +44,18 @@ const PromptInputs: React.FC<PromptInputsProps> = ({ challengeId }) => {
   }, [prompts, setEdited]);
 
   const { mutate: runSingleTest } = api.challenge.runSingleTest.useMutation({
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       const id = Math.random().toString();
+      await refetchTests();
       notifications.add(id, {
         html: data.success
-          ? `<b>Success:</b> <code>&quot;${data.result}&quot;</code>`
-          : `<b>Failed:</b> <code>&quot;${data.result}&quot;</code>`,
+          ? `<div style="max-height: 10vh; max-width: 90vw; overflow: scroll;"><code>&quot;${data.result}&quot;</code><div><p><i>Click for more details</i></p>`
+          : `<div style="max-height: 10vh; max-width: 90vw; overflow: scroll;"><code>&quot;${data.result}&quot;</code><div><p><i>Click for more details</i></p>`,
         level: data.success ? FeedbackLevel.Success : FeedbackLevel.Warning,
         duration: 5000,
+        onClick: () => {
+          setScrollTestTarget(data.id.toString());
+        },
       });
     },
     onError: (error) => {
@@ -68,8 +74,8 @@ const PromptInputs: React.FC<PromptInputsProps> = ({ challengeId }) => {
         const id = Math.random().toString();
         notifications.add(id, {
           html: data.success
-            ? `<b>Success:</b> <code>&quot;${data.result}&quot;</code>`
-            : `<b>Failed:</b> <code>&quot;${data.result}&quot;</code>`,
+            ? `<div style="max-height: 10vh; max-width: 90vw; overflow: scroll;"><code>&quot;${data.result}&quot;</code><div>`
+            : `<div style="max-height: 10vh; max-width: 90vw; overflow: scroll;"><code>&quot;${data.result}&quot;</code><div>`,
           level: data.success ? FeedbackLevel.Success : FeedbackLevel.Warning,
           duration: 5000,
         });
@@ -158,21 +164,13 @@ const PromptInputs: React.FC<PromptInputsProps> = ({ challengeId }) => {
             const newPrompts = [...prompts];
             newPrompts.splice(index, 1);
             setPrompts(newPrompts);
-            const newCounts = [...counts];
-            newCounts.splice(index, 1);
-            setCounts(newCounts);
           }}
           insertStage={() => {
             // insert a new stage after this one
             const newPrompts = [...prompts];
             newPrompts.splice(index + 1, 0, "");
             setPrompts(newPrompts);
-            const newCounts = [...counts];
-            newCounts.splice(index + 1, 0, 0);
-            setCounts(newCounts);
           }}
-          tokenCount={counts[index]!}
-          setTokenCount={setCount}
         />
       ))}
       <p className="text-xl">Total tokens: {totalCount}</p>

@@ -11,7 +11,14 @@ import {
   eitherProcedure,
 } from "~/server/api/trpc";
 import db from "~/utils/db";
-import { Challenge, type IRun, Profile, Run, TestRun } from "~/utils/odm";
+import {
+  Challenge,
+  type IRun,
+  Profile,
+  Run,
+  TestRun,
+  ITestRun,
+} from "~/utils/odm";
 import { ChallengeUploadSchema } from "~/utils/schemas";
 import { runTest } from "~/utils/runner";
 import { countTokens, getSegments } from "~/utils/tokenize";
@@ -114,7 +121,10 @@ export const challengeRouter = createTRPCRouter({
 
         await session.commitTransaction();
 
-        return result;
+        return {
+          ...result,
+          id: (testRun[0] as { _id: mongoose.Types.ObjectId })._id,
+        };
       } catch (err) {
         await abort();
         throw err;
@@ -185,6 +195,7 @@ export const challengeRouter = createTRPCRouter({
         result: string;
         success: boolean;
         intermediates: string[];
+        id: mongoose.Types.ObjectId;
       }[] = await TestRun.aggregate([
         {
           $match: {
@@ -211,6 +222,7 @@ export const challengeRouter = createTRPCRouter({
             result: 1,
             success: 1,
             intermediates: 1,
+            id: "$_id",
           },
         },
       ]);
