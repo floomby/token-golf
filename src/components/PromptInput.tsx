@@ -139,7 +139,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
             removeStage();
           }}
         >
-          <FontAwesomeIcon icon={faX} className="h-8 w-8" />
+          <FontAwesomeIcon icon={faX} className="h-8 w-8 text-red-500" />
         </button>
         <button
           className={
@@ -150,10 +150,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
             insertStage();
           }}
         >
-          <FontAwesomeIcon
-            icon={faPlus}
-            className="h-8 w-8 rotate-90 transform"
-          />
+          <FontAwesomeIcon icon={faPlus} className="h-8 w-8 text-green-500" />
         </button>
       </div>
       <div className="flex w-full flex-col items-start justify-center gap-2 xl:flex-row">

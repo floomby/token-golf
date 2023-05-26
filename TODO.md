@@ -2,7 +2,8 @@
 
 ### Priority Stuff
 
-- Itermediate results
+- Clean up styling (add remove buttons color, restore button better, etc.)
+- More testing
 
 ### Polish
 

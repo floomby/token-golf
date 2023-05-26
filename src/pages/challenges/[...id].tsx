@@ -49,7 +49,6 @@ const ChallengePage: NextPage = () => {
       });
     },
     onSuccess: (data) => {
-      console.log(data);
       if (data.message) {
         const id = Math.random().toString(36).substring(7);
         notifications.add(id, {

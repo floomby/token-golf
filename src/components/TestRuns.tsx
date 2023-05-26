@@ -51,7 +51,7 @@ const Expander: React.FC<ExpanderProps> = ({
               />
               <button
                 className={
-                  "w-full rounded-md px-2" +
+                  "w-full rounded px-2 font-semibold" +
                   colorFromFeedbackLevel(FeedbackLevel.Info, true)
                 }
                 onClick={() => {
@@ -111,7 +111,6 @@ const TestRun: React.FC<TestRunProps> = ({
     if (scrollTestTarget === id.toString()) {
       trRef.current?.scrollIntoView({
         behavior: "smooth",
-        // block: "center",
       });
       if (!expanded) onClick();
     }
@@ -123,8 +122,8 @@ const TestRun: React.FC<TestRunProps> = ({
         className={
           "cursor-pointer border-0 bg-opacity-30 align-top transition-all duration-200 ease-in-out" +
           (success
-            ? " bg-green-300 hover:bg-green-400 dark:hover:bg-green-200"
-            : " bg-red-300 hover:bg-red-400 dark:hover:bg-red-200")
+            ? " bg-green-300 hover:bg-green-400 dark:bg-green-100 dark:hover:bg-green-200"
+            : " bg-red-300 hover:bg-red-400 dark:bg-red-100 dark:hover:bg-red-200")
         }
         onClick={() => {
           onClick();
