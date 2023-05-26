@@ -7,12 +7,25 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { type ITest } from "~/utils/odm";
 import { AnimatePresence, motion } from "framer-motion";
 import mongoose from "mongoose";
+import Test, { type TestProps } from "./Test";
+import { FeedbackLevel, colorFromFeedbackLevel } from "~/lib/feedback";
 
 type ExpanderProps = {
   expanded: boolean;
   success: boolean;
-};
-const Expander: React.FC<ExpanderProps> = ({ expanded, success }) => {
+  restore: () => void;
+  prompts: string[];
+} & TestProps;
+const Expander: React.FC<ExpanderProps> = ({
+  expanded,
+  success,
+  test,
+  expected,
+  result,
+  className,
+  prompts,
+  restore,
+}) => {
   return (
     <tr className="border-0">
       <td colSpan={6} className="">
@@ -23,23 +36,30 @@ const Expander: React.FC<ExpanderProps> = ({ expanded, success }) => {
               animate={{ height: "auto" }}
               exit={{ height: 0 }}
               className={
-                "w-full overflow-y-hidden px-1 text-black dark:text-white" +
+                "flex w-full flex-col items-center overflow-y-hidden px-2 pb-1 text-black dark:text-white" +
                 (success
                   ? " bg-green-100 dark:bg-green-950"
                   : " bg-red-100 dark:bg-red-950")
               }
             >
-              <p>content content content</p>
-              <p>content content content</p>
-              <p>content content content</p>
-              <p>content content content</p>
-              <p>content content content</p>
-              <p>content content content</p>
-              <p>content content content</p>
-              <p>content content content</p>
-              <p>content content content</p>
-              <p>content content content</p>
-              <p>content content content</p>
+              <Test
+                test={test}
+                expected={expected}
+                result={result}
+                className={className}
+                prompts={prompts}
+              />
+              <button
+                className={
+                  "w-full rounded-md px-2" +
+                  colorFromFeedbackLevel(FeedbackLevel.Info, true)
+                }
+                onClick={() => {
+                  restore();
+                }}
+              >
+                Restore
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
@@ -107,10 +127,6 @@ const TestRun: React.FC<TestRunProps> = ({
             : " bg-red-300 hover:bg-red-400 dark:hover:bg-red-200")
         }
         onClick={() => {
-          // setTestIndex(testIndex);
-          // setPrompts(prompts);
-          // setTrim(trim);
-          // setCaseSensitive(caseSensitive);
           onClick();
         }}
         ref={trRef}
@@ -136,13 +152,30 @@ const TestRun: React.FC<TestRunProps> = ({
         </td>
         <td className="px-1">{success ? "Success" : "Failure"}</td>
       </tr>
-      <Expander expanded={expanded} success={success} />
+      <Expander
+        expanded={expanded}
+        success={success}
+        test={tests[testIndex]?.test ?? ""}
+        expected={tests[testIndex]?.expected ?? ""}
+        result={{
+          result,
+          intermediates,
+          success,
+        }}
+        className="px-1"
+        restore={() => {
+          setTestIndex(testIndex);
+          setPrompts(prompts);
+          setTrim(trim);
+          setCaseSensitive(caseSensitive);
+        }}
+        prompts={prompts}
+      />
     </>
   );
 };
 
 type TestRunsProps = {
-  // challengeId: string;
   tests: ITest[];
   testRuns:
     | {
@@ -159,11 +192,7 @@ type TestRunsProps = {
       }[]
     | undefined;
 };
-const TestRuns: React.FC<TestRunsProps> = ({
-  // challengeId,
-  tests,
-  testRuns,
-}) => {
+const TestRuns: React.FC<TestRunsProps> = ({ tests, testRuns }) => {
   const { status } = useSession();
 
   const [expandedId, setExpandedId] = useState("");

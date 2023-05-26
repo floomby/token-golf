@@ -1,12 +1,19 @@
 import { type IResult } from "~/utils/odm";
 
-type TestProps = {
+export type TestProps = {
   test: string;
   expected: string;
   result?: IResult;
   className?: string;
+  prompts?: string[];
 };
-const Test: React.FC<TestProps> = ({ test, expected, result, className }) => {
+const Test: React.FC<TestProps> = ({
+  test,
+  expected,
+  result,
+  className,
+  prompts,
+}) => {
   return (
     <div className={"my-2 flex w-full flex-col gap-2 " + (className ?? "")}>
       <div className="grid w-full grid-cols-4 gap-2 rounded-lg bg-slate-300 p-2 font-semibold text-black">
@@ -44,7 +51,7 @@ const Test: React.FC<TestProps> = ({ test, expected, result, className }) => {
               : " bg-red-200 ring-red-500 dark:bg-red-900")
           }
         >
-          {result.intermediates.length > 0 && (
+          {result.intermediates.length > 0 && !prompts && (
             <>
               <span className="col-span-1">Intermediates</span>
               <div className="col-span-3">
@@ -58,6 +65,42 @@ const Test: React.FC<TestProps> = ({ test, expected, result, className }) => {
                   {result.intermediates.join("\n")}
                 </code>
               </div>
+            </>
+          )}
+          {!!prompts && (
+            <>
+              {prompts.map((prompt, i) => (
+                <>
+                  <span className="font-medium col-span-1">{`Prompt ${i}`}</span>
+                  <div className="col-span-3 flex w-full flex-col gap-2">
+                    <code
+                      className="w-full whitespace-pre-wrap rounded-sm border-2 border-gray-500 p-1"
+                      style={{
+                        wordBreak: "break-word",
+                        display: "block",
+                      }}
+                    >
+                      {prompt}
+                    </code>
+                  </div>
+                  {i !== prompts.length - 1 && (
+                    <>
+                      <span className="font-normal col-span-1 pl-2">Intermediate Output</span>
+                      <div className="col-span-3 flex w-full flex-col gap-2">
+                        <code
+                          className="w-full whitespace-pre-wrap rounded-sm border-2 border-gray-500 p-1"
+                          style={{
+                            wordBreak: "break-word",
+                            display: "block",
+                          }}
+                        >
+                          {result.intermediates[i]}
+                        </code>
+                      </div>
+                    </>
+                  )}
+                </>
+              ))}
             </>
           )}
           <span className="col-span-1">Produced Output</span>
