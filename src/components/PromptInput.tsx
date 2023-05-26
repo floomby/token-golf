@@ -106,41 +106,26 @@ const PromptInput: React.FC<PromptInputProps> = ({
   removeStage,
   insertStage,
 }) => {
-  // const [segments, setSegments] = useState<ReturnType<typeof getSegments>>([]);
   const [infoToken, setInfoToken] = useState<string | null>(null);
 
   const { counts, segments } = useContext(EditorContext);
 
-  // useEffect(() => {
-  //   const segments = getSegments(prompt ?? "");
-  //   setSegments(segments);
-  //   setInfoToken(null);
-  // }, [prompt]);
-
-  // useEffect(() => {
-  //   console.log(
-  //     "token count",
-  //     segments.length > 0 ? countTokens(segments) : 0,
-  //     index,
-  //     updateIndex
-  //   );
-  //   setCount(segments.length > 0 ? countTokens(segments) : 0, index);
-  // }, [segments, updateIndex]);
-
   return (
     <div className="flex w-full flex-col gap-2 rounded-lg bg-slate-300 p-1 dark:bg-cyan-950">
       <div className="mt-1 flex w-full flex-row items-center justify-end">
-        <button
-          className={
-            "hover:scale-105" +
-            colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
-          }
-          onClick={() => {
-            removeStage();
-          }}
-        >
-          <FontAwesomeIcon icon={faX} className="h-8 w-8 text-red-500" />
-        </button>
+        {index !== 0 && (
+          <button
+            className={
+              "hover:scale-105" +
+              colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
+            }
+            onClick={() => {
+              removeStage();
+            }}
+          >
+            <FontAwesomeIcon icon={faX} className="h-8 w-8 text-red-500" />
+          </button>
+        )}
         <button
           className={
             "hover:scale-110" +
