@@ -30,7 +30,7 @@ const ChallengePage: NextPage = () => {
       notifications.add(id, {
         message: error.message,
         level: FeedbackLevel.Error,
-        duration: 5000,
+        duration: 10000,
       });
     },
   });
@@ -45,7 +45,7 @@ const ChallengePage: NextPage = () => {
       notifications.add(id, {
         message: error.message,
         level: FeedbackLevel.Error,
-        duration: 5000,
+        duration: 10000,
       });
     },
     onSuccess: (data) => {
@@ -54,7 +54,7 @@ const ChallengePage: NextPage = () => {
         notifications.add(id, {
           message: data.message,
           level: FeedbackLevel.Warning,
-          duration: 5000,
+          duration: 10000,
         });
       } else {
         setPrompts(data.prompts);
@@ -76,7 +76,7 @@ const ChallengePage: NextPage = () => {
         notifications.add(id, {
           message: error.message,
           level: FeedbackLevel.Error,
-          duration: 5000,
+          duration: 10000,
         });
       },
     }

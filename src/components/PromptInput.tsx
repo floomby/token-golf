@@ -95,6 +95,7 @@ type PromptInputProps = {
   setPrompt: (prompt: string) => void;
   index: number;
   edited: boolean;
+  editedStages: boolean;
   removeStage: () => void;
   insertStage: () => void;
 };
@@ -103,6 +104,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
   setPrompt,
   index,
   edited,
+  editedStages,
   removeStage,
   insertStage,
 }) => {
@@ -140,7 +142,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
       </div>
       <div className="flex w-full flex-col items-start justify-center gap-2 xl:flex-row">
         <textarea
-          className="flex min-h-[128px] w-full rounded-md border-2 border-gray-300 bg-gray-200 text-black placeholder:text-gray-800 xl:w-auto xl:basis-1/2"
+          className="flex min-h-[128px] w-full rounded-md border-2 border-gray-300 bg-gray-200 text-black placeholder:text-gray-600 xl:w-auto xl:basis-1/2"
           value={prompt}
           onChange={(e) => {
             setPrompt(e.currentTarget.value);
@@ -150,7 +152,8 @@ const PromptInput: React.FC<PromptInputProps> = ({
           }}
           rows={10}
           placeholder={
-            edited ? "" : index === 0 ? instructions : chainInstructions
+            (index === 0 && !edited ? instructions : "") +
+            (index !== 0 && !editedStages ? chainInstructions : "")
           }
         />
         <div className="flex w-full flex-col items-start justify-center sm:w-full md:w-full lg:w-full xl:basis-1/2 2xl:basis-1/2">

@@ -23,6 +23,7 @@ const PromptInputs: React.FC<PromptInputsProps> = ({
   const notifications = useNotificationQueue();
 
   const [edited, setEdited] = useState(false);
+  const [editedStages, setEditedStages] = useState(false);
 
   const {
     prompts,
@@ -41,7 +42,10 @@ const PromptInputs: React.FC<PromptInputsProps> = ({
     if (prompts[0]!.length > 0) {
       setEdited(true);
     }
-  }, [prompts, setEdited]);
+    if (prompts[1] && prompts[1]!.length > 0) {
+      setEditedStages(true);
+    }
+  }, [prompts, setEdited, setEditedStages]);
 
   const { mutate: runSingleTest } = api.challenge.runSingleTest.useMutation({
     onSuccess: async (data) => {
@@ -159,6 +163,7 @@ const PromptInputs: React.FC<PromptInputsProps> = ({
           key={index}
           index={index}
           edited={edited}
+          editedStages={editedStages}
           removeStage={() => {
             // slice out this stage
             const newPrompts = [...prompts];
