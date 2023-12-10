@@ -29,8 +29,8 @@ const HowToModal: React.FC = () => {
     <div className="flex flex-col items-start justify-center gap-4" key={0}>
       <h2 className="text-2xl font-semibold">Writing a Prompt</h2>
       <p className="text-lg">
-        A prompt is a template which will be interpolated with the input.
-        The objective is to have the next tokens completed by the LLM match the
+        A prompt is a template which will be interpolated with the input. The
+        objective is to have the next tokens completed by the LLM match the
         expected output for every test in the challenge.
       </p>
       <p className="text-lg">
@@ -56,6 +56,12 @@ const HowToModal: React.FC = () => {
         once on submission with the requirement that they all pass. If you are
         getting inconsistent results on a given test then try changing your
         prompt or just resubmit if you are feeling lucky.
+      </p>
+      <p className="text-lg">
+        <b>Question</b> - Why do none of the leaderboard prompts work?
+        <br />
+        <b>Answer</b> - Because the model that was used originally changed, and
+        I did not bother to remove the existing submissions.
       </p>
       <p className="text-lg">
         <b>Tip</b> - While working on the problem you can run individual tests.
@@ -139,7 +145,10 @@ const HowToModal: React.FC = () => {
                   colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
                 }
               >
-                <FontAwesomeIcon className="h-10 w-12 mt-2" icon={faChevronLeft} />
+                <FontAwesomeIcon
+                  className="mt-2 h-10 w-12"
+                  icon={faChevronLeft}
+                />
               </button>
               <button
                 onClick={() => setShown(false)}
@@ -158,7 +167,10 @@ const HowToModal: React.FC = () => {
                   colorFromFeedbackLevel(FeedbackLevel.Invisible, true)
                 }
               >
-                <FontAwesomeIcon className="h-10 w-12 mt-2" icon={faChevronRight} />
+                <FontAwesomeIcon
+                  className="mt-2 h-10 w-12"
+                  icon={faChevronRight}
+                />
               </button>
             </div>
           </div>

@@ -1,11 +1,10 @@
 import { type ITest } from "./odm";
 import { env } from "~/env.mjs";
-import { Configuration, OpenAIApi } from "openai";
+import OpenAI from "openai";
 
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: env.OPENAI_API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 const runTest = async (
   test: ITest,
@@ -30,14 +29,19 @@ const runTest = async (
 
   first = first!.replace("{input}", test.test);
 
-  const output = await openai.createCompletion({
-    model: "text-davinci-003",
-    prompt: first,
+  const completion = await openai.chat.completions.create({
+    model: "gpt-3.5-turbo",
     temperature: 0,
     max_tokens: maxTokens,
+    messages: [
+      {
+        role: "user",
+        content: first,
+      },
+    ]
   });
 
-  let resultText = output.data.choices[0]?.text ?? "";
+  let resultText = completion.choices[0]?.message.content ?? "";
 
   while (rest.length > 0) {
     console.log("pushing intermediate", resultText);
@@ -45,14 +49,20 @@ const runTest = async (
 
     const [next, ...rest2] = rest;
 
-    const output = await openai.createCompletion({
-      model: "text-davinci-003",
-      prompt: next!.replace("{input}", resultText),
+    const completion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
       temperature: 0,
       max_tokens: maxTokens,
+      messages: [
+        {
+          role: "user",
+          content: next!.replace("{input}", resultText),
+        },
+      ]
+      
     });
 
-    resultText = output.data.choices[0]?.text ?? "";
+    resultText = completion.choices[0]?.message.content ?? "";
 
     rest = rest2;
   }
